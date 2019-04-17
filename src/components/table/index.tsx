@@ -1,15 +1,14 @@
 
 // import Table from 'rc-table';
 import './index.less'
+import "react-table/react-table.css";
 import { Table, Button, Form, Input } from 'antd';
 import * as React from 'react';
-import { AppBase } from '../../core/appbase';
 import { GMExcelTableProps } from './interface';
-import { TableTransactionUtil } from './transactions/transactionutil';
 import { ResizeableTitle } from './cells/resizeabletitle';
 import { EditableInputFormRow, EditableInputCell } from './cells/editableinputcell';
 
-
+import ReactTable from "react-table";
 
 
 
@@ -110,18 +109,33 @@ export default class TableExcel extends React.Component<GMExcelTableProps, any> 
       }),
     }));
 
+    console.log('OrderTable1', this.props)
+
     return (
       <div className="gm-excel-table">
         <Button onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }}>
           Add a row
         </Button>
+
+        <ReactTable
+          data={this.props.data}
+          columns={this.props.columns}
+          pivotBy={[]}
+          onResizedChange={() => {
+            console.log('onResizedChange')
+          }}
+          onPageSizeChange={() => {
+            console.log('onPageSizeChange')
+          }}
+        />
+{/* 
         <Table
           bordered
           columns={columns}
           pagination={false}
           dataSource={this.props.data}
           components={this.components}
-        />
+        /> */}
       </div>
     )
   }

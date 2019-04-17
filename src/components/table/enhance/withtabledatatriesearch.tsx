@@ -11,18 +11,18 @@ import TrieSearch from 'trie-search';
 // 推荐使用行列控制器先增强
 export function WithTableDataTrieSearch(WrappedComponent: React.ComponentClass<any, any>, indexKey: string, searchTrieKeys: string[]) {
 
-
   return class extends React.Component<any, any> {
 
     private _trieTree: any;
 
     componentDidMount() {
       // 注册热键
-      console.log(this.props, 'componentDidMount')
+
+      this.initTrieSearch(this.props.data);
     }
 
     initTrieSearch(data: any[]) {
-      this._trieTree = new TrieSearch(searchTrieKeys, { min: 3, indexField: 'key' });
+      this._trieTree = new TrieSearch(searchTrieKeys, { min: 1, indexField: indexKey });
       this._trieTree.addAll(data);
     }
 
@@ -33,7 +33,11 @@ export function WithTableDataTrieSearch(WrappedComponent: React.ComponentClass<a
     }
 
     handleInputChange = (e: any) => {
-      console.log(e, 'handleInputChange')
+      const value = e.target.value;
+      if (value && this._trieTree) {
+        const result = this._trieTree.get(value);
+        console.log(result, 'value')
+      }
     }
 
     render() {

@@ -2,10 +2,10 @@
 
 import * as React from 'react';
 import TableExcel from '../table';
-import { ColumnProps } from 'antd/lib/table';
 import { GM_TABLE_COLUMNS } from '../table/columns';
 import { WithDataManager } from '../table/datamanager';
 import { WithTableDataTrieSearch } from '../table/enhance/withtabledatatriesearch';
+import { Column } from 'react-table';
  
 
 const data = [{
@@ -28,51 +28,88 @@ const data = [{
   note: 'transfer',
 }];
 
-const OrderTableWithDataManager = WithDataManager(
-  TableExcel,
-  data
-)
+
 
 const OrderTableTest1WithTrieSearch = WithTableDataTrieSearch(
-  OrderTableWithDataManager,
+  TableExcel ,
   'key',
   ['type', 'note']
-)
+);
 
-export const OrderTableTest1 = OrderTableTest1WithTrieSearch;
+// 数据管理
+const OrderTableWithDataManager = WithDataManager(
+  OrderTableTest1WithTrieSearch,
+  data, // todo fetchDataLogic
+  null
+);
+
+
+export const OrderTableTest1 = OrderTableWithDataManager;
 
 
 export class OrderTable1 extends React.Component<any, any>  {
 
+  protected columns: Column[] = [];
+
   constructor (props: any) {
     super(props);
-    const action = {
-      ...GM_TABLE_COLUMNS.action,
-      render: (text: any, record: any, index: number) => (
-        <a href="javascript:;" onClick={() => {
-          this.handleDelete(index);
-        }}>Delete</a>
-      ),
-    }
-    const COLUMNS: ColumnProps<any>[] = [
-      GM_TABLE_COLUMNS.date,
-      GM_TABLE_COLUMNS.date,
-      GM_TABLE_COLUMNS.date,
+    // const action = {
+    //   ...GM_TABLE_COLUMNS.action,
+    //   render: (text: any, record: any, index: number) => (
+    //     <a href="javascript:;" onClick={() => {
+    //       this.handleDelete(index);
+    //     }}>Delete</a>
+    //   ),
+    // }
 
+    // const COLUMNS: Column[] = [
+    //   {
+    //     Header: 'Name',
+    //     accessor: 'name' // String-based value accessors!
+    //   },
+    //   {
+    //     Header: 'Age',
+    //     accessor: 'age',
+    //     Cell: props => <span className='number'>{props.value}</span> // Custom cell components!
+    //   },
+    //   {
+    //     id: 'friendName', // Required because our accessor is not a string
+    //     Header: 'Friend Name',
+    //     accessor: d => d.friend.name // Custom value accessors!
+    //   },
+    //   {
+    //     Header: props => <span>Friend Age</span>, // Custom header components!
+    //     accessor: 'friend.age'
+    //   }
+    // ]
+
+    this.columns = [
+      GM_TABLE_COLUMNS.date,
+      GM_TABLE_COLUMNS.amount,
+      GM_TABLE_COLUMNS.type,
+      GM_TABLE_COLUMNS.note,
+      {
+        Header: 'action',
+        Cell: (props: any) => {
+          console.log(props, 'cell');
+          return (
+            <a href="javascript:;" onClick={() => {
+              this.handleDelete();
+            }}>Delete</a>
+          );
+        }
+      }
     ]
   }
 
-  handleDelete = (index: number) => {
-    this.state.data.splice(index, 1);
-    this.setState({ data: this.state.data });
+  handleDelete = () => {
+
   }
 
   render() {
 
     return (
-      <div>
-
-      </div>
+      <OrderTableTest1 columns={this.columns} />
     )
   }
 

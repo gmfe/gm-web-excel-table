@@ -4,8 +4,7 @@ import * as React from 'react';
 import { App, SJAPP } from './client/app';
 import * as ReactDOM from "react-dom";
 import { AppBase } from './core/appbase';
-import TableExcel from './components/table';
-import { OrderTableTest1 } from "./components/ordertable1/ordertable1";
+import { OrderTableTest1, OrderTable1 } from "./components/ordertable1/ordertable1";
 
 
 class Root extends React.Component<{}> {
@@ -24,7 +23,7 @@ class Root extends React.Component<{}> {
     return (
       <div>
         Hello
-        <OrderTableTest1 app={this._app} />
+        <OrderTable1 app={this._app} />
       </div>
     );
 

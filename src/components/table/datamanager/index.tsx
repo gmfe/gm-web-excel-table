@@ -13,18 +13,13 @@ import { TableTransactionUtil } from '../transactions/transactionutil';
 export function WithDataManager(
   WrappedComponent: React.ComponentClass<any, any>,
   initData: any[] = [],
-  searchTrieKeys: string[] = []
+  defaultData: any,
 ) {
 
   return class extends React.Component<any, any> {
     constructor(props: any) {
       super(props);
       this.state = { data: initData };
-      // 做一个查找树 指定keys
-      console.log(searchTrieKeys, 'searchTrieKeys')
-    }
-    componentDidMount() {
-
     }
 
     handleSearch = (text: string) => {

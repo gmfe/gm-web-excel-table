@@ -1,4 +1,5 @@
 import { AppBase } from './../../core/appbase';
+import { Column } from 'react-table';
 
 
 
@@ -8,6 +9,7 @@ export type TableDataManagerAdd = (item: any, rowIndex?: number, callback?: () =
 export interface GMExcelTableProps {
   app: AppBase;
   data: any[];
+  columns: Column[];
   dataManager: {
     onAdd: TableDataManagerAdd,
     onDelete: (index: number) => void,
