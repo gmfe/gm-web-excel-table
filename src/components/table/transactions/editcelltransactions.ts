@@ -4,8 +4,8 @@ import { Transaction, ITransactionContext } from "../../../core/transaction/tran
 
 
 export class EditCellTransaction extends Transaction {
-  private _cell?: any;
-  private _data?: any;
+  private _oldCell?: any;
+  private _newCell?: any;
   public static uniqueType(): string {
     return TableTransactionTypes.editCell;
   }
@@ -15,39 +15,37 @@ export class EditCellTransaction extends Transaction {
   }
 
   public onCommit(): any {
-    this._cell = this.context.args.cell;
-    if (!this._cell) {
+    const oldCell = this.context.args.oldCell;
+    if (!oldCell) {
       return;
     }
-    const data = this.context.args.data;
-    if (!data) {
+    const newCell = this.context.args.newCell;
+    if (!newCell) {
         return;
     }
-    this._data = this._cell.amount;
-    this._cell.amount = data;
-    this.context.args.onChange(this._cell, this.context.args.index);
-    // console.log(this.context, data, this._cell, 'onCommitonCommit')
+    this._oldCell = JSON.stringify(oldCell);
+    this._newCell = newCell;
+    this.context.args.onChange(newCell);
   }
 
   public onUndo() {
-    if (!this._cell || !this._data) {
+    if (!this._oldCell || !this._newCell) {
       return;
     }
-    const data = this._data;
-    this._data = this._cell.amount;
-    this._cell.amount = data;
-    this.context.args.onChange(this._cell, this.context.args.index);
-    console.log(this, 'undo onUndo 3 amountamount')
+    const oldCell = JSON.parse(this._oldCell);
+    this._oldCell = this._newCell;
+    this._newCell = oldCell;
+    this.context.args.onChange(this._newCell);
   }
 
   public onRedo() {
-    if (!this._cell || !this._data) {
+    if (!this._oldCell || !this._newCell) {
       return;
     }
-    const data = this._data;
-    this._data = this._cell.amount;
-    this._cell.amount = data;
-    this.context.args.onChange(this._cell, this.context.args.index);
+    const oldCell = JSON.parse(this._oldCell);
+    this._oldCell = this._newCell;
+    this._newCell = oldCell;
+    this.context.args.onChange(this._newCell);
   }
 }
 

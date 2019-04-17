@@ -15,7 +15,7 @@ export class TableTransactionUtil{
     return groupTransaction;
 }
 
-  public static createEditCellTransaction(app: AppBase, cell: any, data: any, index: number, onChange: Function, groupTransaction: GroupTransaction) {
+  public static createEditCellTransaction(app: AppBase, oldCell: any, newCell: any, onChange: Function, groupTransaction: GroupTransaction) {
     if (!Transaction.isTransactionFactoryAvailable(TableTransactionTypes.editCell)) {
       Transaction.registerTransactionFactory(EditCellTransaction.uniqueType(), {
         createTransaction(context: ITransactionContext): Transaction {
@@ -25,11 +25,10 @@ export class TableTransactionUtil{
     }
     const transaction = Transaction.createTransaction(
       TableTransactionTypes.editCell,
-      { app, args: { cell, data, index, onChange }},
+      { app, args: { oldCell, newCell, onChange }},
     );
     if (transaction) {
       groupTransaction.add(transaction);
     }
-    console.log(transaction, groupTransaction, 'groupTransaction1')
   }
 }
