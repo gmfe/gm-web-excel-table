@@ -40,6 +40,7 @@
     "rc-table": "^6.4.4",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-resizable": "^1.7.5"
+    "react-resizable": "^1.7.5",
+    "trie-search": "^1.2.9"
   }
 }

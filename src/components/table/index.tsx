@@ -3,7 +3,6 @@
 import './index.less'
 import { Table, Button, Form, Input } from 'antd';
 import * as React from 'react';
-
 import { AppBase } from '../../core/appbase';
 import { GMExcelTableProps } from './interface';
 import { TableTransactionUtil } from './transactions/transactionutil';

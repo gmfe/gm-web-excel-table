@@ -19,7 +19,11 @@ export class SJAPP extends AppBase {
         this.transactionManager().undo();
         context.isHandled = true;
       }
-      if (context.keyEventArgs().isCtrlPressed && context.keyEventArgs().keyCode === 'KeyR') {
+      if (
+        context.keyEventArgs().isCtrlPressed &&
+        context.keyEventArgs().isAltPressed &&
+        context.keyEventArgs().keyCode === 'KeyR'
+      ) {
         this.transactionManager().redo();
         context.isHandled = true;
       }

@@ -66,7 +66,6 @@ export function WithDataManager(
       this.props.app.transactionManager().commit(groupTransaction);
     }
 
-    // 我记得这个表格也可以套到动画组件里
     render() {
       return (
         <WrappedComponent

@@ -33,7 +33,7 @@ export class EditCellTransaction extends Transaction {
       return;
     }
     const oldCell = JSON.parse(this._oldCell);
-    this._oldCell = this._newCell;
+    this._oldCell = JSON.stringify(this._newCell);
     this._newCell = oldCell;
     this.context.args.onChange(this._newCell);
   }
@@ -43,7 +43,7 @@ export class EditCellTransaction extends Transaction {
       return;
     }
     const oldCell = JSON.parse(this._oldCell);
-    this._oldCell = this._newCell;
+    this._oldCell = JSON.stringify(this._newCell);
     this._newCell = oldCell;
     this.context.args.onChange(this._newCell);
   }

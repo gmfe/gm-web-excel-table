@@ -5,6 +5,7 @@ import TableExcel from '../table';
 import { ColumnProps } from 'antd/lib/table';
 import { GM_TABLE_COLUMNS } from '../table/columns';
 import { WithDataManager } from '../table/datamanager';
+import { WithTableDataTrieSearch } from '../table/enhance/withtabledatatriesearch';
  
 
 const data = [{
@@ -27,10 +28,18 @@ const data = [{
   note: 'transfer',
 }];
 
-export const OrderTableTest1 = WithDataManager(
+const OrderTableWithDataManager = WithDataManager(
   TableExcel,
   data
 )
+
+const OrderTableTest1WithTrieSearch = WithTableDataTrieSearch(
+  OrderTableWithDataManager,
+  'key',
+  ['type', 'note']
+)
+
+export const OrderTableTest1 = OrderTableTest1WithTrieSearch;
 
 
 export class OrderTable1 extends React.Component<any, any>  {
