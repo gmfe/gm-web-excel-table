@@ -22,6 +22,20 @@ export function WithDataManager(
       this.state = { data: initData };
     }
 
+    mapData = (data: any[]) => {
+      return data.map(d => {
+        let row: any[] = [];
+        Object.entries(d).forEach((pairs: any) => {
+          row.push({
+            value: pairs[1],
+            dataIndex: pairs[0],
+          });
+        });
+        return row;
+      });
+
+    }
+
     handleSearch = (text: string) => {
       // const result = this.trie.search()
     }
@@ -62,6 +76,8 @@ export function WithDataManager(
     }
 
     render() {
+      // todo add memorize
+      // const mapData = this.mapData(this.state.data);
       return (
         <WrappedComponent
           data={this.state.data}

@@ -11,13 +11,14 @@
         "jsx": "react",
         "module": "es6",
         "target": "es5",
-        "allowJs": false,
+        "allowJs": true,
         "sourceMap": true,
         "outDir": "./dist/",
         "noImplicitAny": true,
         "noImplicitReturns": true,
         "moduleResolution": "node",
         "downlevelIteration": true,
+        "allowSyntheticDefaultImports": false,
     },
     "include": [
         "./src/**/*"

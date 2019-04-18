@@ -1,105 +1,115 @@
-
-
 import * as React from 'react';
+import * as moment from 'moment';
 import TableExcel from '../table';
-import { GM_TABLE_COLUMNS } from '../table/columns';
+import { GM_TABLE_COLUMNS, IColumn } from '../table/constants/columns';
 import { WithDataManager } from '../table/datamanager';
 import { WithTableDataTrieSearch } from '../table/enhance/withtabledatatriesearch';
-import { Column } from 'react-table';
- 
-
-const data = [{
-  key: 0,
-  date: '2018-02-11',
-  amount: 120,
-  type: 'income',
-  note: 'transfer',
-}, {
-  key: 1,
-  date: '2018-03-11',
-  amount: 243,
-  type: 'income',
-  note: 'transfer',
-}, {
-  key: 2,
-  date: '2018-04-11',
-  amount: 98,
-  type: 'income',
-  note: 'transfer',
-}];
+import { DatePicker } from 'antd';
+import { WithColumnRowManager } from '../table/columnrowmanager/with-column-row-manager';
 
 
 
+// 拓展搜索
 const OrderTableTest1WithTrieSearch = WithTableDataTrieSearch(
   TableExcel ,
   'key',
   ['type', 'note']
 );
 
+
+
+// 业务表格配置
+const OrderTableWithWithColumnRowManager = WithColumnRowManager(
+  OrderTableTest1WithTrieSearch,
+  (componentProps: any, columnRowManager: any) => {
+    const columns: IColumn[] = [
+      {
+        ...GM_TABLE_COLUMNS.date,
+        minWidth: 150,
+        maxWidth: 600,
+        Header: '日期',
+        dataEditor: (props: any) => {
+          const date = moment(props.value);
+          // need add dataManager
+          // console.log(props, 'propspropsprops')
+          return (
+            <DatePicker value={date} onChange={(data: any) => {
+              console.log(data, 'DatePicker change' )
+            }}/>
+          );
+        }
+      },
+      {
+        ...GM_TABLE_COLUMNS.amount,
+        Header: '数量',
+      },
+      {
+        ...GM_TABLE_COLUMNS.type,
+        Header: '类型',
+        sortable: false,
+      },
+      {
+        ...GM_TABLE_COLUMNS.note,
+        Header: '文本',
+        sortable: false,
+      },
+      {
+        Header: 'action',
+        disableEvents: true,
+        valueViewer: (data: any) => {
+          return (
+            <a href="javascript:;" onClick={() => {
+              // console.log(data, componentProps, 'columnRowManager props')
+              componentProps.dataManager.onDelete(data.index);
+            }}>Delete</a>
+          );
+        }
+      }
+    ];
+    return columns;
+  }
+)
+
+// https://github.com/nadbm/react-datasheet#cell-options
+const data = [{
+  date: '2018-02-11',
+  amount: 120,
+  type: 'income',
+  note: 'transfer',
+}, {
+  date: '2018-03-11',
+  amount: 243,
+  type: 'income',
+  note: 'transfer',
+}, {
+  date: '2018-04-11',
+  amount: 98,
+  type: 'income',
+  note: 'transfer',
+}];
+
 // 数据管理
 const OrderTableWithDataManager = WithDataManager(
-  OrderTableTest1WithTrieSearch,
+  OrderTableWithWithColumnRowManager,
   data, // todo fetchDataLogic
   null
 );
-
 
 export const OrderTableTest1 = OrderTableWithDataManager;
 
 
 export class OrderTable1 extends React.Component<any, any>  {
 
-  protected columns: Column[] = [];
-
   constructor (props: any) {
     super(props);
-    // const action = {
-    //   ...GM_TABLE_COLUMNS.action,
-    //   render: (text: any, record: any, index: number) => (
-    //     <a href="javascript:;" onClick={() => {
-    //       this.handleDelete(index);
-    //     }}>Delete</a>
-    //   ),
-    // }
 
-    // const COLUMNS: Column[] = [
-    //   {
-    //     Header: 'Name',
-    //     accessor: 'name' // String-based value accessors!
-    //   },
-    //   {
-    //     Header: 'Age',
-    //     accessor: 'age',
-    //     Cell: props => <span className='number'>{props.value}</span> // Custom cell components!
-    //   },
-    //   {
-    //     id: 'friendName', // Required because our accessor is not a string
-    //     Header: 'Friend Name',
-    //     accessor: d => d.friend.name // Custom value accessors!
-    //   },
-    //   {
-    //     Header: props => <span>Friend Age</span>, // Custom header components!
-    //     accessor: 'friend.age'
-    //   }
-    // ]
+    // config columns
 
-    this.columns = [
-      GM_TABLE_COLUMNS.date,
-      GM_TABLE_COLUMNS.amount,
-      GM_TABLE_COLUMNS.type,
-      GM_TABLE_COLUMNS.note,
-      {
-        Header: 'action',
-        Cell: (props: any) => {
-          console.log(props, 'cell');
-          return (
-            <a href="javascript:;" onClick={() => {
-              this.handleDelete();
-            }}>Delete</a>
-          );
-        }
-      }
-    ]
+  }
+
+  handleResize = (e: any) => {
+
+    console.log(e, 'handleResize')
   }
 
   handleDelete = () => {
@@ -107,9 +117,9 @@ export class OrderTable1 extends React.Component<any, any>  {
   }
 
   render() {
-
+    console.log(this.props, 'render render columnRowManager')
     return (
-      <OrderTableTest1 columns={this.columns} />
+      <OrderTableTest1 />
     )
   }
 

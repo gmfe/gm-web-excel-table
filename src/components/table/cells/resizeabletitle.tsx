@@ -6,12 +6,12 @@ import { Resizable } from 'react-resizable';
 export const ResizeableTitle = (props: any) => {
   const { onResize, width, ...restProps } = props;
   if (!width) {
-    return <th {...restProps} />;
+    return props.children;
   }
 
   return (
     <Resizable width={width} height={0} onResize={onResize}>
-      <th {...restProps} />
+      {props.children}
     </Resizable>
   );
 };
