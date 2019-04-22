@@ -1,5 +1,4 @@
 import { AppBase } from './../../core/appbase';
-import { IColumn } from './constants/columns';
 
 
 
@@ -9,11 +8,13 @@ export type TableDataManagerAdd = (item: any, rowIndex?: number, callback?: () =
 export interface GMExcelTableProps {
   app: AppBase;
   data: any[];
+  columnsMapData: any[]; // map to DataSheetProps /node_modules/react-datasheet/types/react-datasheet.d.ts
   columns: any[];
   dataManager: {
-    onAdd: TableDataManagerAdd,
-    onDelete: (index: number) => void,
     onSearch: () => void,
+    onAdd: TableDataManagerAdd,
+    setData: (data: any[]) => void,
+    onDelete: (index: number) => void,
     onUpdate: (rowItem: any, rowIndex: number) => void,
   }
   columnRowManager: any;

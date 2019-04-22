@@ -3,16 +3,19 @@
 
 import * as React from 'react'
 import { TableTransactionUtil } from '../transactions/transactionutil';
+import { AppBase } from '../../../core/appbase';
 
 
 // https://reactjs.org/docs/higher-order-components.html
 
 // todo 后续 initData 这里应该是传入 fetchData的逻辑
 
+
+
 // 只与数据操作有关的逻辑
 export function WithDataManager(
   WrappedComponent: React.ComponentClass<any, any>,
-  initData: any[] = [],
+  initData: any[],
   defaultData: any,
 ) {
 
@@ -22,19 +25,6 @@ export function WithDataManager(
       this.state = { data: initData };
     }
 
-    mapData = (data: any[]) => {
-      return data.map(d => {
-        let row: any[] = [];
-        Object.entries(d).forEach((pairs: any) => {
-          row.push({
-            value: pairs[1],
-            dataIndex: pairs[0],
-          });
-        });
-        return row;
-      });
-
-    }
 
     handleSearch = (text: string) => {
       // const result = this.trie.search()
@@ -60,24 +50,26 @@ export function WithDataManager(
       this.setState({ data: this.state.data });
     }
 
-    handleUpdate = (newItem: any, rowIndex: number) => {
+    handleUpdate = (newItem: Object, rowIndex: number) => {
+
+      // can do sequence
       const newData = [...this.state.data];
       const oldItem = newData[rowIndex];
-      const groupTransaction = TableTransactionUtil.createGroupTransaction(this.props.app);
+      const app = this.props.app;
+      const groupTransaction = TableTransactionUtil.createGroupTransaction(app);
       TableTransactionUtil.createEditCellTransaction(
-        this.props.app,
+        app,
         oldItem,
-        newItem,
+        { ...oldItem, ...newItem },
         (commitedItem: any) => {
           newData.splice(rowIndex, 1, commitedItem);
           this.setState({ data: newData });
       }, groupTransaction);
-      this.props.app.transactionManager().commit(groupTransaction);
+      app.transactionManager().commit(groupTransaction);
     }
 
+
     render() {
-      // todo add memorize
-      // const mapData = this.mapData(this.state.data);
       return (
         <WrappedComponent
           data={this.state.data}
@@ -86,7 +78,8 @@ export function WithDataManager(
             onAdd: this.handleAdd,
             onDelete: this.handleDelete,
             onSearch: this.handleSearch,
-            onUpdate: this.handleUpdate
+            onUpdate: this.handleUpdate, // (newItem: Object, rowIndex: number) => this.handleUpdate(newItem, rowIndex, this.props.app),
+            setData: (data: any[]) => { this.setState({ data }) },
           }}
         />
       )

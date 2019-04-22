@@ -7,7 +7,8 @@ import { WithTableDataTrieSearch } from '../table/enhance/withtabledatatriesearc
 
 import { WithColumnRowManager } from '../table/columnrowmanager/with-column-row-manager';
 import { configOrderTable1Columns, getCellDom } from './config';
-
+import { DragDropContextProvider } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend'
 
 
 // 拓展搜索
@@ -77,7 +78,9 @@ export class OrderTable1 extends React.Component<any, any>  {
   render() {
     console.log(this.props, 'render render columnRowManager')
     return (
-      <OrderTableTest1 />
+      <DragDropContextProvider backend={HTML5Backend}>
+        <OrderTableTest1 {...this.props} />
+      </DragDropContextProvider>
     )
   }
 

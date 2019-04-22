@@ -1,4 +1,6 @@
+import * as React from 'react';
 import { DragSource, DropTarget } from 'react-dnd'
+
 
 /**
  * Specifies which props to inject into your component.
@@ -95,3 +97,4 @@ export const colDragSource = DragSource('col', colSourceSpec, colSourceCollect)
 export const colDropTarget = DropTarget('col', colTargetSpec, colTargetCollect)
 export const rowDragSource = DragSource('row', rowSourceSpec, rowSourceCollect)
 export const rowDropTarget = DropTarget('row', rowTargetSpec, rowTargetCollect)
+

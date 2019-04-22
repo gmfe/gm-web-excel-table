@@ -136,7 +136,8 @@ export function WithColumnRowManager(configOption: WithColumnRowManagerConfig) {
           columns={this.state.columns}
           columnRowManager={this._columnRowManager}
           {...this.props}
-          data={this.columnsMaptoCells(this.props.data, this.state.columns)}
+          data={this.props.data}
+          columnsMapData={this.columnsMaptoCells(this.props.data, this.state.columns)}
           onTableLoad={this.onTableLoaded}
         />
       )

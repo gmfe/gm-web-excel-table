@@ -4,11 +4,11 @@ import { isFunction } from 'lodash'
 import { IColumn } from '../constants/columns';
 import { ResizeableTitle } from '../cells/resizeabletitle';
 
-export default class ColumnHeader extends PureComponent<{ columns: IColumn[], onResizeColumn: Function, onResizeStart: Function }> {
+export default class ColumnHeader extends PureComponent<{ columns: IColumn[], onResizeColumn: Function, onResizeStart: Function, containerStyle?: Object }> {
   render() {
-    const { columns, onResizeColumn, onResizeStart } = this.props;
+    const { columns, onResizeColumn, onResizeStart, containerStyle = {}} = this.props;
     return (
-      <div>
+      <div style={containerStyle}>
         {
           columns.map((column: IColumn, index: number) => {
             const key = column.dataIndex || `columns${index}`;
