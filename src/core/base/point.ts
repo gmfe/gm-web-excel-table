@@ -6,7 +6,7 @@ export class Point2D {
 
   constructor(x?: number, y?: number) {
     this.x = x === undefined ? 0 : x;
-    this.y = x === undefined ? 0 : x;
+    this.y = y === undefined ? 0 : y;
   }
   
   public distanceTo(point: Point2D) {

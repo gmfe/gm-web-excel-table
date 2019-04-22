@@ -1,11 +1,12 @@
 import * as React from 'react';
-import * as moment from 'moment';
+
 import TableExcel from '../table';
-import { GM_TABLE_COLUMNS, IColumn } from '../table/constants/columns';
+import { GM_TABLE_COLUMNS, IColumn, GM_TABLE_COLUMNS_KEYS } from '../table/constants/columns';
 import { WithDataManager } from '../table/datamanager';
 import { WithTableDataTrieSearch } from '../table/enhance/withtabledatatriesearch';
-import { DatePicker } from 'antd';
+
 import { WithColumnRowManager } from '../table/columnrowmanager/with-column-row-manager';
+import { configOrderTable1Columns, getCellDom } from './config';
 
 
 
@@ -19,55 +20,12 @@ const OrderTableTest1WithTrieSearch = WithTableDataTrieSearch(
 
 
 // 业务表格配置
-const OrderTableWithWithColumnRowManager = WithColumnRowManager(
-  OrderTableTest1WithTrieSearch,
-  (componentProps: any, columnRowManager: any) => {
-    const columns: IColumn[] = [
-      {
-        ...GM_TABLE_COLUMNS.date,
-        minWidth: 150,
-        maxWidth: 600,
-        Header: '日期',
-        dataEditor: (props: any) => {
-          const date = moment(props.value);
-          // need add dataManager
-          // console.log(props, 'propspropsprops')
-          return (
-            <DatePicker value={date} onChange={(data: any) => {
-              console.log(data, 'DatePicker change' )
-            }}/>
-          );
-        }
-      },
-      {
-        ...GM_TABLE_COLUMNS.amount,
-        Header: '数量',
-      },
-      {
-        ...GM_TABLE_COLUMNS.type,
-        Header: '类型',
-        sortable: false,
-      },
-      {
-        ...GM_TABLE_COLUMNS.note,
-        Header: '文本',
-        sortable: false,
-      },
-      {
-        Header: 'action',
-        disableEvents: true,
-        valueViewer: (data: any) => {
-          return (
-            <a href="javascript:;" onClick={() => {
-              // console.log(data, componentProps, 'columnRowManager props')
-              componentProps.dataManager.onDelete(data.index);
-            }}>Delete</a>
-          );
-        }
-      }
-    ];
-    return columns;
-  }
+const OrderTableWithWithColumnRowManager = WithColumnRowManager({
+  component: OrderTableTest1WithTrieSearch,
+  getColumns: configOrderTable1Columns,
+  getCellDom: getCellDom,
+}
+
 )
 
 // https://github.com/nadbm/react-datasheet#cell-options

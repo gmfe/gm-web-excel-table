@@ -2,71 +2,120 @@
 
 
 import * as React from 'react'
-import { IColumn } from '../constants/columns';
+import { IWeekSize, WithColumnRowManagerConfig, IWeekSizeRange, IColumnWithOrigin } from './constants';
+import { ColumnManagerUtils } from './utils';
 
 
-const DEFAULT_WIDTH = {
-  min: 100,
-  max: 1000
-}
+
+
+
 
 // 只与行列操作有关的逻辑
-export function WithColumnRowManager(
-  WrappedComponent: React.ComponentClass<any, any>,
-  getColumns: (props: any, columnRowManager: any) => IColumn[], // or other config method
-) {
+export function WithColumnRowManager(configOption: WithColumnRowManagerConfig) {
 
-  return class extends React.Component<any, { columns: IColumn[] }> {
+
+  const CellId = (ri: number, ci: number) => `${1}${ci}`;
+
+  return class extends React.Component<any, { columns: IColumnWithOrigin[] }> {
+  
     private _columnRowManager: any;
+    private _tableContainerDom?: HTMLElement;
+    private _tableCellDomMap: Map<string, HTMLElement>;
+    private _currentSizeRange?: IWeekSizeRange ;
+
     constructor(props: any) {
       super(props);
       this._columnRowManager = {
+        onResizeColumnStart: this.handleResizeColumnStart,
         onResizeColumn: this.handleResizeColumn,
         onResizeRow: this.hanldeResizeRow,
       }
       this.state = {
-        columns: getColumns(props, this._columnRowManager)
+        columns: configOption.getColumns(props, this._columnRowManager).map(c => ({ ...c, origin: {}}))
       };
+      this._tableCellDomMap = new Map();
     }
 
-    handleResizeColumn = (index: number) => (_: any, data: any) => {
+    handleResizeColumnStart = (index: number) => () => {
+      const nextColumns = [...this.state.columns];
+      this._currentSizeRange = ColumnManagerUtils.getSizeRange(nextColumns[index], this.state.columns, this._tableContainerDom);
+      nextColumns[index]  = {
+        ...nextColumns[index],
+        minWidth: this._currentSizeRange.width && this._currentSizeRange.width.min,
+        maxWidth: this._currentSizeRange.width && this._currentSizeRange.width.max,
+      }
+      this.setState({ columns: nextColumns })
+    }
 
-      const newWidth = data.size.width;
+    // event, direction, refToElement, delta
+    handleResizeColumn = (index: number) => (nextSize: IWeekSize, callback?: (size: IWeekSize) => void) => {
       const column = this.state.columns[index];
-      if (!newWidth || !column) {
-        return;
+      if (!column) {
+        return false;
       }
-
-      const minWidth = column.minWidth || DEFAULT_WIDTH.min;
-      const maxWidth = column.maxWidth || DEFAULT_WIDTH.max;
-
-      if (newWidth < minWidth || newWidth > maxWidth) {
-        return;
+      const sizeRange = this._currentSizeRange;
+      if (!sizeRange) {
+        throw Error('make sure you cal sizeRange')
       }
-
+      if(!ColumnManagerUtils.isValidSize(sizeRange, nextSize)) {
+        if (callback) {
+          callback(ColumnManagerUtils.getValidSize(sizeRange, nextSize));
+        }
+        return false;
+      }
       this.setState(({ columns }: any) => {
         const nextColumns = [...columns];
-        nextColumns[index] = {
-          ...nextColumns[index],
-          width: newWidth,
-        };
+        const column = nextColumns[index];
+        if (nextSize.width) {
+          column.width = nextSize.width;
+        }
+        nextColumns[index] = column;
         return { columns: nextColumns };
+      }, () => {
+        if (callback) {
+          const nextColumn = this.state.columns[index];
+          callback({ width: nextColumn.width });
+        }
       });
+      return true;
     }
 
+ 
     hanldeResizeRow() {
 
     }
 
-    mapData = (gridData: any[]) => {
-      const columnMap = new Map();
-      this.state.columns.forEach(column => column.dataIndex && columnMap.set(column.dataIndex, column));
-      return gridData.map(rowData => {
-        return rowData.map((rd: any) => {
-          const column: IColumn | undefined = columnMap.get(rd.dataIndex);
-          return Object.assign(rd, column ? { column } : {});
-        });
+    onTableLoaded = (container: HTMLElement) => {
+      if (this._tableContainerDom && container.id === this._tableContainerDom.id) return;
+
+      this._tableContainerDom = container;
+      const columnsWithSize = this.state.columns.map((c, ci) => {
+        if (!c.width) {
+          const fromMap = this._tableCellDomMap.get(CellId(0, ci));
+          const cellDom = fromMap || configOption.getCellDom(container, 0, ci);
+          if (!fromMap && cellDom) {
+            this._tableCellDomMap.set(CellId(0, ci), cellDom);
+          }
+          if (cellDom) {
+            return {
+              ...c,
+              width: cellDom.offsetWidth,
+            }
+          }
+        }
+        return { ...c };
       });
+
+      const columnsWithRange = columnsWithSize.map(column => {
+        const sizeRange = ColumnManagerUtils.getSizeRange(column, columnsWithSize, this._tableContainerDom);
+        return {
+          ...column,
+          origin: { minWidth: column.minWidth, maxWidth: column.maxWidth, width: column.width },
+          minWidth: sizeRange.width && sizeRange.width.min,
+          maxWidth: sizeRange.width && sizeRange.width.max,
+        }
+      });
+      this.setState(({ columns: columnsWithRange }))
     }
 
     columnsMaptoCells(data: any[], columns: any[]) {
@@ -81,12 +130,14 @@ export function WithColumnRowManager(
     }
 
     render() {
+      const  WrappedComponent = configOption.component;
       return (
         <WrappedComponent
           columns={this.state.columns}
           columnRowManager={this._columnRowManager}
           {...this.props}
           data={this.columnsMaptoCells(this.props.data, this.state.columns)}
+          onTableLoad={this.onTableLoaded}
         />
       )
     }

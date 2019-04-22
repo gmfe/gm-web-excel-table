@@ -17,4 +17,5 @@ export interface GMExcelTableProps {
     onUpdate: (rowItem: any, rowIndex: number) => void,
   }
   columnRowManager: any;
+  onTableLoad?: (container: HTMLElement) => void,
 }
