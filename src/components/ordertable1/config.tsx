@@ -5,6 +5,32 @@ import { DatePicker } from 'antd';
 import { IColumn, GM_TABLE_COLUMNS, GM_TABLE_COLUMNS_KEYS } from '../table/constants/columns';
 
 
+class DataPickerEditor extends React.Component<any> {
+  render() {
+    // console.log(this.props.cell, 'onUpdate')
+    const date = moment(this.props.cell.value);
+    return (
+      <DatePicker
+        value={date}
+        getCalendarContainer={(t: any) => {
+          const div = document.createElement('div');
+          document.body.appendChild(div);
+          div.onmousedown = (e: any) => { e.stopPropagation(); }
+          return div;
+        }}
+        onChange={(moment: moment.Moment) => {
+          const { cell: { dataIndex }, dataManager, row }: any = this.props;
+          if (dataIndex) {
+            const string = moment.toISOString().slice(0, 10);
+            dataManager.onUpdate({ [dataIndex]: string }, row)
+          }
+        }}
+      />
+    )
+  }
+}
+
+
 export const configOrderTable1Columns = (componentProps: any, columnRowManager: any) => {
   const columns: IColumn[] = [
     {
@@ -14,14 +40,7 @@ export const configOrderTable1Columns = (componentProps: any, columnRowManager: 
       Header: '日期',
       dataIndex: GM_TABLE_COLUMNS_KEYS.date,
       dataEditor: (props: any) => {
-        const date = moment(props.value);
-        // need add dataManager
-        // console.log(props, 'propspropsprops')
-        return (
-          <DatePicker value={date} onChange={(data: any) => {
-            console.log(data, 'DatePicker change' )
-          }}/>
-        );
+        return <DataPickerEditor {...componentProps} {...props} />
       }
     },
     {

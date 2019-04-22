@@ -9,11 +9,18 @@ import { WithColumnRowManager } from '../table/columnrowmanager/with-column-row-
 import { configOrderTable1Columns, getCellDom } from './config';
 import { DragDropContextProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend'
+import { WithTableController } from '../table/tablecontroller';
 
+
+
+const tableWithContoller = WithTableController({
+  component: TableExcel,
+  tableKey: 'key'
+})
 
 // 拓展搜索
 const OrderTableTest1WithTrieSearch = WithTableDataTrieSearch(
-  TableExcel ,
+  tableWithContoller,
   'key',
   ['type', 'note']
 );
@@ -57,32 +64,14 @@ const OrderTableWithDataManager = WithDataManager(
 export const OrderTableTest1 = OrderTableWithDataManager;
 
 
+
 export class OrderTable1 extends React.Component<any, any>  {
-
-  constructor (props: any) {
-    super(props);
-
-    // config columns
-
-  }
-
-  handleResize = (e: any) => {
-
-    console.log(e, 'handleResize')
-  }
-
-  handleDelete = () => {
-
-  }
-
   render() {
-    console.log(this.props, 'render render columnRowManager')
     return (
       <DragDropContextProvider backend={HTML5Backend}>
         <OrderTableTest1 {...this.props} />
       </DragDropContextProvider>
     )
   }
-
 }
 

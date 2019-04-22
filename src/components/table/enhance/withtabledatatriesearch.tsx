@@ -1,8 +1,8 @@
-import { Input } from 'antd';
+import { Input, Select } from 'antd';
 import * as React from 'react';
 import TrieSearch from 'trie-search';
 
-
+const Option = Select.Option;
 // 表格内搜索
 
 // https://www.npmjs.com/package/trie-search
@@ -42,9 +42,26 @@ export function WithTableDataTrieSearch(WrappedComponent: React.ComponentClass<a
 
     render() {
 
+      const options = [].map((d: any) => <Option key={d.value}>{d.text}</Option>);
+
+      console.log(this.props.data, 'const Option = Select.Option;')
+
       return (
         <div>
-          <Input onChange={this.handleInputChange} />
+          {/* <Select
+            showSearch
+            value={this.state.value}
+            // placeholder={this.props.placeholder}
+            // style={this.props.style}
+            defaultActiveFirstOption={false}
+            showArrow={false}
+            filterOption={false}
+            // onSearch={this.handleSearch}
+            // onChange={this.handleChange}
+            notFoundContent={null}
+          >
+            {options}
+          </Select> */}
           <WrappedComponent
             {...this.props}
             trieSearch={this.trieSearch}

@@ -3,12 +3,13 @@
 
 import * as React from 'react'
 import { ColumnProps } from 'antd/lib/table';
+import { WithTableControllerConfig } from './constants';
 
 
 
 // todo 需要传入 tableKey
 // 传入 Table Header 高，左边界 (定位到第一个单元格左上角)
-export function WithTableController(WrappedComponent: React.ComponentClass<any, any>, tableKey: string, columns: any[]) {
+export function WithTableController(config: WithTableControllerConfig) {
 
   return class extends React.Component<any, any> {
 
@@ -51,7 +52,7 @@ export function WithTableController(WrappedComponent: React.ComponentClass<any, 
     }
 
     rowColumnPositionToId = (columnKey: string, row: number) => {
-      return `${tableKey}-${columnKey}-${row}`;
+      return `${config.tableKey}-${columnKey}-${row}`;
     }
 
     handleMoveFollowing(nextIndex: any) {
@@ -88,19 +89,15 @@ export function WithTableController(WrappedComponent: React.ComponentClass<any, 
     // todo 嵌套一个动画组件
     // 考虑下其它表格激活后，切换
     render() {
+      const WrappedComponent = config.component;
+      console.log(this.props, 'tableWithContollertableWithContoller')
       return (
         <div>
-          {
-            this.state.index ? null : null
-          }
-          <div style={{ width: 100, height: 100, position: "absolute", ...this.state }}>
-            移动框
-          </div>
           <WrappedComponent
             tableController = {{
-              handleMoveFollowing: this.handleMoveFollowing.bind(this),
-              handleFocus: this.handleFocus.bind(this),
               handleEdit: this.handleEdit.bind(this),
+              handleFocus: this.handleFocus.bind(this),
+              handleMoveFollowing: this.handleMoveFollowing.bind(this),
             }}
             {...this.props}
           />

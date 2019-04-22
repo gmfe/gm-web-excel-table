@@ -74,10 +74,10 @@ export default class TableExcel extends React.Component<GMExcelTableProps, any> 
   }
 
   handleRowDrop = (from: any, to: any) => {
-    console.log(from, to, 'fromfromfromfromfrom')
+    // console.log(from, to, 'fromfromfromfromfrom')
     const data = [...this.props.data]
     data.splice(to, 0, ...data.splice(from, 1));
-    console.log(data, 'datadata')
+    // console.log(data, 'datadata')
     this.props.dataManager.setData(data);
   }
 
@@ -89,10 +89,11 @@ export default class TableExcel extends React.Component<GMExcelTableProps, any> 
 
 
   renderDataEditor = (props: any) => {
-    console.log(this, 'renderDataEditorrenderDataEditor')
     const { dataManager } = this.props;
-    return (<input style={{ margin: 0, width: '100%', height: '100%' }} onChange={function(e) {
-      console.log(e.target.value, props, 'onCellsChangedonCellsChanged')
+    return (<input ref={c => {
+      if (c) c.focus();
+    }} style={{ margin: 0, width: '100%', height: '100%' }} onChange={function(e) {
+      // console.log(e.target.value, props, 'onCellsChangedonCellsChanged')
       if (props.cell.dataIndex) {
         dataManager.onUpdate({ [props.cell.dataIndex]: e.target.value }, props.row)
       }
@@ -119,6 +120,7 @@ export default class TableExcel extends React.Component<GMExcelTableProps, any> 
 
     return (
       <div className="gm-excel-table">
+      
         <Button onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }}>
           Add a row
         </Button>

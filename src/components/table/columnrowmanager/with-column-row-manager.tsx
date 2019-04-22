@@ -29,9 +29,10 @@ export function WithColumnRowManager(configOption: WithColumnRowManagerConfig) {
         onResizeColumnStart: this.handleResizeColumnStart,
         onResizeColumn: this.handleResizeColumn,
         onResizeRow: this.hanldeResizeRow,
+        findCellDom: this.findCellDom,
       }
       this.state = {
-        columns: configOption.getColumns(props, this._columnRowManager).map(c => ({ ...c, origin: {}}))
+        columns: configOption.getColumns(this.props, this._columnRowManager).map(c => ({ ...c, origin: {}}))
       };
       this._tableCellDomMap = new Map();
     }
@@ -91,11 +92,12 @@ export function WithColumnRowManager(configOption: WithColumnRowManagerConfig) {
       this._tableContainerDom = container;
       const columnsWithSize = this.state.columns.map((c, ci) => {
         if (!c.width) {
-          const fromMap = this._tableCellDomMap.get(CellId(0, ci));
-          const cellDom = fromMap || configOption.getCellDom(container, 0, ci);
-          if (!fromMap && cellDom) {
-            this._tableCellDomMap.set(CellId(0, ci), cellDom);
-          }
+          // const fromMap = this._tableCellDomMap.get(CellId(0, ci));
+          // const cellDom = fromMap || configOption.getCellDom(container, 0, ci);
+          // if (!fromMap && cellDom) {
+          //   this._tableCellDomMap.set(CellId(0, ci), cellDom);
+          // }
+          const cellDom = this.findCellDom(0, ci);
           if (cellDom) {
             return {
               ...c,
@@ -118,15 +120,32 @@ export function WithColumnRowManager(configOption: WithColumnRowManagerConfig) {
       this.setState(({ columns: columnsWithRange }))
     }
 
-    columnsMaptoCells(data: any[], columns: any[]) {
+    columnsMaptoCells = (data: any[], columns: any[]) => {
       return data.map((rowData: any) => {
         return columns.map(column => {
           return {
             ...column,
             value: column.dataIndex ? rowData[column.dataIndex] : '',
+            // updateValue: (value: any) => {
+            //   this.props.dataMa
+            //   console.log(value, this.props, 'componentProps')
+            // }
           }
         })
       })
+    }
+
+    findCellDom = (row: number, col: number) => {
+      const cellId = CellId(row, col);
+      let cellDom = this._tableCellDomMap.get(cellId);
+      if (this._tableContainerDom) {
+        const fromTable = configOption.getCellDom(this._tableContainerDom, row, col);
+        if (!cellDom && fromTable) {
+          cellDom = fromTable;
+          this._tableCellDomMap.set(cellId, fromTable);
+        }
+      }
+      return cellDom;
     }
 
     render() {
