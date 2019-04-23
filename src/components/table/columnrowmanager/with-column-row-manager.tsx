@@ -1,12 +1,9 @@
 
-
-
 import * as React from 'react'
-import { IWeekSize, WithColumnRowManagerConfig, IWeekSizeRange, IColumnWithOrigin } from './constants';
 import { ColumnManagerUtils } from './utils';
-
-
-
+import { ICellInDataSheet } from './interface';
+import { IColumn } from '../constants/columns';
+import { IWeekSize, WithColumnRowManagerConfig, IWeekSizeRange, IColumnWithOrigin } from './constants';
 
 
 
@@ -37,7 +34,7 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
   
       handleResizeColumnStart = (index: number) => () => {
         const nextColumns = [...this.state.columns];
-        this._currentSizeRange = ColumnManagerUtils.getSizeRange(nextColumns[index], this.state.columns, this._tableContainerDom);
+        this._currentSizeRange = ColumnManagerUtils.getSizeRange(nextColumns[index], this.state.columns);
         nextColumns[index]  = {
           ...nextColumns[index],
           minWidth: this._currentSizeRange.width && this._currentSizeRange.width.min,
@@ -107,7 +104,7 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
         });
   
         const columnsWithRange = columnsWithSize.map(column => {
-          const sizeRange = ColumnManagerUtils.getSizeRange(column, columnsWithSize, this._tableContainerDom);
+          const sizeRange = ColumnManagerUtils.getSizeRange(column, columnsWithSize);
           return {
             ...column,
             origin: { minWidth: column.minWidth, maxWidth: column.maxWidth, width: column.width },
@@ -118,7 +115,7 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
         this.setState(({ columns: columnsWithRange }))
       }
   
-      columnsMaptoCells = (data: any[], columns: any[]) => {
+      columnsMaptoCells = (data: any[], columns: IColumn[]): ICellInDataSheet[][] => {
         return data.map((rowData: any) => {
           return columns.map(column => {
             return {

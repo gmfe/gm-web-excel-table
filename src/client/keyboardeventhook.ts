@@ -46,7 +46,7 @@ export class KeyboardEventHook{
   private _keypresslistener = (evt: KeyboardEvent) => this.onkeypress(evt, this._app)
 
 
-  public onHook(app: AppBase, isHiJack: boolean = true) {
+  public onHook(isHiJack: boolean = true) {
     this._isHiJack = !!isHiJack;
     if (isHiJack) {
       document.onkeyup = this._keyuplistener;

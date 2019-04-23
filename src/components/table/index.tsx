@@ -4,23 +4,21 @@ import './index.less'
 import 'react-datasheet/lib/react-datasheet.css';
 import { Button } from 'antd';
 import * as React from 'react';
-
-import { GMExcelTableProps } from './interface';
-
+import { GMExcelTableProps, CellSelectedState } from './interface';
 import { ResizeableTitle } from './cells/resizeabletitle';
 import { EditableInputFormRow, EditableInputCell } from './cells/editableinputcell';
 import ReactDataSheet from 'react-datasheet';
-import HTML5Backend from 'react-dnd-html5-backend'
 import {
-  // colDragSource, colDropTarget,
   rowDragSource, rowDropTarget,
 } from './enhance/drag-drop.js'
 import ColumnHeader from './columnheader';
-import { DragDropContextProvider } from 'react-dnd';
+import { isFunction } from 'lodash'
 
+import { VariableSizeList as List } from 'react-window';
+import { IColumn } from './constants/columns';
 
 const ROW_DRAGGER_WIDTH = 20;
-const RowRenderer = rowDropTarget( rowDragSource( (props: any) => {
+const RowRenderer = rowDropTarget(rowDragSource((props: any) => {
   const { isOver, disable, children, connectDropTarget, connectDragPreview, connectDragSource } = props;
   const className = isOver ? 'drop-target' : ''
   return connectDropTarget(connectDragPreview(
@@ -29,12 +27,115 @@ const RowRenderer = rowDropTarget( rowDragSource( (props: any) => {
       {children}
     </tr>
   ))
-} ) );
+}));
 
 
+// export function withCustomStaticConfig() {
+//   return class extends React.Component<any, any> {
+//     render() {
+//       return (<TableExcel {...this.props} />)
+//     }
+//   }
+// }
 
 
-export default class TableExcel extends React.Component<GMExcelTableProps, any> {
+export class SheetBody extends React.Component<any, any> {
+
+
+  handleRowDrop = (from: any, to: any) => {
+    // console.log(from, to, 'fromfromfromfromfrom')
+    const data = [...this.props.data]
+    data.splice(to, 0, ...data.splice(from, 1));
+    // console.log(data, 'datadata')
+    this.props.dataManager.setData(data);
+  }
+
+  renderRow = (props: any) => {
+    const { row, cells, ...rest } = props
+    // can disable
+    return <RowRenderer rowIndex={row} onRowDrop={this.handleRowDrop} {...rest} />
+  }
+
+  renderDataEditor = (props: any) => {
+    const { dataManager } = this.props;
+    return (<input ref={c => {
+      if (c) c.focus();
+    }} style={{ margin: 0, width: '100%', height: '100%' }} onChange={function (e) {
+      // console.log(e.target.value, props, 'onCellsChangedonCellsChanged')
+      if (props.cell.dataIndex) {
+        dataManager.onUpdate({ [props.cell.dataIndex]: e.target.value }, props.row)
+      }
+    }} />);
+  }
+
+  handleOnContextMenu = (event: MouseEvent, cell: any, i: any, j: any) => {
+    console.log(event, cell, i, j, 'handleOnContextMenuhandleOnContextMenu')
+    event.preventDefault();
+    // can show a menu
+  }
+
+  shouldComponentUpdate(nextProps: any) {
+    if (nextProps.columnsMapData.length !== this.props.columnsMapData.length) {
+      return true;
+    }
+    return true;
+    // return false;
+  }
+
+
+  componentDidMount() {
+    // need to listen cell length change dirty for
+  }
+
+
+  render() {
+    // TODO 静态样式配置拆出去
+    const {
+      tableWidth,
+      onTableLoad,
+      tableController,
+    } = this.props;
+
+
+    return (
+      <div ref={(c: any) => (c && onTableLoad && onTableLoad(c))} style={{ height: 200, overflowY: 'scroll'}}>
+
+        <ReactDataSheet
+          overflow="nowrap"
+          data={this.props.columnsMapData}
+          valueRenderer={(cell: any) => cell.value}
+          onCellsChanged={(changes: any) => {
+            console.log(changes, 'onCellsChanged')
+          }}
+          className={"ReactDataSheet"}
+          // cellRenderer={(props: any) => {
+          //   // https://github.com/nadbm/react-datasheet#cell-renderer
+          //   const { cell, style, selected, className } = props;
+          //   console.log(props, 'classNameclassNameclassName')
+          //   return <td style={{ ...style, display: 'inline-block' }} className={className}>{cell.value}</td>
+          // }}
+          selected={tableController.selectedCells}
+          rowRenderer={this.renderRow}
+          onSelect={(select: CellSelectedState) => {
+            tableController.select(select);
+            console.log(select, 'onSelect')
+          }}
+          dataEditor={this.renderDataEditor}
+          parsePaste={(string: string) => {
+            console.log(string, 'parsePaste')
+            return [];
+          }}
+          onContextMenu={this.handleOnContextMenu}
+        />
+      </div>
+    )
+  }
+}
+
+
+export default class TableExcel extends React.PureComponent<GMExcelTableProps, any> {
+
+  private _tableWidth?: number;
 
   constructor(props: GMExcelTableProps) {
     super(props);
@@ -73,39 +174,6 @@ export default class TableExcel extends React.Component<GMExcelTableProps, any> 
     this.props.dataManager.onUpdate(rowItem, rowIndex);
   }
 
-  handleRowDrop = (from: any, to: any) => {
-    // console.log(from, to, 'fromfromfromfromfrom')
-    const data = [...this.props.data]
-    data.splice(to, 0, ...data.splice(from, 1));
-    // console.log(data, 'datadata')
-    this.props.dataManager.setData(data);
-  }
-
-  renderRow = (props: any) => {
-    const { row, cells, ...rest } = props
-    // can disable
-    return <RowRenderer  rowIndex={row} onRowDrop={this.handleRowDrop} {...rest} />
-  }
-
-
-  renderDataEditor = (props: any) => {
-    const { dataManager } = this.props;
-    return (<input ref={c => {
-      if (c) c.focus();
-    }} style={{ margin: 0, width: '100%', height: '100%' }} onChange={function(e) {
-      // console.log(e.target.value, props, 'onCellsChangedonCellsChanged')
-      if (props.cell.dataIndex) {
-        dataManager.onUpdate({ [props.cell.dataIndex]: e.target.value }, props.row)
-      }
-    }} />);
-  }
-
-  handleOnContextMenu = (event: MouseEvent, cell: any, i: any, j: any) => {
-    console.log(event, cell, i, j, 'handleOnContextMenuhandleOnContextMenu')
-    event.preventDefault();
-    // can show a menu
-  }
-
   render() {
 
     // todo add memorize 
@@ -115,53 +183,71 @@ export default class TableExcel extends React.Component<GMExcelTableProps, any> 
     // sheetRenderer 每次会销毁header， 所以重做
     console.log('OrderTable1', this.props)
 
-    const { columns, columnRowManager, onTableLoad, dataManager } = this.props;
-    // const columnsProps = columns.map(c => ({}))
+    const {
+      columns,
+      columnRowManager,
+      onTableLoad,
+      dataManager,
+      tableController,
+    } = this.props;
 
+    // const rowHeights = new Array(1500)
+    //   .fill(true)
+    //   .map(() => 25 + Math.round(Math.random() * 50));
+
+    // const getItemSize = (index: any) => rowHeights[index];
+
+    // const Row = ({ index, style }: any) => (
+    //   <div style={style}>Row {index}</div>
+    // );
+
+    // const Example = () => (
+    //   <List
+    //     height={150}
+    //     itemCount={1000}
+    //     itemSize={getItemSize}
+    //     width={300}
+    //   >
+    //     {Row}
+    //   </List>
+    // );
+
+    // TODO need calWidth
+    if (!this._tableWidth) {
+      this._tableWidth = columns.reduce((a, b) => a + b.width, 0) + ROW_DRAGGER_WIDTH;
+    }
+
+    console.log(this._tableWidth, 'this._tableWidththis._tableWidth')
     return (
-      <div className="gm-excel-table">
-      
+      <div
+        className="gm-excel-table"
+        style={{
+          overflowX: 'scroll',
+          paddingBottom: 20,
+          border: '1px solid #ccc',
+          margin: 5,
+          // width:
+        }}
+      >
+      <div style={{ width: this._tableWidth }}>
         <Button onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }}>
-          Add a row
-        </Button>
+            Add a row
+          </Button>
 
-        <ColumnHeader
-          columns={columns}
-          containerStyle={{ paddingLeft: ROW_DRAGGER_WIDTH }}
-          onResizeColumn={columnRowManager.onResizeColumn}
-          onResizeStart={columnRowManager.onResizeColumnStart}
-        />
+          <ColumnHeader
+            columns={columns}
+            containerStyle={{ paddingLeft: ROW_DRAGGER_WIDTH  }}
+            onResizeColumn={(...args: any) => {
+              // TODO get
+              this._tableWidth = columns.reduce((a, b) => a + b.width, 0) + ROW_DRAGGER_WIDTH;
+              return columnRowManager.onResizeColumn(...args);
+            }}
+            onResizeStart={columnRowManager.onResizeColumnStart}
 
-        {/* <DragDropContextProvider backend={HTML5Backend}> */}
-          <div ref={(c: any) => (c && onTableLoad && onTableLoad(c))}>
-            <ReactDataSheet
-              overflow="nowrap"
-              data={this.props.columnsMapData}
-              valueRenderer={(cell: any) => cell.value}
-              onCellsChanged={(changes: any) => {
-                console.log(changes, 'onCellsChanged')
-              }}
-              // { start: { i: number, j; number }, end: { i: number, j: number } }
-              // selected={}
-              // cellRenderer={(props: any) => {
-              //   // https://github.com/nadbm/react-datasheet#cell-renderer
-              //   const { cell, style, selected, className } = props;
-              //   console.log(props, 'classNameclassNameclassName')
-              //   return <td style={style} className={className}>{cell.value}</td>
-              // }}
-              rowRenderer={this.renderRow}
-              onSelect={(select: any) => {
-                console.log(select, 'onSelect')
-              }}
-              dataEditor={this.renderDataEditor}
-              parsePaste={(string: string) => {
-                console.log(string, 'parsePaste')
-                return [];
-              }}
-              onContextMenu={this.handleOnContextMenu}
-            />
-          </div>
-        {/* </DragDropContextProvider> */}
+          />
+          <SheetBody {...this.props} tableWidth={this._tableWidth} />
+      </div>
+
       </div>
     )
   }

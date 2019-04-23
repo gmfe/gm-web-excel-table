@@ -1,7 +1,7 @@
 
 export interface IColumn {
   key: string;
-  width?: number;
+  width: number;
   height?: number;
   minWidth?: number;
   maxWidth?: number;
@@ -32,7 +32,7 @@ export interface IGM_TABLE_COLUMNS {
 
 export const GM_TABLE_COLUMNS: IGM_TABLE_COLUMNS = {
   [GM_TABLE_COLUMNS_KEYS.date]: {
-    width: 200,
+    width: 800,
     minWidth: 100,
     key: GM_TABLE_COLUMNS_KEYS.date,
   },

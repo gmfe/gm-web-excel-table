@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { DragSource, DropTarget } from 'react-dnd'
 
-
+// https://github.com/nadbm/react-datasheet/blob/master/docs/src/examples/CustomRendererSheet.js
 /**
  * Specifies which props to inject into your component.
  */

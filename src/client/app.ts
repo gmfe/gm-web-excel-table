@@ -1,3 +1,5 @@
+import { MouseEventHook } from './mouseeventhook';
+import { MouseEventContext } from './../core/event/contexts/mouseeventcontext';
 import { AppBase } from '../core/appbase';
 import { CoreConstants } from '../constants';
 import { KeyboardEventHook } from './keyboardeventhook';
@@ -6,14 +8,14 @@ import { KeyboardEventHook } from './keyboardeventhook';
 const BrowserTypes = CoreConstants.BrowserTypes;
 
 export class SJAPP extends AppBase {
- 
+
   public run() {
     this._updatePlatform();
     this._updateBrowser();
     // this.environmentManager().start(defaultEnv);
-    const khook = new KeyboardEventHook(this);
-    khook.onHook(this);
-  
+    new KeyboardEventHook(this).onHook();
+    new MouseEventHook(this).onHook();
+
     this.eventManager().keyboardEvents().listenKeyDown((context) => {
       if (context.keyEventArgs().isCtrlPressed && context.keyEventArgs().keyCode === 'KeyZ') {
         this.transactionManager().undo();
@@ -28,6 +30,13 @@ export class SJAPP extends AppBase {
         context.isHandled = true;
       }
     });
+
+    // window.onbeforeunload = (event) => {
+    //   const isDirty = true;
+    //   if (isDirty) {
+    //     event.returnValue = true;
+    //   }
+    // };
 
   }
 

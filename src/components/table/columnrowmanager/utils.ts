@@ -3,7 +3,11 @@ import { IWeekSize, DEFAULT_WIDTH, IWeekSizeRange, IColumnWithOrigin } from './c
 
 export class ColumnManagerUtils{
 
-  public static getSizeRange(column: IColumnWithOrigin, columns: IColumnWithOrigin[], tableContainer?: HTMLElement): IWeekSizeRange {
+  public static getSizeRange(column: IColumnWithOrigin, columns: IColumnWithOrigin[]): IWeekSizeRange {
+
+    // TODO here this is should maxWidth
+    const totalTableWidth = 1220 // columns.reduce((a, b) => a + b.width, 0) + 20; // ROW_DRAGGER_WIDTH;
+
     const otherTotalSize = columns.reduce((prev, current) => {
       if (column.key !== current.key) {
         if (current.width) {
@@ -18,16 +22,17 @@ export class ColumnManagerUtils{
 
     let minWidth = column.origin.minWidth || DEFAULT_WIDTH.min;
     let maxWidth = column.origin.maxWidth || DEFAULT_WIDTH.max;
-    if (tableContainer) {
-      if (column.origin.width) {
-        minWidth = Math.min(column.origin.width, minWidth);
-      } else  {
-        if (column.width) {
-          minWidth = Math.min(column.width, minWidth);
-        }
-      }
-      maxWidth = Math.min(maxWidth, tableContainer.offsetWidth - otherTotalSize.width - 2);
-    }
+    // if (tableContainer) {
+    //   if (column.origin.width) {
+    //     minWidth = Math.min(column.origin.width, minWidth);
+    //   } else  {
+    //     if (column.width) {
+    //       minWidth = Math.min(column.width, minWidth);
+    //     }
+    //   }
+      console.log(totalTableWidth, otherTotalSize.width, 'tableContainer.offsetWidth')
+      maxWidth = Math.min(maxWidth, totalTableWidth - otherTotalSize.width - 2);
+    // }
     return { width: { min: minWidth, max: maxWidth }, height: { }}
   }
 

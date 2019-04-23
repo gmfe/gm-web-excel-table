@@ -7,7 +7,6 @@ import { IColumn, GM_TABLE_COLUMNS, GM_TABLE_COLUMNS_KEYS } from '../table/const
 
 class DataPickerEditor extends React.Component<any> {
   render() {
-    // console.log(this.props.cell, 'onUpdate')
     const date = moment(this.props.cell.value);
     return (
       <DatePicker
@@ -36,7 +35,6 @@ export const configOrderTable1Columns = (componentProps: any, columnRowManager: 
     {
       ...GM_TABLE_COLUMNS.date,
       minWidth: 150,
-      maxWidth: 600,
       Header: '日期',
       dataIndex: GM_TABLE_COLUMNS_KEYS.date,
       dataEditor: (props: any) => {
@@ -61,7 +59,7 @@ export const configOrderTable1Columns = (componentProps: any, columnRowManager: 
       dataIndex: GM_TABLE_COLUMNS_KEYS.note,
     },
     {
-      // width: 200,
+      width: 100,
       key: 'action',
       Header: 'action',
       disableEvents: true,
