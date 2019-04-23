@@ -1,42 +1,17 @@
+
 import * as React from 'react';
-
 import TableExcel from '../table';
-import { GM_TABLE_COLUMNS, IColumn, GM_TABLE_COLUMNS_KEYS } from '../table/constants/columns';
-import { WithDataManager } from '../table/datamanager';
-import { WithTableDataTrieSearch } from '../table/enhance/withtabledatatriesearch';
-
-import { WithColumnRowManager } from '../table/columnrowmanager/with-column-row-manager';
-import { configOrderTable1Columns, getCellDom } from './config';
-import { DragDropContextProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend'
+import { DragDropContextProvider } from 'react-dnd';
+import { WithDataManager } from '../table/datamanager';
 import { WithTableController } from '../table/tablecontroller';
+import { configOrderTable1Columns, getCellDom } from './config';
+import { WithTableDataTrieSearch } from '../table/enhance/withtabledatatriesearch';
+import { WithColumnRowManager } from '../table/columnrowmanager/with-column-row-manager';
+import { enhanceWithFlows } from '../../core/utils/enhancewithflows';
 
 
 
-const tableWithContoller = WithTableController({
-  component: TableExcel,
-  tableKey: 'key'
-})
-
-// 拓展搜索
-const OrderTableTest1WithTrieSearch = WithTableDataTrieSearch(
-  tableWithContoller,
-  'key',
-  ['type', 'note']
-);
-
-
-
-// 业务表格配置
-const OrderTableWithWithColumnRowManager = WithColumnRowManager({
-  component: OrderTableTest1WithTrieSearch,
-  getColumns: configOrderTable1Columns,
-  getCellDom: getCellDom,
-}
-
-)
-
-// https://github.com/nadbm/react-datasheet#cell-options
 const data = [{
   date: '2018-02-11',
   amount: 120,
@@ -54,22 +29,42 @@ const data = [{
   note: 'transfer',
 }];
 
-// 数据管理
-const OrderTableWithDataManager = WithDataManager(
-  OrderTableWithWithColumnRowManager,
-  data, // todo fetchDataLogic
-  null
-);
 
-export const OrderTableTest1 = OrderTableWithDataManager;
-
-
+// 出藏交付的组件
+const DeliveryComponent = enhanceWithFlows(TableExcel, [
+  // 表格控制
+  { enhance: WithTableController, args: { tableKey: 'key' }},
+  // 拓展搜索
+  { enhance: WithTableDataTrieSearch,
+    args: {
+      searchTrieKeys:   ['date', 'type', 'note'],
+      indexKey: 'key'
+    }
+  },
+  // 业务表格配置 行列管理
+  {
+    enhance: WithColumnRowManager,
+    args: {
+      getColumns: configOrderTable1Columns,
+      getCellDom: getCellDom,
+    }
+  },
+  // // 数据管理
+  {
+    enhance: WithDataManager,
+    args: {
+      initData: data,
+      defaultData: null,
+      fetchData: Promise.resolve()
+    }
+  }
+]);
 
 export class OrderTable1 extends React.Component<any, any>  {
   render() {
     return (
       <DragDropContextProvider backend={HTML5Backend}>
-        <OrderTableTest1 {...this.props} />
+        <DeliveryComponent {...this.props} />
       </DragDropContextProvider>
     )
   }

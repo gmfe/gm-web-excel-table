@@ -27,7 +27,6 @@ export interface IWeekSizeRange{
 export type onResizeColumn = (nextSize: IWeekSize, callback?: (size: IWeekSize) => void) => boolean;
 
 export interface WithColumnRowManagerConfig{
-  component: React.ComponentClass<any, any>;
   getColumns: (props: any, columnRowManager: any) => IColumn[] // or other config method
   getCellDom: (tableContainer: HTMLElement, rowIndex: number, columnIndex: number) => HTMLElement | undefined;
 }

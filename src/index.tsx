@@ -1,10 +1,10 @@
 import "antd/dist/antd.less";
 import "./styles.less";
 import * as React from 'react';
-import { App, SJAPP } from './client/app';
 import * as ReactDOM from "react-dom";
 import { AppBase } from './core/appbase';
-import { OrderTableTest1, OrderTable1 } from "./components/ordertable1/ordertable1";
+import { App, SJAPP } from './client/app';
+import { OrderTable1 } from "./components/ordertable1/ordertable1";
 
 
 class Root extends React.Component<{}> {
