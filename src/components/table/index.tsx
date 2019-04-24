@@ -3,12 +3,12 @@ import './index.less'
 import * as React from 'react';
 import classnames from 'classnames'
 import ColumnHeader from './columnheader';
-import { IColumn } from './constants/columns';
 import { WithDataManager } from './datamanager';
 import { WithTableDataSearch } from './data-search';
 import ExcelSheetBody from './components/sheet-body';
 import { ROW_DRAGGER_WIDTH } from './constants/config';
 import { WithTableController } from './tablecontroller';
+import { IGetColumnsFunc } from './columnrowmanager/constants';
 import { GMExcelTableProps, CellSelectedState } from './interface';
 import { enhanceWithFlows } from '../../core/utils/enhancewithflows';
 import { WithColumnRowManager } from './columnrowmanager/with-column-row-manager';
@@ -22,9 +22,7 @@ interface GMConfigData<T>{
 interface GMTableExcelStaticConfig {
   tableKey: string;
   containerStyle: Object
-  // columns={columns}
-  widthRange?: { max?: number, min?: number }
-  fullScreenWidth?: boolean, // 初始加载全屏 在这个模式下范围最小值默认为屏幕宽度
+  fullScreenWidth?: boolean, // 开启之后对于缺少指定width字段的cell补充满至全屏
   searchConfig: {
     enable?: boolean;
     indexKey: string;
@@ -32,9 +30,7 @@ interface GMTableExcelStaticConfig {
     // searchRender: (props) // 暂时不提供对外开放的searchRenderer配置
   }
   columnsConfig: {
-    // getCellDom: getCellDom, // NOTICE 这个应该不放在这层
-    // TODO 补充props interface
-    getColumns: (props: any) => IColumn[]
+    getColumns: IGetColumnsFunc
   }
   canDragRow?: boolean;
   dataConfig: GMConfigData<any>;
@@ -62,7 +58,7 @@ export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExce
       // 业务表格配置 行列管理
       {
         enhance: WithColumnRowManager,
-        args: { getColumns }
+        args: { getColumns },
       },
       // 数据管理
       {
@@ -117,23 +113,6 @@ export class GMTableExcel extends React.Component<GMExcelTableProps, any> {
   componentDidMount() {
     this.props.tableRef(new TableRef(this));
   }
-
-  // handleTableWidth() {
-  //   if (this._isColumnResizedDirty) {
-  //     const { columns } = this.props;
-  //     let isAllAssignWidth = true;
-  //     columns.forEach(col => {
-  //       if (col.width === undefined) {
-  //         isAllAssignWidth = false;
-  //       }
-  //     });
-
-
-  //     this._tableWidth = columns.reduce((a, b) => a + b.width, 0) + ROW_DRAGGER_WIDTH; + 2
-  //   }
-  //   return this._tableWidth;
-  // }
-
 
   render() {
 

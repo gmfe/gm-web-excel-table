@@ -11,7 +11,8 @@ export default class ColumnHeader extends PureComponent<{
   containerStyle?: Object,
 }> {
   render() {
-    const { columns, onResizeColumn, onResizeStart, containerStyle = {}} = this.props;
+    const { columns, onResizeColumn, onResizeStart, containerStyle = {} } = this.props;
+    console.log(columns, 'columnscolumns')
     return (
       <div style={containerStyle}>
         {
@@ -27,18 +28,16 @@ export default class ColumnHeader extends PureComponent<{
               return <span key={key}>{header}</span>;
             }
             return (
-              <th>
-                <ResizeableTitle
-                  key={key}
-                  width={column.width}
-                  minWidth={column.minWidth}
-                  maxWidth={column.maxWidth}
-                  onResize={onResizeColumn(index)}
-                  onResizeStart={onResizeStart(index)}
-                >
-                  {header}
-                </ResizeableTitle>
-              </th>
+              <ResizeableTitle
+                key={`${key}${(column as any).origin.width}`}
+                width={column.width}
+                minWidth={column.minWidth}
+                maxWidth={column.maxWidth}
+                onResize={onResizeColumn(index)}
+                onResizeStart={onResizeStart(index)}
+              >
+                {header}
+              </ResizeableTitle>
             );
           })
         }

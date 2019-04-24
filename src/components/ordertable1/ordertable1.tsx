@@ -3,7 +3,7 @@ import { Button } from 'antd';
 import * as React from 'react';
 import HTML5Backend from 'react-dnd-html5-backend'
 import { DragDropContextProvider } from 'react-dnd';
-import { configOrderTable1Columns, getCellDom } from './config';
+import { configOrderTable1Columns } from './config';
 import { GMTableExcelStaticConfigWrapper, TableRef } from '../table';
 
 
@@ -79,9 +79,7 @@ export class TabelExcelWrapper extends React.PureComponent<any, any> {
             paddingBottom: 20,
             border: '1px solid #ccc',
           }}
-          // columns={columns}
-          widthRange={{ max: 2000, min: 100 }}
-          fullScreenWidth // 初始加载全屏 在这个模式下范围最小值默认为屏幕宽度
+          fullScreenWidth
 
           canDragRow// NOTICE 
 
@@ -92,7 +90,6 @@ export class TabelExcelWrapper extends React.PureComponent<any, any> {
           }}
 
           columnsConfig={{
-            // getCellDom: getCellDom, // NOTICE 这个应该不放在这层
             getColumns: configOrderTable1Columns,
           }}
           dataConfig={{

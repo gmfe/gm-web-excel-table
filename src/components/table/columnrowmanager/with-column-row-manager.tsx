@@ -1,12 +1,14 @@
 
 import * as React from 'react'
 import { ColumnManagerUtils } from './utils';
-import { ICellInDataSheet, IColumnManager } from './interface';
 import { IColumn } from '../constants/columns';
-import { IWeekSize, WithColumnRowManagerConfig, IWeekSizeRange, IColumnWithOrigin } from './constants';
 import { ROW_DRAGGER_WIDTH } from '../constants/config';
+import { ICellInDataSheet, IColumnManager, IColumnManagerProps } from './interface';
+import { IWeekSize, WithColumnRowManagerConfig, IWeekSizeRange, IColumnWithOrigin } from './constants';
 
 
+
+// TODO HANDlE Resize
 
 // 只与行列操作有关的逻辑
 export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
@@ -14,11 +16,12 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
   return (configOption: WithColumnRowManagerConfig) => {
     const CellId = (ri: number, ci: number) => `${1}${ci}`;
     
-    return class extends React.Component<{ data: any[], canDragRow?: boolean }, { tableWidth: undefined | number, columns: IColumnWithOrigin[] }> {
+    return class extends React.Component<IColumnManagerProps, { tableWidth: undefined | number, columns: IColumnWithOrigin[] }> {
       private _tableContainerDom?: HTMLElement;
       private _columnRowManager: IColumnManager;
       private _currentSizeRange?: IWeekSizeRange ;
       private _tableCellDomMap: Map<string, HTMLElement>;
+      private _isInitAllAssignWidth: boolean = false;
   
       constructor(props: any) {
         super(props);
@@ -29,13 +32,17 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
           findCellDom: this.findCellDom,
         }
   
-        const columns = configOption.getColumns(this.props, this._columnRowManager).map(c => ({ ...c, origin: {}, width: c.width || 0 }))
+        const columns = configOption.getColumns(props, this._columnRowManager).map(c => ({ ...c, origin: {} }))
         this._tableCellDomMap = new Map();
         let tableWidth = undefined;
-        // 初始情况下全部均存在width
-        const isInitAllAssignWidth = columns.every(col => col.width !== undefined);
-        if (isInitAllAssignWidth) {
-          tableWidth = this.getTableWidth(columns);
+
+        // 全屏模式下不传入初始tableWidth
+        if (!props.fullScreenWidth) {
+          // 初始情况下全部均存在width
+          this._isInitAllAssignWidth = columns.every(col => col.width !== undefined);
+          if (this._isInitAllAssignWidth) {
+            tableWidth = this.getTableWidth(columns);
+          }
         }
 
         this.state = {
@@ -46,14 +53,13 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
       }
 
       public getTableWidth(columns: IColumn[]) {
-        return columns.reduce((a, b) => a + (b.width || 0), 0) + (this.props.canDragRow ? ROW_DRAGGER_WIDTH : 0);
+        return columns.reduce((a, b) => a + (b.width || 0), 0) + this.fixWidth;
       }
-
 
       handleResizeColumnStart = (index: number) => () => {
         const nextColumns = [...this.state.columns];
-        this._currentSizeRange = ColumnManagerUtils.getSizeRange(nextColumns[index], this.state.columns, this.props.canDragRow ? ROW_DRAGGER_WIDTH : 0);
-        console.log(this._currentSizeRange,  'this._currentSizeRange')
+        this._currentSizeRange = ColumnManagerUtils.getSizeRange(nextColumns[index], this.state.columns, this.fixWidth);
+        // console.log(this._currentSizeRange,  'this._currentSizeRange')
         nextColumns[index]  = {
           ...nextColumns[index],
           minWidth: this._currentSizeRange.width && this._currentSizeRange.width.min,
@@ -103,22 +109,51 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
   
       }
 
+      public get fixWidth() {
+        return this.props.canDragRow ? ROW_DRAGGER_WIDTH : 0;
+      }
+
       onTableLoaded = (container: HTMLElement) => {
+        console.log(this.state.tableWidth, container.offsetWidth, container.clientWidth, 'this.state.tableWidththis.state.tableWidth')
         if (this._tableContainerDom && container.id === this._tableContainerDom.id) return;
         this._tableContainerDom = container;
-        let tableWidth = this.props.canDragRow ? ROW_DRAGGER_WIDTH : 0;
+        let tableWidth = this.fixWidth;
+        let lastUndefinedWidthColIndex: number | undefined = undefined;
         const columnsWithSize = this.state.columns.map((c, ci) => {
           if (!c.width) {
             const cellDom = this.findCellDom(0, ci);
             if (cellDom) {
               c.width = cellDom.offsetWidth;
+              lastUndefinedWidthColIndex = ci;
+              // console.log(c, cellDom.clientWidth, cellDom.offsetWidth, 'cellDomcellDom')
             }
           }
-          tableWidth += c.width!;
+          // tableWidth += c.width!;
           return { ...c };
         });
+        if (this.props.fullScreenWidth) {
+          tableWidth = container.clientWidth;
+          if (lastUndefinedWidthColIndex !== undefined) {
+            const otherTotalWidth = columnsWithSize.reduce((a, b, bindex) => {
+              return a + (lastUndefinedWidthColIndex === bindex ? 0 : b.width || 0);
+            }, 0) 
+            console.log(tableWidth, otherTotalWidth, 'lastUndefinedWidthCollastUndefinedWidthCol')
+            const newWidth = tableWidth - otherTotalWidth - this.fixWidth;
+            const col = columnsWithSize[lastUndefinedWidthColIndex];
+            if (!(
+              (col.maxWidth && newWidth > col.maxWidth) ||
+              (col.minWidth && newWidth < col.minWidth)
+            )) {
+              col.width = newWidth;
+            }
+          }
+        } else {
+          tableWidth += columnsWithSize.reduce((a, b) => a + (b.width || 0), 0);
+        }
+
+
         const columnsWithRange = columnsWithSize.map(column => {
-          const sizeRange = ColumnManagerUtils.getSizeRange(column, columnsWithSize, this.props.canDragRow ? ROW_DRAGGER_WIDTH : 0);
+          const sizeRange = ColumnManagerUtils.getSizeRange(column, columnsWithSize, this.fixWidth);
           return {
             ...column,
             origin: { minWidth: column.minWidth, maxWidth: column.maxWidth, width: column.width },
@@ -126,7 +161,7 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
             maxWidth: sizeRange.width && sizeRange.width.max,
           }
         });
-        this.setState(({ columns: columnsWithRange, tableWidth }))
+        this.setState(({ columns: columnsWithRange, tableWidth }));
       }
   
       columnsMaptoCells = (data: any[], columns: IColumn[]): ICellInDataSheet[][] => {
@@ -140,11 +175,21 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
         })
       }
   
+      private _getCellDom(tableContainerDom: HTMLElement, rowIndex: number, columnIndex: number): HTMLElement | undefined {
+        const tbody = tableContainerDom.children[0].children[0].children[0];
+        const tr = tbody.children[rowIndex];
+        if (tr) {
+          const cell = tr.children[columnIndex];
+          return cell as HTMLElement;
+        }
+        return undefined;
+      }
+
       findCellDom = (row: number, col: number) => {
         const cellId = CellId(row, col);
         let cellDom = this._tableCellDomMap.get(cellId);
         if (this._tableContainerDom) {
-          const fromTable = configOption.getCellDom(this._tableContainerDom, row, col);
+          const fromTable = this._getCellDom(this._tableContainerDom, row, col);
           if (!cellDom && fromTable) {
             cellDom = fromTable;
             this._tableCellDomMap.set(cellId, fromTable);
@@ -154,15 +199,18 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
       }
   
       render() {
+        const {
+          data,
+          fullScreenWidth,
+        } = this.props;
         return (
           <Target
             columns={this.state.columns}
             columnRowManager={this._columnRowManager}
             {...this.props}
-            data={this.props.data}
-            columnsMapData={this.columnsMaptoCells(this.props.data, this.state.columns)}
+            columnsMapData={this.columnsMaptoCells(data, this.state.columns)}
             onTableLoad={this.onTableLoaded}
-            tableWidth={this.state.tableWidth}
+            tableWidth={ this.state.tableWidth}
           />
         )
       }

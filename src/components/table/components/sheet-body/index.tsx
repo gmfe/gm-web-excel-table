@@ -3,6 +3,7 @@
 
 // Be sure to include styles at some point, probably during your bootstrapping
 import 'react-datasheet/lib/react-datasheet.css';
+import './index.less'
 import * as React from 'react';
 import ReactDataSheet from 'react-datasheet';
 import {
@@ -18,8 +19,9 @@ const RowRenderer = rowDropTarget(rowDragSource((props: any) => {
   return connectDropTarget(connectDragPreview(
     <tr className={className}>
       {disable ? null :
-        connectDragSource(<td className='cell read-only row-handle' key='$$actionCell' style={{ width: ROW_DRAGGER_WIDTH }}
-      />)}
+        connectDragSource(
+          <td className='read-only row-handler' key='$$actionCell' style={{ width: ROW_DRAGGER_WIDTH - 1 }} />
+        )}
       {children}
     </tr>
   ))
@@ -27,6 +29,8 @@ const RowRenderer = rowDropTarget(rowDragSource((props: any) => {
 
 
 export default class ExcelSheetBody extends React.Component<any, any> {
+
+  private _container?: HTMLElement;
 
   handleRowDrop = (from: any, to: any) => {
     const data = [...this.props.data]
@@ -66,6 +70,12 @@ export default class ExcelSheetBody extends React.Component<any, any> {
 
   componentDidMount() {
     // need to listen cell length change dirty for
+    // console.log(this._container, this._container && this._container.clientWidth, '_container')
+    if (this._container) {
+      const { onTableLoad } = this.props;
+      onTableLoad && onTableLoad(this._container)
+    }
+   
   }
 
 
@@ -73,13 +83,14 @@ export default class ExcelSheetBody extends React.Component<any, any> {
     // TODO 静态样式配置拆出去
     const {
       tableWidth,
-      onTableLoad,
       tableController,
     } = this.props;
 
+    const csyle: any = { height: 200, overflowY: 'scroll', overflowX: 'hidden' }
+    if (tableWidth !== undefined) csyle.width = tableWidth;
 
     return (
-      <div ref={(c: any) => (c && onTableLoad && onTableLoad(c))} style={{ height: 200, overflowY: 'scroll' }}>
+      <div ref={(c: any) => { this._container = c }} style={csyle}>
 
         {/* https://github.com/nadbm/react-datasheet#cell-renderer */}
         <ReactDataSheet
@@ -89,7 +100,7 @@ export default class ExcelSheetBody extends React.Component<any, any> {
           onCellsChanged={(changes: any) => {
             console.log(changes, 'onCellsChanged')
           }}
-          className={"ReactDataSheet"}
+          className={"gm-react-data-sheet"}
           // cellRenderer={(props: any) => {
           //   const { cell, style, selected, className } = props;
           //   console.log(props, 'classNameclassNameclassName')

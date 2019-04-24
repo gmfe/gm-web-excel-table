@@ -12,17 +12,17 @@ import { WithDataManagerProps, DataManagerEvents } from './interface';
 // todo 后续 initData 这里应该是传入 fetchData的逻辑
 
 
+type IData = any;
 
 // 只与数据操作有关的逻辑
 export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>) {
 
-  return ({ initData, defaultData, fetchData }: WithDataManagerProps<any, any>) => {
+  return ({ initData, defaultData, fetchData }: WithDataManagerProps<IData>) => {
     return class extends React.Component<any, any> {
 
       private _addedListeners: Function[]
       private _removedListeners: Function[]
       private _changedListeners: Function[]
-
 
       constructor(props: any) {
         super(props);
@@ -75,11 +75,7 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
         }
       }
 
-      handleSearch = (text: string) => {
-        // const result = this.trie.search()
-      }
-
-      handleAdd = (item: any, rowIndex?: number, callback?: () => void) => {
+      handleAdd = (item: IData, rowIndex?: number, callback?: () => void) => {
         // TODO 可以加一个字段校验，与当前的 item keys 需要匹配
         let data = this.state.data;
         if (rowIndex !== undefined && rowIndex >= 0 && rowIndex <= data.length) {
@@ -93,7 +89,6 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
         });
 
         this.setState({ data }, () => {
-          // TODO 需要传定位
           if (callback) callback();
         });
 
@@ -140,11 +135,11 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
             dataManager={{
               onAdd: this.handleAdd,
               onDelete: this.handleDelete,
-              onSearch: this.handleSearch,
-              onUpdate: this.handleUpdate, // (newItem: Object, rowIndex: number) => this.handleUpdate(newItem, rowIndex, this.props.app),
-              setData: (data: any[]) => { this.setState({ data }) },
+              onUpdate: this.handleUpdate,
               addEventListener: this.addEventListener,
+              getData: () => { return this.state.data },
               removeEventListener: this.removeEventListener,
+              setData: (data: any[]) => { this.setState({ data }) },
             }}
           />
         )

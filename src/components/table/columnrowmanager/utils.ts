@@ -11,14 +11,16 @@ export class ColumnManagerUtils{
     let maxTotalTableWidth = otherWidth || 0;
     // let minTotalTableWidth = otherWidth || 0;
     const getMaxWidth = (col: IColumnWithOrigin) => {
-      if (!col.maxWidth) {
-        return (col.origin.width || col.width) * 3;
+      const width = col.origin.width || col.width;
+      if (!col.maxWidth && width) {
+        return width * 3;
       }
       return column.origin.maxWidth || DEFAULT_WIDTH.max;
     }
     const getMinWidth = (col: IColumnWithOrigin) => {
-      if (!col.minWidth) {
-        return col.origin.width || col.width;
+      const width = col.origin.width || col.width;
+      if (!col.minWidth && width) {
+        return width;
       }
       return column.origin.minWidth || DEFAULT_WIDTH.min
     }

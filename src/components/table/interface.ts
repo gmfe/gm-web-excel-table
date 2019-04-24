@@ -39,20 +39,3 @@ export interface GMExcelTableProps {
   onTableLoad?: (container: HTMLElement) => void;
   tableRef: (ref: TableRef) => void;
 }
-
-
-
-// export interface IGMExcelTableProps {
-//   columns: IColumn[]
-//   className?: string;
-
-//   containerStyle?: Object;
-//   canDragRow?: boolean;
-//   onResizeColumn?: Function;
-//   onResizeColumnStart?: Function
-
-//   tableWidth?: number; // 指定后就无法拖拽
-//   fullScreenWidth?: boolean;
-//   widthRange?: { max?: number, min?: number }
-  
-// }

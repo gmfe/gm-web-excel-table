@@ -1,5 +1,5 @@
+import { IColumnManager, IColumnManagerProps } from './interface';
 import { IColumn } from './../constants/columns';
-
 
 
 export const DEFAULT_WIDTH = {
@@ -26,13 +26,13 @@ export interface IWeekSizeRange{
 
 export type onResizeColumn = (nextSize: IWeekSize, callback?: (size: IWeekSize) => void) => boolean;
 
+export type IGetColumnsFunc = (props: IColumnManagerProps, columnRowManager: IColumnManager) => IColumn[];
+
 export interface WithColumnRowManagerConfig{
-  getColumns: (props: any, columnRowManager: any) => IColumn[] // or other config method
-  getCellDom: (tableContainer: HTMLElement, rowIndex: number, columnIndex: number) => HTMLElement | undefined;
+  getColumns: IGetColumnsFunc 
 }
 
 export interface IColumnWithOrigin extends IColumn{
-  width: number;
   origin: {
     width?: number
     minWidth?: number

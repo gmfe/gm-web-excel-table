@@ -3,6 +3,8 @@ import * as React from 'react';
 import { DatePicker } from 'antd';
 
 import { IColumn, GM_TABLE_COLUMNS, GM_TABLE_COLUMNS_KEYS } from '../table/constants/columns';
+import { IGetColumnsFunc } from '../table/columnrowmanager/constants';
+import { IColumnManagerProps } from '../table/columnrowmanager/interface';
 
 
 class DataPickerEditor extends React.Component<any> {
@@ -19,10 +21,13 @@ class DataPickerEditor extends React.Component<any> {
         }}
         onChange={(moment: moment.Moment) => {
           const { cell: { dataIndex }, dataManager, row }: any = this.props;
-          if (dataIndex) {
+          if (moment && dataIndex) {
             const string = moment.toISOString().slice(0, 10);
             dataManager.onUpdate({ [dataIndex]: string }, row)
           }
+        }}
+        onOpenChange={() => {
+          console.log('onOpenChangeonOpenChange')
         }}
       />
     )
@@ -30,7 +35,7 @@ class DataPickerEditor extends React.Component<any> {
 }
 
 
-export const configOrderTable1Columns = (componentProps: any) => {
+export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: IColumnManagerProps) => {
   const columns: IColumn[] = [
     {
       ...GM_TABLE_COLUMNS.date,
@@ -59,29 +64,25 @@ export const configOrderTable1Columns = (componentProps: any) => {
       dataIndex: GM_TABLE_COLUMNS_KEYS.note,
     },
     {
-      width: 100,
-      key: 'action',
-      Header: 'action',
+      key: 'action1',
+      Header: 'action1',
       disableEvents: true,
       valueViewer: (data: any) => {
-        // console.log(data, 'valueViewer action')
         return (
           <a href="javascript:;" onClick={() => {
-            componentProps.dataManager.onDelete(data.index);
+            // console.log(data, 'datadatatatata,')
+            componentProps.dataManager.onDelete(data.row);
           }}>Delete</a>
         );
+      }
+    },
+    {
+      key: 'action2',
+      Header: 'action2',
+      valueViewer: (data: any) => {
+        return <span>action2</span>
       }
     }
   ];
   return columns;
-}
-
-export function getCellDom(tableContainerDom: HTMLElement, rowIndex: number, columnIndex: number): HTMLElement | undefined {
-  const tbody = tableContainerDom.children[0].children[0].children[0];
-  const tr = tbody.children[rowIndex];
-  if (tr) {
-    const cell = tr.children[columnIndex];
-    return cell as HTMLElement;
-  }
-  return undefined;
 }

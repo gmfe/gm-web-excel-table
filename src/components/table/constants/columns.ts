@@ -1,7 +1,8 @@
 
 export interface IColumn {
   key: string;
-  width?: number; // 改了很多遍，不指定宽度可以100%填充
+  width?: number; // TOOD 增加string支持
+  // 改了很多遍，不指定宽度可以100%填充
   height?: number;
   minWidth?: number;
   maxWidth?: number;
@@ -32,7 +33,7 @@ export interface IGM_TABLE_COLUMNS {
 
 export const GM_TABLE_COLUMNS: IGM_TABLE_COLUMNS = {
   [GM_TABLE_COLUMNS_KEYS.date]: {
-    width: 800,
+    width: 150,
     minWidth: 100,
     key: GM_TABLE_COLUMNS_KEYS.date,
   },
