@@ -1,7 +1,7 @@
 
 export interface IColumn {
   key: string;
-  width: number;
+  width?: number; // 改了很多遍，不指定宽度可以100%填充
   height?: number;
   minWidth?: number;
   maxWidth?: number;

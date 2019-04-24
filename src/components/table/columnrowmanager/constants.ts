@@ -3,7 +3,7 @@ import { IColumn } from './../constants/columns';
 
 
 export const DEFAULT_WIDTH = {
-  min: 100,
+  min: 40,
   max: 1000
 }
 
@@ -15,12 +15,12 @@ export interface IWeekSize{
 
 export interface IWeekSizeRange{
   width?: {
-    min?: number;
-    max?: number;
+    min: number;
+    max: number;
   },
   height?: {
-    min?: number;
-    max?: number;
+    min: number;
+    max: number;
   }
 }
 
@@ -32,6 +32,7 @@ export interface WithColumnRowManagerConfig{
 }
 
 export interface IColumnWithOrigin extends IColumn{
+  width: number;
   origin: {
     width?: number
     minWidth?: number

@@ -30,7 +30,7 @@ class DataPickerEditor extends React.Component<any> {
 }
 
 
-export const configOrderTable1Columns = (componentProps: any, columnRowManager: any) => {
+export const configOrderTable1Columns = (componentProps: any) => {
   const columns: IColumn[] = [
     {
       ...GM_TABLE_COLUMNS.date,

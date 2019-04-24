@@ -1,255 +1,178 @@
 
 import './index.less'
-// Be sure to include styles at some point, probably during your bootstrapping
-import 'react-datasheet/lib/react-datasheet.css';
-import { Button } from 'antd';
 import * as React from 'react';
-import { GMExcelTableProps, CellSelectedState } from './interface';
-import { ResizeableTitle } from './cells/resizeabletitle';
-import { EditableInputFormRow, EditableInputCell } from './cells/editableinputcell';
-import ReactDataSheet from 'react-datasheet';
-import {
-  rowDragSource, rowDropTarget,
-} from './enhance/drag-drop.js'
+import classnames from 'classnames'
 import ColumnHeader from './columnheader';
-import { isFunction } from 'lodash'
-
-import { VariableSizeList as List } from 'react-window';
 import { IColumn } from './constants/columns';
-
-const ROW_DRAGGER_WIDTH = 20;
-const RowRenderer = rowDropTarget(rowDragSource((props: any) => {
-  const { isOver, disable, children, connectDropTarget, connectDragPreview, connectDragSource } = props;
-  const className = isOver ? 'drop-target' : ''
-  return connectDropTarget(connectDragPreview(
-    <tr className={className}>
-      {disable ? null : connectDragSource(<td className='cell read-only row-handle' key='$$actionCell' style={{ width: ROW_DRAGGER_WIDTH }} />)}
-      {children}
-    </tr>
-  ))
-}));
+import { WithDataManager } from './datamanager';
+import { WithTableDataSearch } from './data-search';
+import ExcelSheetBody from './components/sheet-body';
+import { ROW_DRAGGER_WIDTH } from './constants/config';
+import { WithTableController } from './tablecontroller';
+import { GMExcelTableProps, CellSelectedState } from './interface';
+import { enhanceWithFlows } from '../../core/utils/enhancewithflows';
+import { WithColumnRowManager } from './columnrowmanager/with-column-row-manager';
 
 
-// export function withCustomStaticConfig() {
-//   return class extends React.Component<any, any> {
-//     render() {
-//       return (<TableExcel {...this.props} />)
-//     }
-//   }
-// }
-
-
-export class SheetBody extends React.Component<any, any> {
-
-
-  handleRowDrop = (from: any, to: any) => {
-    // console.log(from, to, 'fromfromfromfromfrom')
-    const data = [...this.props.data]
-    data.splice(to, 0, ...data.splice(from, 1));
-    // console.log(data, 'datadata')
-    this.props.dataManager.setData(data);
+interface GMConfigData<T>{
+  fillBlankData: Object,
+  initData: T[] // mocksDatas(20),
+  fetchData: Promise<T>
+}
+interface GMTableExcelStaticConfig {
+  tableKey: string;
+  containerStyle: Object
+  // columns={columns}
+  widthRange?: { max?: number, min?: number }
+  fullScreenWidth?: boolean, // 初始加载全屏 在这个模式下范围最小值默认为屏幕宽度
+  searchConfig: {
+    enable?: boolean;
+    indexKey: string;
+    searchKeys: string[]; //['date', 'type', 'note'],
+    // searchRender: (props) // 暂时不提供对外开放的searchRenderer配置
   }
-
-  renderRow = (props: any) => {
-    const { row, cells, ...rest } = props
-    // can disable
-    return <RowRenderer rowIndex={row} onRowDrop={this.handleRowDrop} {...rest} />
+  columnsConfig: {
+    // getCellDom: getCellDom, // NOTICE 这个应该不放在这层
+    // TODO 补充props interface
+    getColumns: (props: any) => IColumn[]
   }
+  canDragRow?: boolean;
+  dataConfig: GMConfigData<any>;
+  tableRef: (tref: TableRef) => void;
+}
 
-  renderDataEditor = (props: any) => {
-    const { dataManager } = this.props;
-    return (<input ref={c => {
-      if (c) c.focus();
-    }} style={{ margin: 0, width: '100%', height: '100%' }} onChange={function (e) {
-      // console.log(e.target.value, props, 'onCellsChangedonCellsChanged')
-      if (props.cell.dataIndex) {
-        dataManager.onUpdate({ [props.cell.dataIndex]: e.target.value }, props.row)
-      }
-    }} />);
+export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExcelStaticConfig, any> {
+  shouldComponentUpdate() {
+    return false;
   }
-
-  handleOnContextMenu = (event: MouseEvent, cell: any, i: any, j: any) => {
-    console.log(event, cell, i, j, 'handleOnContextMenuhandleOnContextMenu')
-    event.preventDefault();
-    // can show a menu
-  }
-
-  shouldComponentUpdate(nextProps: any) {
-    if (nextProps.columnsMapData.length !== this.props.columnsMapData.length) {
-      return true;
-    }
-    return true;
-    // return false;
-  }
-
-
-  componentDidMount() {
-    // need to listen cell length change dirty for
-  }
-
-
   render() {
-    // TODO 静态样式配置拆出去
     const {
-      tableWidth,
-      onTableLoad,
-      tableController,
+      columnsConfig: { getColumns },
+      searchConfig: { searchKeys, indexKey },
+      dataConfig: { fillBlankData, initData, fetchData }
     } = this.props;
+    const DeliveryComponent = enhanceWithFlows(GMTableExcel, [
+      // 拓展搜索
+      {
+        enhance: WithTableDataSearch,
+        args: { searchKeys, indexKey }
+      },
+      // 表格控制
+      { enhance: WithTableController, args: { tableKey: 'key' } },
+      // 业务表格配置 行列管理
+      {
+        enhance: WithColumnRowManager,
+        args: { getColumns }
+      },
+      // 数据管理
+      {
+        enhance: WithDataManager,
+        args: {
+          initData,
+          fetchData,
+          fillBlankData,
+        }
+      },
+    ]);
+    return <DeliveryComponent {...this.props} />
+  }
+}
 
-
-    return (
-      <div ref={(c: any) => (c && onTableLoad && onTableLoad(c))} style={{ height: 200, overflowY: 'scroll'}}>
-
-        <ReactDataSheet
-          overflow="nowrap"
-          data={this.props.columnsMapData}
-          valueRenderer={(cell: any) => cell.value}
-          onCellsChanged={(changes: any) => {
-            console.log(changes, 'onCellsChanged')
-          }}
-          className={"ReactDataSheet"}
-          // cellRenderer={(props: any) => {
-          //   // https://github.com/nadbm/react-datasheet#cell-renderer
-          //   const { cell, style, selected, className } = props;
-          //   console.log(props, 'classNameclassNameclassName')
-          //   return <td style={{ ...style, display: 'inline-block' }} className={className}>{cell.value}</td>
-          // }}
-          selected={tableController.selectedCells}
-          rowRenderer={this.renderRow}
-          onSelect={(select: CellSelectedState) => {
-            tableController.select(select);
-            console.log(select, 'onSelect')
-          }}
-          dataEditor={this.renderDataEditor}
-          parsePaste={(string: string) => {
-            console.log(string, 'parsePaste')
-            return [];
-          }}
-          onContextMenu={this.handleOnContextMenu}
-        />
-      </div>
-    )
+export class TableRef {
+  public component: GMTableExcel;
+  constructor(component: GMTableExcel) {
+    this.component = component;
+  }
+  public get props() {
+    return this.component.props;
+  }
+  addBlank = () => {
+    console.log(this.props, 'handleAddhandleAdd')
+    // const newData = {
+    //   amount: 120,
+    //   type: 'income',
+    //   note: 'transfer',
+    //   date: '2018-02-11',
+    //   key: this.props.data.length,
+    // };
+    // this.props.dataManager.onAdd(newData);
   }
 }
 
 
-export default class TableExcel extends React.PureComponent<GMExcelTableProps, any> {
+export class GMTableExcel extends React.Component<GMExcelTableProps, any> {
 
+  static defaultProps = {
+    canDragRow: true, // NOTICE 
+  }
+
+  // 如果指定100%填充
   private _tableWidth?: number;
+  private _isColumnResizedDirty: boolean = false;
 
   constructor(props: GMExcelTableProps) {
     super(props);
-
-    this.state = {
-    }
   }
 
-  components = {
-    header: {
-      cell: ResizeableTitle,
-    },
-    body: {
-      row: EditableInputFormRow,
-      cell: EditableInputCell,
-    }
-  };
-
-  // 需要业务表格自己封装 
-  handleAdd = () => {
-    const newData = {
-      amount: 120,
-      type: 'income',
-      note: 'transfer',
-      date: '2018-02-11',
-      key: this.props.data.length,
-    };
-    this.props.dataManager.onAdd(newData);
+  componentDidMount() {
+    this.props.tableRef(new TableRef(this));
   }
 
-  handleDelete = (index: number) => {
-    this.props.dataManager.onDelete(index);
-  }
+  // handleTableWidth() {
+  //   if (this._isColumnResizedDirty) {
+  //     const { columns } = this.props;
+  //     let isAllAssignWidth = true;
+  //     columns.forEach(col => {
+  //       if (col.width === undefined) {
+  //         isAllAssignWidth = false;
+  //       }
+  //     });
 
-  handleSave = (rowItem: any, rowIndex: number) => {
-    this.props.dataManager.onUpdate(rowItem, rowIndex);
-  }
+
+  //     this._tableWidth = columns.reduce((a, b) => a + b.width, 0) + ROW_DRAGGER_WIDTH; + 2
+  //   }
+  //   return this._tableWidth;
+  // }
+
 
   render() {
 
-    // todo add memorize 
-    // editable
-
-    // todo resize header 
-    // sheetRenderer 每次会销毁header， 所以重做
-    console.log('OrderTable1', this.props)
-
     const {
       columns,
+      containerStyle,
+      className,
+      tableWidth,
+      canDragRow,
       columnRowManager,
-      onTableLoad,
-      dataManager,
-      tableController,
-    } = this.props;
+    } = this.props
 
-    // const rowHeights = new Array(1500)
-    //   .fill(true)
-    //   .map(() => 25 + Math.round(Math.random() * 50));
 
-    // const getItemSize = (index: any) => rowHeights[index];
+    console.log(this.props, tableWidth, 'GMTableExcelGMTableExcel')
 
-    // const Row = ({ index, style }: any) => (
-    //   <div style={style}>Row {index}</div>
-    // );
 
-    // const Example = () => (
-    //   <List
-    //     height={150}
-    //     itemCount={1000}
-    //     itemSize={getItemSize}
-    //     width={300}
-    //   >
-    //     {Row}
-    //   </List>
-    // );
-
-    // TODO need calWidth
-    if (!this._tableWidth) {
-      this._tableWidth = columns.reduce((a, b) => a + b.width, 0) + ROW_DRAGGER_WIDTH;
-    }
-
-    console.log(this._tableWidth, 'this._tableWidththis._tableWidth')
     return (
       <div
-        className="gm-excel-table"
-        style={{
-          overflowX: 'scroll',
-          paddingBottom: 20,
-          border: '1px solid #ccc',
-          margin: 5,
-          // width:
-        }}
+        style={containerStyle}
+        className={classnames("gm-excel-table", className)}
       >
-      <div style={{ width: this._tableWidth }}>
-        <Button onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }}>
-            Add a row
-          </Button>
-
+        <div style={tableWidth ? { width: tableWidth } : {}}>
           <ColumnHeader
             columns={columns}
-            containerStyle={{ paddingLeft: ROW_DRAGGER_WIDTH  }}
-            onResizeColumn={(...args: any) => {
-              // TODO get
-              this._tableWidth = columns.reduce((a, b) => a + b.width, 0) + ROW_DRAGGER_WIDTH;
-              return columnRowManager.onResizeColumn(...args);
-            }}
             onResizeStart={columnRowManager.onResizeColumnStart}
-
+            onResizeColumn={columnRowManager.onResizeColumn}
+            containerStyle={canDragRow ? { paddingLeft: ROW_DRAGGER_WIDTH } : {}}
           />
-          <SheetBody {...this.props} tableWidth={this._tableWidth} />
-      </div>
+          <ExcelSheetBody
+            {...this.props}
+            tableWidth={tableWidth}
+          />
+        </div>
 
       </div>
     )
   }
 }
+
+
+
 

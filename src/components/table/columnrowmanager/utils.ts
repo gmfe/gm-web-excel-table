@@ -3,10 +3,25 @@ import { IWeekSize, DEFAULT_WIDTH, IWeekSizeRange, IColumnWithOrigin } from './c
 
 export class ColumnManagerUtils{
 
-  public static getSizeRange(column: IColumnWithOrigin, columns: IColumnWithOrigin[]): IWeekSizeRange {
+  public static getSizeRange(column: IColumnWithOrigin, columns: IColumnWithOrigin[], otherWidth?: number): IWeekSizeRange {
+    // sizeRange 规则
+    // * cell minWidth 1. 用户传值 2. 初始不存在width的为初始width 3.默认minWidth
+    // *. cell maxWidth 1. 用户传值 2. 初始不存在width的为初始width的3倍 3.默认minWidth
 
-    // TODO here this is should maxWidth
-    const totalTableWidth = 1220 // columns.reduce((a, b) => a + b.width, 0) + 20; // ROW_DRAGGER_WIDTH;
+    let maxTotalTableWidth = otherWidth || 0;
+    // let minTotalTableWidth = otherWidth || 0;
+    const getMaxWidth = (col: IColumnWithOrigin) => {
+      if (!col.maxWidth) {
+        return (col.origin.width || col.width) * 3;
+      }
+      return column.origin.maxWidth || DEFAULT_WIDTH.max;
+    }
+    const getMinWidth = (col: IColumnWithOrigin) => {
+      if (!col.minWidth) {
+        return col.origin.width || col.width;
+      }
+      return column.origin.minWidth || DEFAULT_WIDTH.min
+    }
 
     const otherTotalSize = columns.reduce((prev, current) => {
       if (column.key !== current.key) {
@@ -17,23 +32,16 @@ export class ColumnManagerUtils{
           prev.height += current.height;
         }
       }
+      maxTotalTableWidth += getMaxWidth(current);
+      // minTotalTableWidth += current.origin.minWidth || DEFAULT_WIDTH.min;
       return prev;
     }, { width: 0, height: 0 });
 
-    let minWidth = column.origin.minWidth || DEFAULT_WIDTH.min;
-    let maxWidth = column.origin.maxWidth || DEFAULT_WIDTH.max;
-    // if (tableContainer) {
-    //   if (column.origin.width) {
-    //     minWidth = Math.min(column.origin.width, minWidth);
-    //   } else  {
-    //     if (column.width) {
-    //       minWidth = Math.min(column.width, minWidth);
-    //     }
-    //   }
-      console.log(totalTableWidth, otherTotalSize.width, 'tableContainer.offsetWidth')
-      maxWidth = Math.min(maxWidth, totalTableWidth - otherTotalSize.width - 2);
-    // }
-    return { width: { min: minWidth, max: maxWidth }, height: { }}
+    let minWidth = getMinWidth(column);
+    let maxWidth = getMaxWidth(column);
+    maxWidth = Math.min(maxWidth, maxTotalTableWidth - otherTotalSize.width);
+
+    return { width: { min: minWidth, max: maxWidth }}
   }
 
 

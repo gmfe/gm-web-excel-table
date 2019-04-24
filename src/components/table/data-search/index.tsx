@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Input, Select } from 'antd';
 import TrieSearch from './triesearch';
 import { IColumn } from '../constants/columns';
-import { WithTableDataTrieSearchProps } from './interface';
+import { WithTableDataSearchProps } from './interface';
 import { DataManagerEvents } from '../datamanager/interface';
 import { RowcolIndextoSelectedState } from '../utils/datamap';
 import { ICellInDataSheet } from '../columnrowmanager/interface';
@@ -15,10 +15,10 @@ const Option = Select.Option;
 // TODO 可以增加配置
 // 可能也不使用trie-tree 因为只能从开始搜索
 
-export function WithTableDataTrieSearch(Target: React.ComponentClass<any, any>) {
+export function WithTableDataSearch(Target: React.ComponentClass<any, any>) {
 
-  return (props: WithTableDataTrieSearchProps) => {
-    const { searchTrieKeys, indexKey, maxSearchResultLength = 10 } = props;
+  return (props: WithTableDataSearchProps) => {
+    const { searchKeys, indexKey, maxSearchResultLength = 10 } = props;
     return class extends React.Component<any, any> {
 
       private _trieTree: any;
@@ -78,7 +78,7 @@ export function WithTableDataTrieSearch(Target: React.ComponentClass<any, any>) 
       getDealWithData() {
         const dealwith: { key: string, value: string, rowIndex: number, colIndex: number }[] = [];
         const searchTrieKeysMap = new Map();
-        searchTrieKeys.forEach(k => searchTrieKeysMap.set(k, true));
+        searchKeys.forEach(k => searchTrieKeysMap.set(k, true));
         this.props.columnsMapData.forEach((row: ICellInDataSheet[], ri: number) => {
           row.forEach((cell: ICellInDataSheet, cellIndex: number) => {
             if (cell.dataIndex && searchTrieKeysMap.has(cell.dataIndex)) {
@@ -132,10 +132,11 @@ export function WithTableDataTrieSearch(Target: React.ComponentClass<any, any>) 
               // console.log(this.props, 'indexindexonClickonClickindexindexindex')
               // this.props.tableController.select(RowcolIndextoSelectedState(d.rowIndex, d.colIndex));
             }}>{`${d.value} - 第${d.rowIndex}行第${d.colIndex}列`}</div>
-          </Option>)
+          </Option>
+          )
         );
 
-        console.log(this.props, 'withtabledatatriesearchwithtabledatatriesearch')
+        // console.log(this.props, 'withtabledatatriesearchwithtabledatatriesearch')
 
         // select 也可以抽出去配置
         return (

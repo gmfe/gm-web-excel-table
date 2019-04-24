@@ -1,4 +1,7 @@
+import { IColumnManager } from './columnrowmanager/interface';
 import { AppBase } from './../../core/appbase';
+import { IColumn } from './constants/columns';
+import { TableRef } from '.';
 
 
 
@@ -13,6 +16,12 @@ export interface CellSelectedState {
 export interface GMExcelTableProps {
   app: AppBase;
   data: any[];
+
+  containerStyle?: Object;
+  className?: string;
+  tableWidth?: number;
+  canDragRow?: boolean;
+
   columnsMapData: any[]; // map to DataSheetProps /node_modules/react-datasheet/types/react-datasheet.d.ts
   columns: any[];
   dataManager: {
@@ -26,6 +35,24 @@ export interface GMExcelTableProps {
     select: (state: CellSelectedState) => void,
     selectedCells: null | CellSelectedState;
   }
-  columnRowManager: any;
-  onTableLoad?: (container: HTMLElement) => void,
+  columnRowManager: IColumnManager;
+  onTableLoad?: (container: HTMLElement) => void;
+  tableRef: (ref: TableRef) => void;
 }
+
+
+
+// export interface IGMExcelTableProps {
+//   columns: IColumn[]
+//   className?: string;
+
+//   containerStyle?: Object;
+//   canDragRow?: boolean;
+//   onResizeColumn?: Function;
+//   onResizeColumnStart?: Function
+
+//   tableWidth?: number; // 指定后就无法拖拽
+//   fullScreenWidth?: boolean;
+//   widthRange?: { max?: number, min?: number }
+  
+// }
