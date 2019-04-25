@@ -11,7 +11,7 @@ export class SingleReactApp extends AppBase {
 
   public run() {
     // this._updatePlatform();
-    this._updateBrowser();
+    // this._updateBrowser();
     // this.environmentManager().start(defaultEnv);
     new KeyboardEventHook(this).onHook();
     new MouseEventHook(this).onHook();
@@ -40,28 +40,28 @@ export class SingleReactApp extends AppBase {
 
   }
 
-  private _updateBrowser() {
-    const userAgent = navigator.userAgent;
-    const isOpera = userAgent.indexOf('Opera') > -1;
-    if (isOpera) {
-      this._browser = BrowserTypes.Opera;
-    }
-    if (userAgent.indexOf('Firefox') > -1) {
-      this._browser = BrowserTypes.Firefox;
-    }
-    if (userAgent.indexOf('Chrome') > -1 && userAgent.indexOf('Safari') > -1) {
-      this._browser = BrowserTypes.Chrome;
-    }
-    if (userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1 && !isOpera) {
-      this._browser = BrowserTypes.IE;
-    }
-    if (userAgent.indexOf('Trident') > -1) {
-      this._browser = BrowserTypes.Trident;
-    }
-    if (userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1) {
-      this._browser = BrowserTypes.Trident;
-    }
-  }
+  // private _updateBrowser() {
+  //   const userAgent = navigator.userAgent;
+  //   const isOpera = userAgent.indexOf('Opera') > -1;
+  //   if (isOpera) {
+  //     this._browser = BrowserTypes.Opera;
+  //   }
+  //   if (userAgent.indexOf('Firefox') > -1) {
+  //     this._browser = BrowserTypes.Firefox;
+  //   }
+  //   if (userAgent.indexOf('Chrome') > -1 && userAgent.indexOf('Safari') > -1) {
+  //     this._browser = BrowserTypes.Chrome;
+  //   }
+  //   if (userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1 && !isOpera) {
+  //     this._browser = BrowserTypes.IE;
+  //   }
+  //   if (userAgent.indexOf('Trident') > -1) {
+  //     this._browser = BrowserTypes.Trident;
+  //   }
+  //   if (userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1) {
+  //     this._browser = BrowserTypes.Trident;
+  //   }
+  // }
 
   // now has sever-render issue, temp no use
   // private _updatePlatform() {
