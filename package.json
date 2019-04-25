@@ -56,6 +56,7 @@
     "react-dnd": "^7.4.5",
     "react-dnd-html5-backend": "^7.4.4",
     "react-dom": "^16.8.6",
-    "trie-search": "^1.2.9"
+    "trie-search": "^1.2.9",
+    "window-or-global": "^1.0.1"
   }
 }
