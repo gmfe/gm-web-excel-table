@@ -64,6 +64,9 @@ export class SJAPP extends AppBase {
   }
 
   private _updatePlatform() {
+    if (typeof window === undefined) {
+      return;
+    }
     try {
       const isWin = (window.navigator.platform === 'Win32') || (window.navigator.platform === 'Windows');
       if (isWin) {
