@@ -7,7 +7,7 @@ const config = {
   entry: './src/index.tsx',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].[contenthash].js'
+    filename: '[name].js'
   },
   devtool: 'inline-source-map',
   devServer: {
