@@ -10,7 +10,7 @@ const BrowserTypes = CoreConstants.BrowserTypes;
 export class SingleReactApp extends AppBase {
 
   public run() {
-    this._updatePlatform();
+    // this._updatePlatform();
     this._updateBrowser();
     // this.environmentManager().start(defaultEnv);
     new KeyboardEventHook(this).onHook();
@@ -63,40 +63,41 @@ export class SingleReactApp extends AppBase {
     }
   }
 
-  private _updatePlatform() {
-    const isWin = (window.navigator.platform === 'Win32') || (window.navigator.platform === 'Windows');
-    if (isWin) {
-      this.platform = CoreConstants.PlatformTypes.Windows;
-      return;
-    }
-    const isMac = (window.navigator.platform === 'Mac68K') || (window.navigator.platform === 'MacPPC') ||
-      (window.navigator.platform === 'Macintosh') || (window.navigator.platform === 'MacIntel');
-    if (isMac) {
-      this.platform = CoreConstants.PlatformTypes.Mac;
-      return;
-    }
-    const isUnix = (window.navigator.platform === 'X11') && !isWin && !isMac;
-    if (isUnix) {
-      this.platform = CoreConstants.PlatformTypes.Unix;
-      return;
-    }
-    const isLinux = (String(window.navigator.platform).indexOf('Linux') > -1);
-    if (isLinux) {
-      this.platform = CoreConstants.PlatformTypes.Linux;
-      return;
-    }
-    const isIos = /(iPhone|iPad|iPod|iOS)/i.test(window.navigator.userAgent);
-    if (isIos) {
-      this.platform = CoreConstants.PlatformTypes.IOS;
-      return;
-    }
-    const isAndroid = /(Android)/i.test(window.navigator.userAgent);
-    if (isAndroid) {
-      this.platform = CoreConstants.PlatformTypes.Android;
-      return;
-    }
-    this.platform = CoreConstants.PlatformTypes.Other;
+  // now has sever-render issue, temp no use
+  // private _updatePlatform() {
+  //   const isWin = (window.navigator.platform === 'Win32') || (window.navigator.platform === 'Windows');
+  //   if (isWin) {
+  //     this.platform = CoreConstants.PlatformTypes.Windows;
+  //     return;
+  //   }
+  //   const isMac = (window.navigator.platform === 'Mac68K') || (window.navigator.platform === 'MacPPC') ||
+  //     (window.navigator.platform === 'Macintosh') || (window.navigator.platform === 'MacIntel');
+  //   if (isMac) {
+  //     this.platform = CoreConstants.PlatformTypes.Mac;
+  //     return;
+  //   }
+  //   const isUnix = (window.navigator.platform === 'X11') && !isWin && !isMac;
+  //   if (isUnix) {
+  //     this.platform = CoreConstants.PlatformTypes.Unix;
+  //     return;
+  //   }
+  //   const isLinux = (String(window.navigator.platform).indexOf('Linux') > -1);
+  //   if (isLinux) {
+  //     this.platform = CoreConstants.PlatformTypes.Linux;
+  //     return;
+  //   }
+  //   const isIos = /(iPhone|iPad|iPod|iOS)/i.test(window.navigator.userAgent);
+  //   if (isIos) {
+  //     this.platform = CoreConstants.PlatformTypes.IOS;
+  //     return;
+  //   }
+  //   const isAndroid = /(Android)/i.test(window.navigator.userAgent);
+  //   if (isAndroid) {
+  //     this.platform = CoreConstants.PlatformTypes.Android;
+  //     return;
+  //   }
+  //   this.platform = CoreConstants.PlatformTypes.Other;
 
-  }
+  // }
 
 }
