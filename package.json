@@ -1,12 +1,12 @@
 {
   "name": "gm-web-excel-table",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "",
   "main": "index.js",
   "scripts": {
     "clean": "rm dist/bundle.js",
     "dev": "webpack-dev-server",
-    "publish": "npm version patch && npm publish",
+    "pp": "npm version patch && npm publish",
     "build-dev": "webpack -d --mode development",
     "build-prod": "webpack -p --mode production"
   },
