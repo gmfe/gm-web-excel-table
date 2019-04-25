@@ -1,4 +1,3 @@
-import root from 'window-or-global'
 import { AppBase } from '../core/appbase';
 import { CoreConstants } from '../constants';
 import { MouseEventHook } from './mouseeventhook';
@@ -8,7 +7,7 @@ import { KeyboardEventHook } from './keyboardeventhook';
 
 const BrowserTypes = CoreConstants.BrowserTypes;
 
-export class SJAPP extends AppBase {
+export class SingleReactApp extends AppBase {
 
   public run() {
     this._updatePlatform();
@@ -32,7 +31,7 @@ export class SJAPP extends AppBase {
       }
     });
 
-    // root.onbeforeunload = (event) => {
+    // window.onbeforeunload = (event) => {
     //   const isDirty = true;
     //   if (isDirty) {
     //     event.returnValue = true;
@@ -65,35 +64,33 @@ export class SJAPP extends AppBase {
   }
 
   private _updatePlatform() {
-    console.log(root, 'windowwindowwindow')
-
-    const isWin = (root.navigator.platform === 'Win32') || (root.navigator.platform === 'Windows');
+    const isWin = (window.navigator.platform === 'Win32') || (window.navigator.platform === 'Windows');
     if (isWin) {
       this.platform = CoreConstants.PlatformTypes.Windows;
       return;
     }
-    const isMac = (root.navigator.platform === 'Mac68K') || (root.navigator.platform === 'MacPPC') ||
-      (root.navigator.platform === 'Macintosh') || (root.navigator.platform === 'MacIntel');
+    const isMac = (window.navigator.platform === 'Mac68K') || (window.navigator.platform === 'MacPPC') ||
+      (window.navigator.platform === 'Macintosh') || (window.navigator.platform === 'MacIntel');
     if (isMac) {
       this.platform = CoreConstants.PlatformTypes.Mac;
       return;
     }
-    const isUnix = (root.navigator.platform === 'X11') && !isWin && !isMac;
+    const isUnix = (window.navigator.platform === 'X11') && !isWin && !isMac;
     if (isUnix) {
       this.platform = CoreConstants.PlatformTypes.Unix;
       return;
     }
-    const isLinux = (String(root.navigator.platform).indexOf('Linux') > -1);
+    const isLinux = (String(window.navigator.platform).indexOf('Linux') > -1);
     if (isLinux) {
       this.platform = CoreConstants.PlatformTypes.Linux;
       return;
     }
-    const isIos = /(iPhone|iPad|iPod|iOS)/i.test(root.navigator.userAgent);
+    const isIos = /(iPhone|iPad|iPod|iOS)/i.test(window.navigator.userAgent);
     if (isIos) {
       this.platform = CoreConstants.PlatformTypes.IOS;
       return;
     }
-    const isAndroid = /(Android)/i.test(root.navigator.userAgent);
+    const isAndroid = /(Android)/i.test(window.navigator.userAgent);
     if (isAndroid) {
       this.platform = CoreConstants.PlatformTypes.Android;
       return;
@@ -103,6 +100,3 @@ export class SJAPP extends AppBase {
   }
 
 }
-
-// instance only
-export const App = new SJAPP();

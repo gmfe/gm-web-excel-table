@@ -6,6 +6,7 @@ import { configOrderTable1Columns, SearchRenderer } from './config';
 import { GMTableExcelStaticConfigWrapper, TableRef } from '../table';
 
 import { Checkbox } from 'antd';
+import { SingleReactApp } from '../../client/app';
 
 
 const rrr = (max: number = 9) => Math.floor(Math.random() * (max + 1));
@@ -37,7 +38,7 @@ const data = [{
 }];
 
 
-
+const APP = new SingleReactApp()
 export class TabelExcelWrapper extends React.PureComponent<any, any> {
 
   private _tableRef?: TableRef;
@@ -80,7 +81,7 @@ export class TabelExcelWrapper extends React.PureComponent<any, any> {
 
         {/* { 这里都是静态配置 } */}
         <GMTableExcelStaticConfigWrapper
-          {...this.props}
+          app={APP}
           tableRef={(c: TableRef) => this._tableRef = c}
           tableKey='key'
           containerStyle={{

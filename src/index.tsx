@@ -1,4 +1,6 @@
 export * from './components'
+export { SingleReactApp as default } from './client/app'
+
 // 看看业务需要什么常量
 
 

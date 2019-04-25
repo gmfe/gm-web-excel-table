@@ -2,12 +2,11 @@
 import './index.less'
 import * as React from 'react';
 import classnames from 'classnames'
-import { AppBase } from '../../core/appbase';
-import { App, SJAPP } from '../../client/app';
 import { WithDataManager } from './datamanager';
 import HTML5Backend from 'react-dnd-html5-backend'
-import { DragDropContextProvider } from 'react-dnd';
+import { SingleReactApp } from '../../client/app';
 import { WithTableDataSearch } from './data-search';
+import { DragDropContextProvider } from 'react-dnd';
 import ExcelSheetBody from './components/sheet-body';
 import ColumnHeader from './components/columnheader';
 import { ROW_DRAGGER_WIDTH } from './constants/config';
@@ -18,10 +17,18 @@ import { WithColumnRowManager } from './columnrowmanager/with-column-row-manager
 
 
 export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExcelStaticConfig, any> {
-  private _app: AppBase = App;
 
+  private _app: SingleReactApp;
+  constructor(props: GMTableExcelStaticConfig) {
+    super(props);
+    if (!props.app) {
+      this._app = new SingleReactApp();
+    } else {
+      this._app = props.app;
+    }
+  }
   componentDidMount() {
-    (this._app as SJAPP).run();
+    this._app.run();
   }
 
   shouldComponentUpdate() {
@@ -34,6 +41,7 @@ export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExce
       searchConfig,
       dataConfig: { fillBlankData, initData, fetchData }
     } = this.props;
+    
     const DeliveryComponent = enhanceWithFlows(GMTableExcel, [
       // 拓展搜索
       {
@@ -106,7 +114,7 @@ export class GMTableExcel extends React.Component<GMExcelTableProps & GMTableExc
       containerStyle,
       columnRowManager,
     } = this.props
-    console.log(this.props, tableWidth, 'GMTableExcelGMTableExcel')
+    console.log(this.props, 'GMTableExcelGMTableExcel')
     return (
       <div
         style={containerStyle}

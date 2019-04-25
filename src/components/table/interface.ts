@@ -1,5 +1,6 @@
 import { TableRef } from '.';
 import { AppBase } from './../../core/appbase';
+import { SingleReactApp } from '../../client/app';
 import { IColumnManager, IGetColumnsFunc } from './columnrowmanager/interface';
 
 
@@ -65,6 +66,7 @@ export interface GMTableExcelSearchArgs {
 
 
 export interface GMTableExcelStaticConfig {
+  app?: SingleReactApp;
   tableKey: string;
   containerStyle: Object
   fullScreenWidth?: boolean, // 开启之后对于缺少指定width字段的cell补充满至全屏
