@@ -12,9 +12,10 @@ import { IGetColumnsFunc } from './columnrowmanager/constants';
 import { GMExcelTableProps, CellSelectedState } from './interface';
 import { enhanceWithFlows } from '../../core/utils/enhancewithflows';
 import { WithColumnRowManager } from './columnrowmanager/with-column-row-manager';
+import HTML5Backend from 'react-dnd-html5-backend'
+import { DragDropContextProvider } from 'react-dnd';
 
-
-interface GMConfigData<T>{
+interface GMConfigData<T> {
   fillBlankData: Object,
   initData: T[] // mocksDatas(20),
   fetchData: Promise<T>
@@ -70,7 +71,11 @@ export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExce
         }
       },
     ]);
-    return <DeliveryComponent {...this.props} />
+    return (
+      <DragDropContextProvider backend={HTML5Backend}>
+        <DeliveryComponent {...this.props} />
+      </DragDropContextProvider>
+    )
   }
 }
 
@@ -84,19 +89,15 @@ export class TableRef {
   }
   addBlank = () => {
     console.log(this.props, 'handleAddhandleAdd')
-    // const newData = {
-    //   amount: 120,
-    //   type: 'income',
-    //   note: 'transfer',
-    //   date: '2018-02-11',
-    //   key: this.props.data.length,
-    // };
-    // this.props.dataManager.onAdd(newData);
+    this.props.dataManager.onAdd(this.props.dataConfig.fillBlankData);
+  }
+  add = (item: any, rowIndex?: number) => {
+    this.props.dataManager.onAdd(item, rowIndex);
   }
 }
 
 
-export class GMTableExcel extends React.Component<GMExcelTableProps, any> {
+export class GMTableExcel extends React.Component<GMExcelTableProps & GMTableExcelStaticConfig, any> {
 
   static defaultProps = {
     canDragRow: true, // NOTICE 
@@ -106,7 +107,7 @@ export class GMTableExcel extends React.Component<GMExcelTableProps, any> {
   private _tableWidth?: number;
   private _isColumnResizedDirty: boolean = false;
 
-  constructor(props: GMExcelTableProps) {
+  constructor(props: GMExcelTableProps & GMTableExcelStaticConfig) {
     super(props);
   }
 

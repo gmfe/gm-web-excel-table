@@ -48,11 +48,11 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
       }
 
       componentDidMount() {
-        const app: AppBase = this.props.app;
-        app.eventManager().mouseEvents().listenMouseDown((context: MouseEventContext) => {
-          console.log(context, 'contextcontextcontext')
-          // context.args.
-        });
+        // const app: AppBase = this.props.app;
+        // app.eventManager().mouseEvents().listenMouseDown((context: MouseEventContext) => {
+        //   // console.log(context, 'contextcontextcontext')
+        //   // context.args.
+        // });
       }
       
   

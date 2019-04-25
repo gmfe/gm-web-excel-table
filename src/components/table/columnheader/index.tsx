@@ -12,7 +12,6 @@ export default class ColumnHeader extends PureComponent<{
 }> {
   render() {
     const { columns, onResizeColumn, onResizeStart, containerStyle = {} } = this.props;
-    console.log(columns, 'columnscolumns')
     return (
       <div style={containerStyle}>
         {
