@@ -1,5 +1,5 @@
 {
-  "name": "gm_web_excel_table",
+  "name": "gm-web-excel-table",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,7 +9,7 @@
     "build-dev": "webpack -d --mode development",
     "build-prod": "webpack -p --mode production"
   },
-  "author": "shankun",
+  "author": "shankun@guanmai.cn",
   "license": "ISC",
   "sideEffects": [
     "*.css",
