@@ -2,7 +2,7 @@
   "name": "gm-web-excel-table",
   "version": "1.0.6",
   "description": "",
-  "main": "index.js",
+  "main": "dist/main.js",
   "scripts": {
     "clean": "rm dist/bundle.js",
     "dev": "webpack-dev-server",
