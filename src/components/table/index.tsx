@@ -12,12 +12,9 @@ import ExcelSheetBody from './components/sheet-body';
 import ColumnHeader from './components/columnheader';
 import { ROW_DRAGGER_WIDTH } from './constants/config';
 import { WithTableController } from './tablecontroller';
-import { IGetColumnsFunc } from './columnrowmanager/interface';
 import { enhanceWithFlows } from '../../core/utils/enhancewithflows';
 import { GMExcelTableProps, GMTableExcelStaticConfig } from './interface';
 import { WithColumnRowManager } from './columnrowmanager/with-column-row-manager';
-
-
 
 
 export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExcelStaticConfig, any> {
