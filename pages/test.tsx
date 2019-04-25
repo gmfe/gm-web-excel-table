@@ -55,7 +55,7 @@ export class TabelExcelWrapper extends React.PureComponent<any, any> {
     return (
       <div>
 
-        <button onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }}>
+        <button onClick={this.handleAdd} style={{ marginBottom: 16 }}>
           Add a Blank row
         </button>
 
