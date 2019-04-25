@@ -10,8 +10,8 @@ const BrowserTypes = CoreConstants.BrowserTypes;
 export class SingleReactApp extends AppBase {
 
   public run() {
-    this._updatePlatform();
-    this._updateBrowser();
+    // this._updatePlatform();
+    // this._updateBrowser();
     // this.environmentManager().start(defaultEnv);
     new KeyboardEventHook(this).onHook();
     new MouseEventHook(this).onHook();
