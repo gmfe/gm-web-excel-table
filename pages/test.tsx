@@ -1,12 +1,10 @@
 
+
+import "antd/dist/antd.less";
+import React, { Component } from 'react'
 import { Button, Radio, Checkbox } from 'antd';
-import * as React from 'react';
-
-import { configOrderTable1Columns, SearchRenderer } from './config';
-import { GMTableExcelStaticConfigWrapper, TableRef } from '../table';
-
-
-import { SingleReactApp } from '../../client/app';
+import { SingleReactApp, TableRef, GMTableExcelStaticConfigWrapper, } from '../src'
+import { configOrderTable1Columns, SearchRenderer } from '../src/components/ordertable1/config';
 
 
 const rrr = (max: number = 9) => Math.floor(Math.random() * (max + 1));
@@ -34,7 +32,6 @@ const data = [{
   type: 'income',
   note: 'transfer',
 }];
-const APP = new SingleReactApp()
 export class TabelExcelWrapper extends React.PureComponent<any, any> {
 
   private _tableRef?: TableRef;
@@ -58,11 +55,11 @@ export class TabelExcelWrapper extends React.PureComponent<any, any> {
     return (
       <div>
 
-        <Button onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }}>
+        <button onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }}>
           Add a Blank row
-        </Button>
+        </button>
 
-        <Button onClick={() => {
+        <button onClick={() => {
           if (this._tableRef) {
             this._tableRef.add({
               amount: 120,
@@ -71,9 +68,9 @@ export class TabelExcelWrapper extends React.PureComponent<any, any> {
               date: '2018-02-11',
             })
           }
-        }} type="primary" style={{ marginBottom: 16, marginLeft: 10 }}>
+        }} style={{ marginBottom: 16, marginLeft: 10 }}>
           Add a Item Row
-        </Button>
+        </button>
 
         {/* { 这里都是静态配置 } */}
         <GMTableExcelStaticConfigWrapper
@@ -167,13 +164,17 @@ export class TabelExcelWrapper extends React.PureComponent<any, any> {
   }
 }
 
+// THIS page is for test ssr
+export class TestPage extends Component {
 
-
-export class OrderTable1 extends React.Component<any, any>  {
   render() {
     return (
-      <TabelExcelWrapper {...this.props} />
+      <div>
+        test
+      </div>
     )
   }
 }
 
+
+export default TestPage

@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const config = {
   entry: './src/index.tsx',
@@ -28,17 +29,20 @@ const config = {
         loader: 'ts-loader',
         exclude: /node_modules/
       },
+
       {
         test: /\.css$/,
         use: [
-          'style-loader',
-          'css-loader'
+          {
+            loader: MiniCssExtractPlugin.loader,
+          },
+          'css-loader',
         ],
       },
       {
         test: /\.less$/,
         use: [
-          'style-loader',
+          MiniCssExtractPlugin.loader,
           'css-loader',
           {
             loader: 'less-loader',
@@ -70,12 +74,16 @@ const config = {
     ]
   },
   plugins: [
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+      chunkFilename: '[id].css',
+    }),
     new LodashModuleReplacementPlugin,
     new HtmlWebpackPlugin({
-        inject: false,
-        appMountId: 'app',
-        template: require('html-webpack-template'),
-      })
+      inject: false,
+      appMountId: 'app',
+      template: require('html-webpack-template'),
+    })
   ],
   optimization: {
     runtimeChunk: 'single',
