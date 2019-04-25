@@ -1,23 +1,25 @@
-import { IWeekSize, DEFAULT_WIDTH, IWeekSizeRange, IColumnWithOrigin } from './constants';
+import { DEFAULT_WIDTH } from './constants';
+import { IWeekSize, IWeekSizeRange } from './interface';
+import { GMExcelTableColumnWithOrigin } from './../constants/interface';
 
 
 export class ColumnManagerUtils{
 
-  public static getSizeRange(column: IColumnWithOrigin, columns: IColumnWithOrigin[], otherWidth?: number): IWeekSizeRange {
+  public static getSizeRange(column: GMExcelTableColumnWithOrigin, columns: GMExcelTableColumnWithOrigin[], otherWidth?: number): IWeekSizeRange {
     // sizeRange 规则
     // * cell minWidth 1. 用户传值 2. 初始不存在width的为初始width 3.默认minWidth
     // *. cell maxWidth 1. 用户传值 2. 初始不存在width的为初始width的3倍 3.默认minWidth
 
     let maxTotalTableWidth = otherWidth || 0;
     // let minTotalTableWidth = otherWidth || 0;
-    const getMaxWidth = (col: IColumnWithOrigin) => {
+    const getMaxWidth = (col: GMExcelTableColumnWithOrigin) => {
       const width = col.origin.width || col.width;
       if (!col.maxWidth && width) {
         return width * 3;
       }
       return column.origin.maxWidth || DEFAULT_WIDTH.max;
     }
-    const getMinWidth = (col: IColumnWithOrigin) => {
+    const getMinWidth = (col: GMExcelTableColumnWithOrigin) => {
       const width = col.origin.width || col.width;
       if (!col.minWidth && width) {
         return width;

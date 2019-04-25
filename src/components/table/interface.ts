@@ -1,8 +1,6 @@
-import { IColumnManager } from './columnrowmanager/interface';
-import { AppBase } from './../../core/appbase';
-import { IColumn } from './constants/columns';
 import { TableRef } from '.';
-
+import { AppBase } from './../../core/appbase';
+import { IColumnManager, IGetColumnsFunc } from './columnrowmanager/interface';
 
 
 
@@ -38,4 +36,43 @@ export interface GMExcelTableProps {
   columnRowManager: IColumnManager;
   onTableLoad?: (container: HTMLElement) => void;
   tableRef: (ref: TableRef) => void;
+}
+
+
+export interface GMConfigData<T> {
+  fetchData: Promise<T>
+  fillBlankData: Object,
+  initData: T[] // mocksDatas(20),
+}
+
+
+export interface SearchRenderProps{
+  searchValue: '';
+  searchResults: any[]
+
+  onReset: () => void;
+  onSearch: (value: string) => void;
+  onSelect: (rowIndex: number, colIndex: number) => void
+}
+
+export interface GMTableExcelSearchArgs {
+  enable?: boolean;
+  indexKey: string;  // 索引字段
+  searchKeys: string[]; // 搜索的字段
+  maxSearchResultLength?: number
+  SearchRenderer?: React.ComponentClass<any, any>
+}
+
+
+export interface GMTableExcelStaticConfig {
+  tableKey: string;
+  containerStyle: Object
+  fullScreenWidth?: boolean, // 开启之后对于缺少指定width字段的cell补充满至全屏
+  searchConfig: GMTableExcelSearchArgs,
+  columnsConfig: {
+    getColumns: IGetColumnsFunc
+  }
+  canDragRow?: boolean;
+  dataConfig: GMConfigData<any>;
+  tableRef: (tref: TableRef) => void;
 }

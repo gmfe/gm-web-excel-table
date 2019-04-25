@@ -1,11 +1,11 @@
 
 import React, { PureComponent } from 'react'
 import { isFunction } from 'lodash'
-import { IColumn } from '../constants/columns';
-import { ResizeableTitle } from '../cells/resizeabletitle';
+import { ResizeableTitle } from '../../cells/resizeabletitle';
+import { GMExcelTableColumn } from '../../constants/interface';
 
 export default class ColumnHeader extends PureComponent<{
-  columns: IColumn[],
+  columns: GMExcelTableColumn[],
   onResizeColumn: Function,
   onResizeStart: Function,
   containerStyle?: Object,
@@ -15,7 +15,7 @@ export default class ColumnHeader extends PureComponent<{
     return (
       <div style={containerStyle}>
         {
-          columns.map((column: IColumn, index: number) => {
+          columns.map((column: GMExcelTableColumn, index: number) => {
             const key = column.dataIndex || `columns${index}`;
             let header = null;
             if (isFunction(column.Header)) {

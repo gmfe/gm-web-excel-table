@@ -1,12 +1,11 @@
 
 import * as React from 'react';
-import Resizable from  're-resizable';
-import { onResizeColumn } from '../columnrowmanager/constants';
+import Resizable from 're-resizable';
+import { onResizeColumn } from '../columnrowmanager/interface';
+import { DEFAULT_RANGE } from '../columnrowmanager/constants';
+import { GMExcelTableColumnState } from '../constants/interface';
 
-export class ResizeableTitle extends React.PureComponent<{
-  width?: number,
-  minWidth?: number,
-  maxWidth?: number,
+export class ResizeableTitle extends React.PureComponent<GMExcelTableColumnState & {
   onResize: onResizeColumn,
   onResizeStart: () => void,
 }, any> {
@@ -21,17 +20,22 @@ export class ResizeableTitle extends React.PureComponent<{
   render() {
     const { width, minWidth, maxWidth, onResizeStart } = this.props;
     return (
+      // EXPAND[可拓展拖拽吸附] snap: may be useful
+      // EXPAND[可拓展多方向拉拽]
       // https://github.com/bokuweb/re-resizable
-      // snap: may be useful
+
       <Resizable
+  
+        style={{ display: 'inline-block', border: '1px solid #ccc' }}
+        enable={{ top: false, right: true, bottom: false, left: false, topRight: false, bottomRight: false, bottomLeft: false, topLeft: false }}
+
         ref={c => this._resizable = c}
-        onResize={this.handleResize}
-        style={{ display: 'inline-block', border: '1px solid #ccc'}}
-        minWidth={minWidth || 100}
-        maxWidth={maxWidth || 1000}
-        enable={{ top: false, right:true, bottom:false, left:false, topRight:false, bottomRight:false, bottomLeft:false, topLeft:false }}
-        defaultSize={{ width }}
+        minWidth={minWidth || DEFAULT_RANGE.minWidth}
+        maxWidth={maxWidth || DEFAULT_RANGE.maxWidth}
+
         // size={{ width }}
+        defaultSize={{ width }}
+        onResize={this.handleResize}
         onResizeStart={onResizeStart}
       >
         {this.props.children}
@@ -39,13 +43,3 @@ export class ResizeableTitle extends React.PureComponent<{
     );
   }
 }
-
-
-// export const ResizeableTitle = (props: any) => {
-
-
-
-
-// };
-
-// export ResizeableTitle

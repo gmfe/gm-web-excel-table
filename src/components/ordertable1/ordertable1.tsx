@@ -2,7 +2,7 @@
 import { Button, Radio } from 'antd';
 import * as React from 'react';
 
-import { configOrderTable1Columns } from './config';
+import { configOrderTable1Columns, SearchRenderer } from './config';
 import { GMTableExcelStaticConfigWrapper, TableRef } from '../table';
 
 import { Checkbox } from 'antd';
@@ -53,6 +53,10 @@ export class TabelExcelWrapper extends React.PureComponent<any, any> {
   //   this.props.dataManager.onDelete(index);
   // }
 
+  componentDidMount() {
+    
+  }
+
   render() {
     return (
       <div>
@@ -92,6 +96,7 @@ export class TabelExcelWrapper extends React.PureComponent<any, any> {
             enable: true,
             indexKey: 'key',
             searchKeys: ['date', 'type', 'note'],
+            SearchRenderer: SearchRenderer
           }}
 
           columnsConfig={{

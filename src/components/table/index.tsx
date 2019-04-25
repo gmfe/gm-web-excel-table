@@ -2,57 +2,46 @@
 import './index.less'
 import * as React from 'react';
 import classnames from 'classnames'
-import ColumnHeader from './columnheader';
+import { AppBase } from '../../core/appbase';
+import { App, SJAPP } from '../../client/app';
 import { WithDataManager } from './datamanager';
-import { WithTableDataSearch } from './data-search';
-import ExcelSheetBody from './components/sheet-body';
-import { ROW_DRAGGER_WIDTH } from './constants/config';
-import { WithTableController } from './tablecontroller';
-import { IGetColumnsFunc } from './columnrowmanager/constants';
-import { GMExcelTableProps, CellSelectedState } from './interface';
-import { enhanceWithFlows } from '../../core/utils/enhancewithflows';
-import { WithColumnRowManager } from './columnrowmanager/with-column-row-manager';
 import HTML5Backend from 'react-dnd-html5-backend'
 import { DragDropContextProvider } from 'react-dnd';
+import { WithTableDataSearch } from './data-search';
+import ExcelSheetBody from './components/sheet-body';
+import ColumnHeader from './components/columnheader';
+import { ROW_DRAGGER_WIDTH } from './constants/config';
+import { WithTableController } from './tablecontroller';
+import { IGetColumnsFunc } from './columnrowmanager/interface';
+import { enhanceWithFlows } from '../../core/utils/enhancewithflows';
+import { GMExcelTableProps, GMTableExcelStaticConfig } from './interface';
+import { WithColumnRowManager } from './columnrowmanager/with-column-row-manager';
 
-interface GMConfigData<T> {
-  fillBlankData: Object,
-  initData: T[] // mocksDatas(20),
-  fetchData: Promise<T>
-}
-interface GMTableExcelStaticConfig {
-  tableKey: string;
-  containerStyle: Object
-  fullScreenWidth?: boolean, // 开启之后对于缺少指定width字段的cell补充满至全屏
-  searchConfig: {
-    enable?: boolean;
-    indexKey: string;
-    searchKeys: string[]; //['date', 'type', 'note'],
-    // searchRender: (props) // 暂时不提供对外开放的searchRenderer配置
-  }
-  columnsConfig: {
-    getColumns: IGetColumnsFunc
-  }
-  canDragRow?: boolean;
-  dataConfig: GMConfigData<any>;
-  tableRef: (tref: TableRef) => void;
-}
+
+
 
 export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExcelStaticConfig, any> {
+  private _app: AppBase = App;
+
+  componentDidMount() {
+    (this._app as SJAPP).run();
+  }
+
   shouldComponentUpdate() {
     return false;
   }
+
   render() {
     const {
       columnsConfig: { getColumns },
-      searchConfig: { searchKeys, indexKey },
+      searchConfig,
       dataConfig: { fillBlankData, initData, fetchData }
     } = this.props;
     const DeliveryComponent = enhanceWithFlows(GMTableExcel, [
       // 拓展搜索
       {
         enhance: WithTableDataSearch,
-        args: { searchKeys, indexKey }
+        args: searchConfig,
       },
       // 表格控制
       { enhance: WithTableController, args: { tableKey: 'key' } },
@@ -73,7 +62,7 @@ export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExce
     ]);
     return (
       <DragDropContextProvider backend={HTML5Backend}>
-        <DeliveryComponent {...this.props} />
+        <DeliveryComponent {...this.props} app={this._app} />
       </DragDropContextProvider>
     )
   }
@@ -103,33 +92,24 @@ export class GMTableExcel extends React.Component<GMExcelTableProps & GMTableExc
     canDragRow: true, // NOTICE 
   }
 
-  // 如果指定100%填充
-  private _tableWidth?: number;
-  private _isColumnResizedDirty: boolean = false;
-
-  constructor(props: GMExcelTableProps & GMTableExcelStaticConfig) {
-    super(props);
-  }
+  // constructor(props: GMExcelTableProps & GMTableExcelStaticConfig) {
+  //   super(props);
+  // }
 
   componentDidMount() {
     this.props.tableRef(new TableRef(this));
   }
 
   render() {
-
     const {
       columns,
-      containerStyle,
       className,
       tableWidth,
       canDragRow,
+      containerStyle,
       columnRowManager,
     } = this.props
-
-
     console.log(this.props, tableWidth, 'GMTableExcelGMTableExcel')
-
-
     return (
       <div
         style={containerStyle}
@@ -147,12 +127,10 @@ export class GMTableExcel extends React.Component<GMExcelTableProps & GMTableExc
             tableWidth={tableWidth}
           />
         </div>
-
       </div>
     )
   }
 }
-
 
 
 
