@@ -1,4 +1,4 @@
-import root from 'root-or-global'
+import root from 'window-or-global'
 import { AppBase } from '../core/appbase';
 import { CoreConstants } from '../constants';
 import { MouseEventHook } from './mouseeventhook';
