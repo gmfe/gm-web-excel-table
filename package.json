@@ -4,7 +4,6 @@
   "description": "",
   "main": "dist/main.js",
   "scripts": {
-    "clean": "antd-tools run clean",
     "dev": "webpack-dev-server",
     "pp": "npm run build-prod && npm version patch && npm publish",
     "build-dev": "webpack -d --mode development",
@@ -12,15 +11,8 @@
     "tsc-build": "tsc -p . --outDir dist/lib",
     "dev2": "next -p 9009",
 
-    "dist": "antd-tools run dist",
-    "compile": "antd-tools run compile",
-    "start": "antd-tools run start",
-    "site": "antd-tools run site",
-    "deploy": "antd-tools run update-self && antd-tools run deploy",
-    "just-deploy": "antd-tools run just-deploy",
-    "pub": "antd-tools run update-self && antd-tools run pub",
-    "prepublish": "antd-tools run guard",
-    "cpupdate": "cp -R ./dist ../test/node_modules/abc/dist"
+    "cpupdate": "cp -R ./dist ../test/node_modules/abc/dist",
+    "bup": "npm run tsc-build && npm run cpupdate"
 
   },
   "author": "shankun@guanmai.cn",
