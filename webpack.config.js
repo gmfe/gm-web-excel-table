@@ -6,6 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 
+
 const babelConfig = require('antd-tools/lib/getBabelCommonConfig')(false);
 // babel import for components
 babelConfig.plugins.push([
@@ -19,7 +20,7 @@ babelConfig.plugins.push([
 
 const config = {
   entry: {
-    main: './src/index.tsx',
+    alpha: ['./src/index.tsx' ],
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -40,14 +41,11 @@ const config = {
         use: 'babel-loader',
         exclude: /node_modules/
       },
-      // {
-      //   test: /\.(ts|tsx)?$/,
-      //   loader: 'awesome-typescript-loader',
-      //   exclude: /node_modules/,
-      //   query: {
-      //     declaration: false,
-      //   }
-      // },
+      {
+        test: /\.(ts)?$/,
+        loader: 'ts-loader',
+        exclude: /node_modules/
+      },
       {
         test: /\.tsx?$/,
         use: [
@@ -102,6 +100,7 @@ const config = {
     ]
   },
   plugins: [
+    new HardSourceWebpackPlugin(),
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[name].css',
@@ -112,16 +111,19 @@ const config = {
       appMountId: 'app',
       template: require('html-webpack-template'),
     }),
+		new webpack.DllPlugin({
+      context: __dirname,
+			name: "[name]_[hash]",
+			path: path.join(__dirname, "dist/dll", "[name]-manifest.json"),
+		})
     // new webpack.optimize.UglifyJsPlugin({
     //   minimize: true,
     //   sourceMap: true,
     //   include: /\.min\.js$/,
     // })
-    // new HardSourceWebpackPlugin()
   ],
   optimization: {
     runtimeChunk: 'single',
-    // source
     splitChunks: {
       cacheGroups: {
         vendor: {
