@@ -5,8 +5,23 @@ const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
+const getBabelCommonConfig = require('antd-tools/lib/getBabelCommonConfig');
+
+const babelConfig = require('antd-tools/lib/getBabelCommonConfig')(false);
+// babel import for components
+babelConfig.plugins.push([
+  require.resolve('babel-plugin-import'),
+  {
+    style: true,
+    libraryName: 'gm-excel-table',
+    libraryDirectory: 'components',
+  },
+]);
+
 const config = {
-  entry: './src/index.tsx',
+  entry: {
+    main: './src/index.tsx',
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',
@@ -26,12 +41,29 @@ const config = {
         use: 'babel-loader',
         exclude: /node_modules/
       },
+      // {
+      //   test: /\.(ts|tsx)?$/,
+      //   loader: 'awesome-typescript-loader',
+      //   exclude: /node_modules/,
+      //   query: {
+      //     declaration: false,
+      //   }
+      // },
       {
-        test: /\.(ts|tsx)?$/,
-        loader: 'ts-loader',
-        exclude: /node_modules/
+        test: /\.tsx?$/,
+        use: [
+          {
+            loader: require.resolve('babel-loader'),
+            options: babelConfig,
+          },
+          {
+            loader: require.resolve('ts-loader'),
+            options: {
+              transpileOnly: true,
+            },
+          },
+        ],
       },
-
       {
         test: /\.css$/,
         use: [
@@ -42,16 +74,11 @@ const config = {
         ],
       },
       {
-        test: /\.less$/,
+        test: /\.scss$/,
         use: [
           MiniCssExtractPlugin.loader,
           'css-loader',
-          {
-            loader: 'less-loader',
-            options: {
-              javascriptEnabled: true,
-            },
-          }
+          'sass-loader'
         ]
       },
       {
@@ -85,7 +112,12 @@ const config = {
       inject: false,
       appMountId: 'app',
       template: require('html-webpack-template'),
-    })
+    }),
+    // new webpack.optimize.UglifyJsPlugin({
+    //   minimize: true,
+    //   sourceMap: true,
+    //   include: /\.min\.js$/,
+    // })
     // new HardSourceWebpackPlugin()
   ],
   optimization: {
