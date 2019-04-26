@@ -10,7 +10,6 @@ const config = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',
-    libraryTarget: 'umd'
   },
   devtool: 'inline-source-map',
   // devtool: 'source-map',
@@ -86,8 +85,8 @@ const config = {
       inject: false,
       appMountId: 'app',
       template: require('html-webpack-template'),
-    }),
-    new HardSourceWebpackPlugin()
+    })
+    // new HardSourceWebpackPlugin()
   ],
   optimization: {
     runtimeChunk: 'single',

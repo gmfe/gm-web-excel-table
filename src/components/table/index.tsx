@@ -91,7 +91,7 @@ export class TableRef {
 }
 
 
-export class GMTableExcel extends React.Component<GMExcelTableProps & GMTableExcelStaticConfig, any> {
+class GMTableExcel extends React.Component<GMExcelTableProps & GMTableExcelStaticConfig, any> {
 
   static defaultProps = {
     canDragRow: true, // NOTICE 

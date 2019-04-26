@@ -1,4 +1,4 @@
-import { GMExcelTableColumn } from './../table/constants/interface';
+import { GMExcelTableColumn } from '../../src';
 
 
 

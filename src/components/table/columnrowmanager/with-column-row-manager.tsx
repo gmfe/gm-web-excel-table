@@ -3,7 +3,7 @@ import * as React from 'react'
 import { ColumnManagerUtils } from './utils';
 import { ROW_DRAGGER_WIDTH } from '../constants/config';
 import { GMExcelTableColumn, GMExcelTableColumnWithOrigin } from '../constants/interface';
-import { ICellInDataSheet, IColumnManager, IColumnManagerProps } from './interface';
+import { ICellInDataSheet, IColumnManager, ConfigColumnProps } from './interface';
 import { IWeekSize, WithColumnRowManagerConfig, IWeekSizeRange } from './interface';
 
 
@@ -16,7 +16,7 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
   return (configOption: WithColumnRowManagerConfig) => {
     const CellId = (ri: number, ci: number) => `${1}${ci}`;
     
-    return class extends React.Component<IColumnManagerProps, { tableWidth: undefined | number, columns: GMExcelTableColumnWithOrigin[] }> {
+    return class extends React.Component<ConfigColumnProps, { tableWidth: undefined | number, columns: GMExcelTableColumnWithOrigin[] }> {
       private _tableContainerDom?: HTMLElement;
       private _columnRowManager: IColumnManager;
       private _currentSizeRange?: IWeekSizeRange ;

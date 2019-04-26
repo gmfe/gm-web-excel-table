@@ -1,5 +1,5 @@
 {
-  "name": "gm-web-excel-table",
+  "name": "gm-web-excel-table1",
   "version": "1.0.20",
   "description": "",
   "main": "dist/main.js",
@@ -9,6 +9,7 @@
     "pp": "npm run build-prod && npm version patch && npm publish",
     "build-dev": "webpack -d --mode development",
     "build-prod": "webpack -p --mode production",
+    "tsc-build": "tsc -p .",
     "dev2": "next -p 9009"
   },
   "author": "shankun@guanmai.cn",
@@ -46,18 +47,19 @@
     "webpack-dev-server": "^3.3.1"
   },
   "dependencies": {
-    "events": "^3.0.0",
-    "react": "^16.8.6",
-    "fuse.js": "^3.4.4",
-    "lodash": "^4.17.11",
-    "hasharray": "^1.1.1",
-    "react-dnd": "^7.4.5",
-    "classnames": "^2.2.6",
-    "react-dom": "^16.8.6",
-    "trie-search": "^1.2.9",
     "@types/node": "^11.13.7",
+    "classnames": "^2.2.6",
+    "events": "^3.0.0",
+    "fuse.js": "^3.4.4",
+    "gm-web-excel-table": "^1.0.20",
+    "hasharray": "^1.1.1",
+    "lodash": "^4.17.11",
     "re-resizable": "^4.11.0",
+    "react": "^16.8.6",
     "react-datasheet": "^1.3.10",
-    "react-dnd-html5-backend": "^7.4.4"
+    "react-dnd": "^7.4.5",
+    "react-dnd-html5-backend": "^7.4.4",
+    "react-dom": "^16.8.6",
+    "trie-search": "^1.2.9"
   }
 }

@@ -1,12 +1,12 @@
 
-import { Button, Radio, Checkbox } from 'antd';
+import "antd/dist/antd.less";
 import * as React from 'react';
-
+import { Button, Radio, Checkbox } from 'antd';
+import { SingleReactApp } from '../../src/client/app';
 import { configOrderTable1Columns, SearchRenderer } from './config';
-import { GMTableExcelStaticConfigWrapper, TableRef } from '../table';
-import { SingleReactApp } from '../../client/app';
+import { GMTableExcelStaticConfigWrapper, TableRef } from '../../src/components/table';
 
-// import GMET from '../../../dist/main'
+// import * as GMET from '../../dist/main'
 // console.log(GMET, 'SingleReactApp')
 
 const rrr = (max: number = 9) => Math.floor(Math.random() * (max + 1));
@@ -170,7 +170,7 @@ export class TabelExcelWrapper extends React.PureComponent<any, any> {
 
 
 
-export class OrderTable1 extends React.Component<any, any>  {
+export default class OrderTable1 extends React.Component<any, any>  {
   render() {
     return (
       <TabelExcelWrapper {...this.props} />

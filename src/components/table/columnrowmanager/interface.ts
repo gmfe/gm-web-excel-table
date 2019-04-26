@@ -15,7 +15,7 @@ export interface IColumnManager {
   findCellDom: (row: number, col: number) => HTMLElement | undefined;
 }
 
-export interface IColumnManagerProps{
+export interface ConfigColumnProps{
   data: any[]
   canDragRow?: boolean
   fullScreenWidth?: boolean
@@ -38,7 +38,7 @@ export interface IWeekSizeRange{
   }
 }
 
-export type IGetColumnsFunc = (props: IColumnManagerProps, columnRowManager: IColumnManager) => GMExcelTableColumn[];
+export type IGetColumnsFunc = (props: ConfigColumnProps, columnRowManager: IColumnManager) => GMExcelTableColumn[];
 
 export interface WithColumnRowManagerConfig{
   getColumns: IGetColumnsFunc 

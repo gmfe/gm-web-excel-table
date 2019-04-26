@@ -1,13 +1,13 @@
 import * as React from 'react';
 import * as moment from 'moment';
-import { DatePicker } from 'antd';
+import { DatePicker, Select } from 'antd';
 import { GM_TABLE_COLUMNS_KEYS, IGM_TABLE_COLUMNS } from './interface';
-import { GMExcelTableColumn } from '../table/constants/interface';
-import { IColumnManagerProps } from '../table/columnrowmanager/interface';
-import { render } from 'react-dom';
+import { GMExcelTableColumn, ConfigColumnProps, SearchRenderProps } from '../../src';
 
-import { Select } from 'antd';
-import { SearchRenderProps } from '../table/interface';
+
+
+
+
 const Option = Select.Option;
 
 const GM_TABLE_COLUMNS: IGM_TABLE_COLUMNS = {
@@ -59,7 +59,7 @@ class DataPickerEditor extends React.Component<any> {
 }
 
 
-export const configOrderTable1Columns = (componentProps: IColumnManagerProps) => {
+export const configOrderTable1Columns = (componentProps: ConfigColumnProps) => {
   const columns: GMExcelTableColumn[] = [
     {
       ...GM_TABLE_COLUMNS.date,
