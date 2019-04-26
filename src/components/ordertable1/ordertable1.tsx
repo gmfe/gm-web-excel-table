@@ -4,11 +4,10 @@ import * as React from 'react';
 
 import { configOrderTable1Columns, SearchRenderer } from './config';
 import { GMTableExcelStaticConfigWrapper, TableRef } from '../table';
-
-// import * as GMET from '../../../dist/main'
-
 import { SingleReactApp } from '../../client/app';
 
+// import GMET from '../../../dist/main'
+// console.log(GMET, 'SingleReactApp')
 
 const rrr = (max: number = 9) => Math.floor(Math.random() * (max + 1));
 const mocksDatas = (len: number) => {
@@ -52,7 +51,8 @@ export class TabelExcelWrapper extends React.PureComponent<any, any> {
   // }
 
   componentDidMount() {
-    // console.log(GMET, 'GMETGMET')
+    // const GG = require('../../../dist/main')
+    // console.log(GMET, GG, 'GMETGMET')
   }
 
   render() {

@@ -3,22 +3,22 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 const config = {
   entry: './src/index.tsx',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',
-    libraryTarget: 'commonjs',
-    // libraryTarget: 'umd',
+    libraryTarget: 'umd'
   },
   devtool: 'inline-source-map',
   // devtool: 'source-map',
   devServer: {
-    contentBase: path.join(__dirname, 'dist'),
-    compress: false,
     port: 9000,
+    compress: false,
     host: '0.0.0.0',
+    contentBase: path.join(__dirname, 'dist')
   },
   module: {
     rules: [
@@ -86,7 +86,8 @@ const config = {
       inject: false,
       appMountId: 'app',
       template: require('html-webpack-template'),
-    })
+    }),
+    new HardSourceWebpackPlugin()
   ],
   optimization: {
     runtimeChunk: 'single',
