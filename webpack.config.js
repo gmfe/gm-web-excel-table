@@ -87,17 +87,18 @@ const config = {
     })
   ],
   optimization: {
-    runtimeChunk: 'single',
-    // source
-    splitChunks: {
-      cacheGroups: {
-        vendor: {
-          test: /[\\\/]node_modules[\\\/]/,
-          name: 'vendors',
-          chunks: 'all'
-        }
-      }
-    }
+  //   runtimeChunk: 'single',
+  //   // source
+  //   splitChunks: {
+  //     cacheGroups: {
+  //       vendor: {
+  //         test: /[\\\/]node_modules[\\\/]/,
+  //         name: 'vendors',
+  //         chunks: 'all'
+  //       }
+  //     }
+  //   }
+  // }
   }
 }
 
