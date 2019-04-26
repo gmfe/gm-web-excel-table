@@ -5,7 +5,6 @@ const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
-const getBabelCommonConfig = require('antd-tools/lib/getBabelCommonConfig');
 
 const babelConfig = require('antd-tools/lib/getBabelCommonConfig')(false);
 // babel import for components

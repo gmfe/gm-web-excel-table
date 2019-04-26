@@ -1,5 +1,5 @@
 {
-  "name": "gm-web-excel-table1",
+  "name": "gm-web-excel-table",
   "version": "1.0.21",
   "description": "",
   "main": "dist/main.js",
@@ -9,10 +9,9 @@
     "build-dev": "webpack -d --mode development",
     "build-prod": "webpack -p --mode production",
     "tsc-build": "tsc -p . --outDir dist/lib",
-    "dev2": "next -p 9009",
 
-    "cpupdate": "cp -R ./dist ../test/node_modules/abc/dist",
-    "bup": "npm run tsc-build && npm run cpupdate"
+    "cpupdate": "cp -R ./dist ../gm-web-excel-test-client/node_modules/gm-web-excel-table/dist",
+    "bup": "npm run build-dev && npm run cpupdate"
 
   },
   "author": "shankun@guanmai.cn",
