@@ -10,7 +10,8 @@ const config = {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js'
   },
-  devtool: 'inline-source-map',
+  // devtool: 'inline-source-map',
+  devtool: 'source-map',
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
     compress: false,
@@ -76,7 +77,7 @@ const config = {
   plugins: [
     new MiniCssExtractPlugin({
       filename: '[name].css',
-      chunkFilename: '[id].css',
+      chunkFilename: '[name].css',
     }),
     new LodashModuleReplacementPlugin,
     new HtmlWebpackPlugin({
@@ -87,6 +88,7 @@ const config = {
   ],
   optimization: {
     runtimeChunk: 'single',
+    // source
     splitChunks: {
       cacheGroups: {
         vendor: {

@@ -170,7 +170,7 @@ export class TestPage extends Component {
   render() {
     return (
       <div>
-        test
+        <TabelExcelWrapper />
       </div>
     )
   }
