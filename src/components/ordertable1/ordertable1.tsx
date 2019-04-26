@@ -5,6 +5,7 @@ import * as React from 'react';
 import { configOrderTable1Columns, SearchRenderer } from './config';
 import { GMTableExcelStaticConfigWrapper, TableRef } from '../table';
 
+// import * as GMET from '../../../dist/main'
 
 import { SingleReactApp } from '../../client/app';
 
@@ -51,7 +52,7 @@ export class TabelExcelWrapper extends React.PureComponent<any, any> {
   // }
 
   componentDidMount() {
-    
+    // console.log(GMET, 'GMETGMET')
   }
 
   render() {

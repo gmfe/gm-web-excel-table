@@ -1,5 +1,9 @@
 
 
+# NOTICE
+* this component not support ssr
+* todo 改进，应该改为 node-sass 以支持ssr
+
 
 # 需求
 

@@ -8,10 +8,12 @@ const config = {
   entry: './src/index.tsx',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].js'
+    filename: '[name].js',
+    libraryTarget: 'commonjs',
+    // libraryTarget: 'umd',
   },
-  // devtool: 'inline-source-map',
-  devtool: 'source-map',
+  devtool: 'inline-source-map',
+  // devtool: 'source-map',
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
     compress: false,
@@ -87,18 +89,17 @@ const config = {
     })
   ],
   optimization: {
-  //   runtimeChunk: 'single',
-  //   // source
-  //   splitChunks: {
-  //     cacheGroups: {
-  //       vendor: {
-  //         test: /[\\\/]node_modules[\\\/]/,
-  //         name: 'vendors',
-  //         chunks: 'all'
-  //       }
-  //     }
-  //   }
-  // }
+    runtimeChunk: 'single',
+    // source
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\\/]node_modules[\\\/]/,
+          name: 'vendors',
+          chunks: 'all'
+        }
+      }
+    }
   }
 }
 
