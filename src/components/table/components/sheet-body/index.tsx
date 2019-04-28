@@ -6,8 +6,8 @@ import 'react-datasheet/lib/react-datasheet.css';
 import './index.less'
 import * as React from 'react';
 import ReactDataSheet from 'react-datasheet';
+import { CellSelectedState } from '../../interface';
 import * as DragDropEnhanceN from '../../../../js/drag-drop.js'
-import { CellSelectedState } from '../../interface.js';
 
 // 
 const { rowDragSource, rowDropTarget } = DragDropEnhanceN;

@@ -39,7 +39,7 @@ export function WithTableDataSearch(Target: React.ComponentClass<any, any>) {
         // 注册热键
         // this.initTrieSearch();
         this.initFuseSearch();
-        console.log(TrieSearch, 'TrieSearch')
+        console.log(TrieSearch, indexKey, 'TrieSearch')
       }
 
       onDataChanged = (...args: any) => {
