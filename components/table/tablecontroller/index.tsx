@@ -14,8 +14,8 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
     return class extends React.Component<any, any> {
       // columnKey
       private _editMap: Map<string, boolean>;
-      private _refMap: Map<string, HTMLElement>;
-      private _sizeMap: Map<string, { width: number, height: number }>;
+      // private _refMap: Map<string, HTMLElement>;
+      // private _sizeMap: Map<string, { width: number, height: number }>;
   
       constructor(props: any) {
         super(props);
@@ -35,8 +35,8 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
           focusing: undefined // [ 0, 0 ]
         };
         // 做一个查找树
-        this._sizeMap = new Map();
-        this._refMap = new Map();
+        // this._sizeMap = new Map();
+        // this._refMap = new Map();
         this._editMap = new Map();
   
         // 注册按键移动事件
@@ -66,6 +66,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
   
       handleMoveFollowing(nextIndex: any) {
         // 增加一个自身当前宽高的尺寸
+        console.log(nextIndex, 'nextIndex')
       }
 
       select = (state: CellSelectedState) => {

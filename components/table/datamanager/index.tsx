@@ -13,7 +13,8 @@ type IData = any;
 // 只与数据操作有关的逻辑
 export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>) {
 
-  return ({ initData, defaultData, fetchData }: WithDataManagerProps<IData>) => {
+  // defaultData, fetchData
+  return ({ initData  }: WithDataManagerProps<IData>) => {
     return class extends React.Component<any, any> {
 
       private _addedListeners: Function[]

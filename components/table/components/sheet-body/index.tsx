@@ -57,6 +57,7 @@ export default class ExcelSheetBody extends React.Component<any, any> {
 
   handleOnContextMenu = (event: MouseEvent, cell: any, i: any, j: any) => {
     event.preventDefault();
+    console.log(cell, i , i, 'handleOnContextMenu')
     // can show a menu
   }
 

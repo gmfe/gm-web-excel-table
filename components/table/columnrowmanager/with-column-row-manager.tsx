@@ -14,7 +14,7 @@ import { IWeekSize, WithColumnRowManagerConfig, IWeekSizeRange } from './interfa
 export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
 
   return (configOption: WithColumnRowManagerConfig) => {
-    const CellId = (ri: number, ci: number) => `${1}${ci}`;
+    const CellId = (_: number, ci: number) => `${1}${ci}`;
     
     return class extends React.Component<ConfigColumnProps, { tableWidth: undefined | number, columns: GMExcelTableColumnWithOrigin[] }> {
       private _tableContainerDom?: HTMLElement;
@@ -201,7 +201,7 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
       render() {
         const {
           data,
-          fullScreenWidth,
+          // fullScreenWidth,
         } = this.props;
         return (
           <Target

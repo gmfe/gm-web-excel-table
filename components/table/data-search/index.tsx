@@ -43,7 +43,7 @@ export function WithTableDataSearch(Target: React.ComponentClass<any, any>) {
       }
 
       onDataChanged = (...args: any) => {
-        // console.log(args, 'onDataChanged')
+        console.log(args, 'onDataChanged')
         if (this._fuseSearch) {
           (this._fuseSearch as any).list = this.getDealWithData()
         }
