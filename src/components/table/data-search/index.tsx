@@ -4,7 +4,7 @@ import { GMTableExcelSearchArgs } from '../interface';
 import { DataManagerEvents } from '../datamanager/interface';
 import { RowcolIndextoSelectedState } from '../utils/datamap';
 import { ICellInDataSheet } from '../columnrowmanager/interface';
-import TrieSearch  from '../../../js/triesearch';
+import TrieSearch  from '../js/triesearch';
 
 // https://www.npmjs.com/package/trie-search
 // 可能也不使用trie-tree 因为只能从开始搜索
