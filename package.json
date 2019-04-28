@@ -52,7 +52,7 @@
     "fuse.js": "^3.4.4",
     "hasharray": "^1.1.1",
     "kunsam-app-model": "^1.0.3",
-    "kunsam-tools": "^1.0.6",
+    "kunsam-tools": "^1.0.7",
     "lodash": "^4.17.11",
     "re-resizable": "^4.11.0",
     "react": "^16.8.6",
