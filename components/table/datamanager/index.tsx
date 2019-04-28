@@ -17,9 +17,9 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
   return ({ initData  }: WithDataManagerProps<IData>) => {
     return class extends React.Component<any, any> {
 
-      private _addedListeners: Function[]
-      private _removedListeners: Function[]
-      private _changedListeners: Function[]
+      public _addedListeners: Function[]
+      public _removedListeners: Function[]
+      public _changedListeners: Function[]
 
       constructor(props: any) {
         super(props);

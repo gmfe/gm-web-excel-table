@@ -13,7 +13,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
   return (config: WithTableControllerConfig) => {
     return class extends React.Component<any, any> {
       // columnKey
-      private _editMap: Map<string, boolean>;
+      public _editMap: Map<string, boolean>;
       // private _refMap: Map<string, HTMLElement>;
       // private _sizeMap: Map<string, { width: number, height: number }>;
   

@@ -5,25 +5,23 @@
       "es2017",
       "dom"
     ],
-    "baseUrl": ".",
-    "paths": {
-      "*": [
-        "types/*"
-      ]
-    },
     "strict": true,
     "jsx": "react",
     "target": "es6",
-    "allowJs": true,
-    // "declaration": true,
     "sourceMap": true,
     "module": "es2015",
+    "allowJs": true,
     "outDir": "./lib",
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "moduleResolution": "node",
     "downlevelIteration": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "typeRoots" : [
+      "node_modules/@types/",
+      "./typings/index.d.ts",
+      "./js/types/*.d.ts",
+    ]
   },
   "exclude": [
     "node_modules",

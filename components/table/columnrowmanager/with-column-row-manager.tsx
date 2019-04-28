@@ -17,11 +17,11 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
     const CellId = (_: number, ci: number) => `${1}${ci}`;
     
     return class extends React.Component<ConfigColumnProps, { tableWidth: undefined | number, columns: GMExcelTableColumnWithOrigin[] }> {
-      private _tableContainerDom?: HTMLElement;
-      private _columnRowManager: IColumnManager;
-      private _currentSizeRange?: IWeekSizeRange ;
-      private _tableCellDomMap: Map<string, HTMLElement>;
-      private _isInitAllAssignWidth: boolean = false;
+      public _tableContainerDom?: HTMLElement;
+      public _columnRowManager: IColumnManager;
+      public _currentSizeRange?: IWeekSizeRange ;
+      public _tableCellDomMap: Map<string, HTMLElement>;
+      public _isInitAllAssignWidth: boolean = false;
   
       constructor(props: any) {
         super(props);
@@ -175,7 +175,7 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
         })
       }
   
-      private _getCellDom(tableContainerDom: HTMLElement, rowIndex: number, columnIndex: number): HTMLElement | undefined {
+      public _getCellDom(tableContainerDom: HTMLElement, rowIndex: number, columnIndex: number): HTMLElement | undefined {
         const tbody = tableContainerDom.children[0].children[0].children[0];
         const tr = tbody.children[rowIndex];
         if (tr) {

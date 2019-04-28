@@ -11,7 +11,7 @@
     "build-prod": "webpack -p --mode production",
     "tsc-build": "tsc -p . --outDir dist/lib",
     "tsc-d": "tsc -d --emitDeclarationOnly --allowJs false",
-    "cpupdate": "cp -R ./dist ../gm-web-excel-test-client/node_modules/gm-web-excel-table",
+    "cpupdate": "cp -R ./lib ../gm-web-excel-test-client/node_modules/gm-web-excel-table",
     "bup": "npm run build-dev && npm run cpupdate",
     "tsc-compile": "tsc && npm run tsc-d",
     "compile": "kunsam-tools run compile"
@@ -52,7 +52,7 @@
     "fuse.js": "^3.4.4",
     "hasharray": "^1.1.1",
     "kunsam-app-model": "^1.0.3",
-    "kunsam-tools": "^1.0.4",
+    "kunsam-tools": "^1.0.5",
     "lodash": "^4.17.11",
     "re-resizable": "^4.11.0",
     "react": "^16.8.6",

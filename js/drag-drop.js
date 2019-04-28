@@ -98,3 +98,8 @@ export const colDropTarget = DropTarget('col', colTargetSpec, colTargetCollect)
 export const rowDragSource = DragSource('row', rowSourceSpec, rowSourceCollect)
 export const rowDropTarget = DropTarget('row', rowTargetSpec, rowTargetCollect)
 
+
+export default {
+  rowDragSource,
+  rowDropTarget
+}

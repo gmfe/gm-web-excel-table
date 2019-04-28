@@ -1,11 +1,10 @@
 import Fuse from 'fuse.js'
 import * as React from 'react';
-import TrieSearch from './triesearch';
 import { GMTableExcelSearchArgs } from '../interface';
 import { DataManagerEvents } from '../datamanager/interface';
 import { RowcolIndextoSelectedState } from '../utils/datamap';
 import { ICellInDataSheet } from '../columnrowmanager/interface';
-
+import * as TrieSearch from '../../../js/triesearch';
 
 // https://www.npmjs.com/package/trie-search
 // 可能也不使用trie-tree 因为只能从开始搜索
@@ -40,6 +39,7 @@ export function WithTableDataSearch(Target: React.ComponentClass<any, any>) {
         // 注册热键
         // this.initTrieSearch();
         this.initFuseSearch();
+        console.log(TrieSearch, 'TrieSearch')
       }
 
       onDataChanged = (...args: any) => {
@@ -90,7 +90,7 @@ export function WithTableDataSearch(Target: React.ComponentClass<any, any>) {
       }
 
       initTrieSearch() {
-        this._trieTree = new TrieSearch(['value'], { min: 1, indexField: indexKey });
+        // this._trieTree = new TrieSearch(['value'], { min: 1, indexField: indexKey });
         const dealwith = this.getDealWithData();
         this._trieTree.addAll(dealwith);
         // 订阅删除 订阅增加 订阅修改

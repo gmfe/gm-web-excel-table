@@ -6,11 +6,11 @@ import 'react-datasheet/lib/react-datasheet.css';
 import './index.less'
 import * as React from 'react';
 import ReactDataSheet from 'react-datasheet';
-import {
-  rowDragSource, rowDropTarget,
-} from '../../enhance/drag-drop.js'
+import * as DragDropEnhanceN from '../../../../js/drag-drop.js'
 import { CellSelectedState } from '../../interface.js';
 
+// 
+const { rowDragSource, rowDropTarget } = DragDropEnhanceN;
 
 const ROW_DRAGGER_WIDTH = 20;
 const RowRenderer = rowDropTarget(rowDragSource((props: any) => {
