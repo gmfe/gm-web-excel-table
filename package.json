@@ -10,7 +10,7 @@
     "build-dev": "webpack -d --mode development",
     "build-prod": "webpack -p --mode production",
     "tsc-d": "tsc -d --emitDeclarationOnly --allowJs false",
-    "cpupdate": "cp -R ./lib ../gm-web-excel-test-client/node_modules/gm-web-excel-table",
+    "cpupdate": "cp -R ./lib ./dist ./es ../gm-web-excel-test-client/node_modules/gm-web-excel-table",
     "bup": "npm run build-dev && npm run cpupdate",
     "tsc-compile": "tsc && npm run tsc-d",
     "compile": "kunsam-tools run compile"
