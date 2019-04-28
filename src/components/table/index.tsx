@@ -1,5 +1,5 @@
 
-import './index.scss'
+import './index.less'
 import * as React from 'react';
 import classnames from 'classnames'
 import { WithDataManager } from './datamanager';

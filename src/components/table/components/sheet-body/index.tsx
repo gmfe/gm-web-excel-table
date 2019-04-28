@@ -3,7 +3,7 @@
 
 // Be sure to include styles at some point, probably during your bootstrapping
 import 'react-datasheet/lib/react-datasheet.css';
-import './index.scss'
+import './index.less'
 import * as React from 'react';
 import ReactDataSheet from 'react-datasheet';
 import {

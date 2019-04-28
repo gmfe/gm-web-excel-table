@@ -6,25 +6,14 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 
-
-const babelConfig = require('antd-tools/lib/getBabelCommonConfig')(false);
-// babel import for components
-babelConfig.plugins.push([
-  require.resolve('babel-plugin-import'),
-  {
-    style: true,
-    libraryName: 'gm-excel-table',
-    libraryDirectory: 'components',
-  },
-]);
-
 const config = {
   entry: {
-    alpha: ['./src/index.tsx' ],
+    main: ['./src/index.tsx' ],
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',
+    libraryTarget: 'umd2'
   },
   devtool: 'inline-source-map',
   // devtool: 'source-map',
@@ -42,24 +31,9 @@ const config = {
         exclude: /node_modules/
       },
       {
-        test: /\.(ts)?$/,
+        test: /\.(ts|tsx)?$/,
         loader: 'ts-loader',
         exclude: /node_modules/
-      },
-      {
-        test: /\.tsx?$/,
-        use: [
-          {
-            loader: require.resolve('babel-loader'),
-            options: babelConfig,
-          },
-          {
-            loader: require.resolve('ts-loader'),
-            options: {
-              transpileOnly: true,
-            },
-          },
-        ],
       },
       {
         test: /\.css$/,
@@ -71,11 +45,11 @@ const config = {
         ],
       },
       {
-        test: /\.scss$/,
+        test: /\.less$/,
         use: [
           MiniCssExtractPlugin.loader,
           'css-loader',
-          'sass-loader'
+          'less-loader'
         ]
       },
       {
@@ -115,7 +89,8 @@ const config = {
       context: __dirname,
 			name: "[name]_[hash]",
 			path: path.join(__dirname, "dist/dll", "[name]-manifest.json"),
-		})
+    }),
+    
     // new webpack.optimize.UglifyJsPlugin({
     //   minimize: true,
     //   sourceMap: true,

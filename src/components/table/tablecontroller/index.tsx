@@ -2,7 +2,6 @@
 
 
 import * as React from 'react'
-import { ColumnProps } from 'antd/lib/table';
 import { WithTableControllerConfig } from './constants';
 import { CellSelectedState } from '../interface';
 import { AppBase } from '../../../core/appbase';
