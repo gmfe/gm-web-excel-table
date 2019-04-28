@@ -10,7 +10,10 @@
     "build-prod": "webpack -p --mode production",
     "tsc-build": "tsc -p . --outDir dist/lib",
     "cpupdate": "cp -R ./dist ../gm-web-excel-test-client/node_modules/gm-web-excel-table",
-    "bup": "npm run build-dev && npm run cpupdate"
+    "bup": "npm run build-dev && npm run cpupdate",
+    "compile": "kunsam-tools run compile",
+    "prepublish": "kunsam-tools run guard",
+    "pre-publish": "kunsam-tools run guard"
   },
   "author": "shankun@guanmai.cn",
   "license": "ISC",
@@ -46,6 +49,8 @@
     "events": "^3.0.0",
     "fuse.js": "^3.4.4",
     "hasharray": "^1.1.1",
+    "kunsam-app-model": "^1.0.3",
+    "kunsam-tools": "^1.0.4",
     "lodash": "^4.17.11",
     "re-resizable": "^4.11.0",
     "react": "^16.8.6",

@@ -22,13 +22,12 @@
     "noImplicitReturns": true,
     "moduleResolution": "node",
     "downlevelIteration": true,
-    "allowSyntheticDefaultImports": true,
+    "allowSyntheticDefaultImports": true
   },
   "exclude": [
-    "node_modules", "dist"
+    "node_modules",
+    "dist",
+    "es",
+    "lib"
   ]
-  
-  // "include": [
-  //   // "./src/**/*"
-  // ]
 }
