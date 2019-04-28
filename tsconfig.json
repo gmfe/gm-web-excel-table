@@ -5,6 +5,7 @@
       "es2017",
       "dom"
     ],
+    "rootDir": "./",
     "strict": true,
     "jsx": "react",
     "target": "es6",

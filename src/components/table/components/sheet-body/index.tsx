@@ -7,10 +7,8 @@ import './index.less'
 import * as React from 'react';
 import ReactDataSheet from 'react-datasheet';
 import { CellSelectedState } from '../../interface';
-import * as DragDropEnhanceN from '../../../../js/drag-drop.js'
+import { rowDragSource, rowDropTarget } from '../../../../js/drag-drop.js'
 
-// 
-const { rowDragSource, rowDropTarget } = DragDropEnhanceN;
 
 const ROW_DRAGGER_WIDTH = 20;
 const RowRenderer = rowDropTarget(rowDragSource((props: any) => {
