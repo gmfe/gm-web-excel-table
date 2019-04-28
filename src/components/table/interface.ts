@@ -3,7 +3,8 @@ import { AppBase } from './../../core/appbase';
 import { SingleReactApp } from '../../client/app';
 import { IColumnManager, IGetColumnsFunc } from './columnrowmanager/interface';
 
-
+export * from './constants/interface'
+export * from './columnrowmanager/interface'
 
 export type TableDataManagerAdd = (item: any, rowIndex?: number, callback?: () => void) => void;
 
