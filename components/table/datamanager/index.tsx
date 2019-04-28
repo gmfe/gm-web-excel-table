@@ -1,8 +1,4 @@
-
-
-
 import * as React from 'react'
-import { AppBase } from '../../../core/appbase';
 import { TableTransactionUtil } from '../transactions/transactionutil';
 import { WithDataManagerProps, DataManagerEvents } from './interface';
 

@@ -1,11 +1,8 @@
-
-
-
 import * as React from 'react'
 import { WithTableControllerConfig } from './constants';
 import { CellSelectedState } from '../interface';
-import { AppBase } from '../../../core/appbase';
-import { MouseEventContext } from '../../../core/event/contexts';
+// import { AppBase, MouseEventContext } from 'kunsam-app-model';
+
 
 
 

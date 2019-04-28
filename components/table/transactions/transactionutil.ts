@@ -1,7 +1,7 @@
 
 import { EditCellTransaction } from './editcelltransactions';
 import { TableTransactionTypes } from '../constants/transactiontypes';
-import { AppBase, Transaction, Transaction, GroupTransaction, ITransactionContext, CoreConstants } from 'kunsam-app-model';
+import { AppBase, Transaction, GroupTransaction, ITransactionContext, CoreConstants } from 'kunsam-app-model';
 
 
 

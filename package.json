@@ -4,8 +4,9 @@
   "description": "",
   "main": "dist/main.js",
   "scripts": {
+    "clean": "rm -rf ./dist ./es ./lib",
     "dev": "webpack-dev-server",
-    "pp": "npm run build-prod && npm version patch && npm publish",
+    "pp": "npm run build-prod && npm run compile && npm version patch && npm publish",
     "build-dev": "webpack -d --mode development",
     "build-prod": "webpack -p --mode production",
     "tsc-build": "tsc -p . --outDir dist/lib",
