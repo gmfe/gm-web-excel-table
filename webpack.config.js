@@ -8,7 +8,7 @@ const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 const config = {
   entry: {
-    main: ['./components/index.tsx' ],
+    main: ['./src/components/index.tsx' ],
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
