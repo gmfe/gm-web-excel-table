@@ -10,11 +10,15 @@ export class ResizeableTitle extends React.PureComponent<GMExcelTableColumnState
   onResizeStart: () => void,
 }, any> {
 
-  // private _resizable: any;
+  private _resizable: any;
 
   handleResize = (...args: any) => {
     const newWidth = (args[2] as HTMLElement).offsetWidth;
     this.props.onResize({ width: newWidth });
+  }
+
+  handle = () => {
+    console.log(this._resizable,) // for noerr
   }
 
   render() {
