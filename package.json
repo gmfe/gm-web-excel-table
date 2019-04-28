@@ -12,9 +12,7 @@
     "tsc-build": "tsc -p . --outDir dist/lib",
     "cpupdate": "cp -R ./dist ../gm-web-excel-test-client/node_modules/gm-web-excel-table",
     "bup": "npm run build-dev && npm run cpupdate",
-    "compile": "kunsam-tools run compile",
-    "prepublish": "kunsam-tools run guard",
-    "pre-publish": "kunsam-tools run guard"
+    "compile": "kunsam-tools run compile"
   },
   "author": "shankun@guanmai.cn",
   "license": "ISC",
