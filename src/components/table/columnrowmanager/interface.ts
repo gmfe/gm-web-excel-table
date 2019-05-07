@@ -18,7 +18,7 @@ export interface IColumnManager {
 export interface ConfigColumnProps{
   data: any[]
   canDragRow?: boolean
-  fullScreenWidth?: boolean
+  fullContainerWidth?: boolean // 需要作出说明
   dataManager: IDataManager<any>
 }
 

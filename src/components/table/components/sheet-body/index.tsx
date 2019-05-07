@@ -12,7 +12,12 @@ import { rowDragSource, rowDropTarget } from '../../../../third-js/drag-drop.js'
 
 const ROW_DRAGGER_WIDTH = 20;
 const RowRenderer = rowDropTarget(rowDragSource((props: any) => {
-  const { isOver, disable, children, connectDropTarget, connectDragPreview, connectDragSource } = props;
+  const { isOver, disable, children, canDragRow, connectDropTarget, connectDragPreview, connectDragSource } = props;
+  console.log(children, 'children')
+  
+  if (!canDragRow) {
+    return (<tr>{children}</tr>);
+  }
   const className = isOver ? 'drop-target' : ''
   return connectDropTarget(connectDragPreview(
     <tr className={className}>
@@ -38,8 +43,7 @@ export default class ExcelSheetBody extends React.Component<any, any> {
 
   renderRow = (props: any) => {
     const { row, cells, ...rest } = props
-    // can disable
-    return <RowRenderer rowIndex={row} onRowDrop={this.handleRowDrop} {...rest} />
+    return <RowRenderer canDragRow={this.props.canDragRow} rowIndex={row} onRowDrop={this.handleRowDrop} {...rest} />
   }
 
   renderDataEditor = (props: any) => {
@@ -56,7 +60,7 @@ export default class ExcelSheetBody extends React.Component<any, any> {
   handleOnContextMenu = (event: MouseEvent, cell: any, i: any, j: any) => {
     event.preventDefault();
     console.log(cell, i , j, 'handleOnContextMenu')
-    // can show a menu
+    // can show a menu 
   }
 
   shouldComponentUpdate(nextProps: any) {
@@ -86,7 +90,9 @@ export default class ExcelSheetBody extends React.Component<any, any> {
     } = this.props;
 
     const csyle: any = { height: 200, overflowY: 'scroll', overflowX: 'hidden' }
-    if (tableWidth !== undefined) csyle.width = tableWidth;
+    if (tableWidth !== undefined) {
+      csyle.width = tableWidth;
+    }
 
     return (
       <div ref={(c: any) => { this._container = c }} style={csyle}>

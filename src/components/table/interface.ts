@@ -71,7 +71,7 @@ export interface GMTableExcelStaticConfig {
   app?: ClientAppModel;
   tableKey: string;
   containerStyle: Object
-  fullScreenWidth?: boolean, // 开启之后对于缺少指定width字段的cell补充满至全屏
+  fullContainerWidth?: boolean, // 开启之后对于缺少指定width字段的cell补充满至全屏
   searchConfig: GMTableExcelSearchArgs,
   columnsConfig: {
     getColumns: IGetColumnsFunc

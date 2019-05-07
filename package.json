@@ -10,11 +10,13 @@
     "build-dev": "webpack -d --mode development",
     "build-prod": "webpack -p --mode production",
     "tsc-d": "tsc -d --emitDeclarationOnly --allowJs false",
-    "cpupdate": "cp -R ./lib ./dist ./es ../gm-web-excel-test-client/node_modules/gm-web-excel-table",
-    "bup": "npm run build-dev && npm run cpupdate",
+    "cpupdate": "cp -R ./lib ./dist ../gm_static_station/node_modules/gm-web-excel-table",
+    "bup": "npm run build-dev && npm run compile && npm run cpupdate",
     "tsc-compile": "tsc && npm run tsc-d",
-    "compile": "kunsam-tools run compile"
+    "compile": "kunsam-tools run compile",
+    "watch-dev": "kunsam-tools run watch-compile-with-lib"
   },
+  "kunsam-tools-lib-target": "../gm_static_station",
   "author": "shankun@guanmai.cn",
   "license": "ISC",
   "devDependencies": {
@@ -51,7 +53,7 @@
     "fuse.js": "^3.4.4",
     "hasharray": "^1.1.1",
     "kunsam-app-model": "^1.0.4",
-    "kunsam-tools": "^1.0.7",
+    "kunsam-tools": "^1.0.15",
     "lodash": "^4.17.11",
     "re-resizable": "^4.11.0",
     "react": "^16.8.6",

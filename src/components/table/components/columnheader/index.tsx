@@ -16,6 +16,7 @@ export default class ColumnHeader extends PureComponent<{
       <div style={containerStyle}>
         {
           columns.map((column: GMExcelTableColumn, index: number) => {
+            // 没有header也需要保持宽高
             const key = column.dataIndex || `columns${index}`;
             let header = null;
             if (isFunction(column.Header)) {

@@ -113,6 +113,8 @@ export function WithTableDataSearch(Target: React.ComponentClass<any, any>) {
             this.setState({ _searchResults: result2.slice(0, maxSearchResultLength) })
           }
         }
+        console.log(value, 'valuevaluevaluevalue')
+        this.setState({ _searchValue: value })
       }
 
       handleSelectCell = (rowIndex: number, colIndex: number) => {

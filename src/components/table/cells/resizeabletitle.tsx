@@ -29,8 +29,7 @@ export class ResizeableTitle extends React.PureComponent<GMExcelTableColumnState
       // https://github.com/bokuweb/re-resizable
 
       <Resizable
-  
-        style={{ display: 'inline-block', border: '1px solid #ccc' }}
+        style={{ display: 'inline-block', height: 20 }}
         enable={{ top: false, right: true, bottom: false, left: false, topRight: false, bottomRight: false, bottomLeft: false, topLeft: false }}
 
         ref={c => this._resizable = c}
@@ -42,7 +41,9 @@ export class ResizeableTitle extends React.PureComponent<GMExcelTableColumnState
         onResize={this.handleResize}
         onResizeStart={onResizeStart}
       >
-        {this.props.children}
+        <div style={{ border: '1px solid #ccc' }}>
+          {this.props.children}
+        </div>
       </Resizable>
     );
   }

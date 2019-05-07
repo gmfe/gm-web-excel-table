@@ -13,7 +13,7 @@ type IData = any;
 // 只与数据操作有关的逻辑
 export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>) {
 
-  // defaultData, fetchData
+  // defaultData, fetchData., 1234sdsd
   return ({ initData  }: WithDataManagerProps<IData>) => {
     return class extends React.Component<any, any> {
 
@@ -44,6 +44,7 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
           case DataManagerEvents.changed: {
             this._changedListeners.push(listener);
             break;
+
           }
         }
       }

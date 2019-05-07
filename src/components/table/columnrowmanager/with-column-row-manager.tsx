@@ -37,7 +37,7 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
         let tableWidth = undefined;
 
         // 全屏模式下不传入初始tableWidth
-        if (!props.fullScreenWidth) {
+        if (!props.fullContainerWidth) {
           // 初始情况下全部均存在width
           this._isInitAllAssignWidth = columns.every(col => col.width !== undefined);
           if (this._isInitAllAssignWidth) {
@@ -109,6 +109,11 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
   
       }
 
+      /**
+       * 固定宽度
+       *
+       * @readonly
+       */
       public get fixWidth() {
         return this.props.canDragRow ? ROW_DRAGGER_WIDTH : 0;
       }
@@ -131,7 +136,7 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
           // tableWidth += c.width!;
           return { ...c };
         });
-        if (this.props.fullScreenWidth) {
+        if (this.props.fullContainerWidth) {
           tableWidth = container.clientWidth;
           if (lastUndefinedWidthColIndex !== undefined) {
             const otherTotalWidth = columnsWithSize.reduce((a, b, bindex) => {
@@ -150,7 +155,7 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
         } else {
           tableWidth += columnsWithSize.reduce((a, b) => a + (b.width || 0), 0);
         }
-
+        // fullContainerWidth
 
         const columnsWithRange = columnsWithSize.map(column => {
           const sizeRange = ColumnManagerUtils.getSizeRange(column, columnsWithSize, this.fixWidth);
@@ -201,7 +206,7 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
       render() {
         const {
           data,
-          // fullScreenWidth,
+          // fullContainerWidth,
         } = this.props;
         return (
           <Target
@@ -210,7 +215,8 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
             {...this.props}
             columnsMapData={this.columnsMaptoCells(data, this.state.columns)}
             onTableLoad={this.onTableLoaded}
-            tableWidth={ this.state.tableWidth}
+            // TODO 需要有种机制 标记最初的来源负责人是哪
+            tableWidth={ this.state.tableWidth }
           />
         )
       }
