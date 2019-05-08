@@ -113,7 +113,7 @@ class GMTableExcel extends React.Component<GMExcelTableProps & GMTableExcelStati
       containerStyle,
       columnRowManager,
     } = this.props
-    console.log(this.props, 'GMTableExcelGMTableExcel235')
+    console.log(this.props, 'GMTableExcelGMTableExcel')
     return (
       <div
         style={containerStyle}

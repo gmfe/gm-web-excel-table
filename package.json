@@ -5,13 +5,12 @@
   "main": "lib/components/index.js",
   "scripts": {
     "clean": "rm -rf ./dist ./es ./lib",
-    "dev": "webpack-dev-server",
+    "dev": "cross-env NODE_ENV=dev webpack-dev-server",
     "pp": "npm run build-prod && npm run compile && npm version patch && npm publish",
-    "build-dev": "webpack -d --mode development",
+    "build-dev": "cross-env NODE_ENV=dev webpack -d --mode development",
     "build-prod": "webpack -p --mode production",
-    "tsc-d": "tsc -d --emitDeclarationOnly --allowJs false",
     "cpupdate": "cp -R ./lib ./dist ../gm_static_station/node_modules/gm-web-excel-table",
-    "bup": "npm run build-dev && npm run compile && npm run cpupdate",
+    "bup": "npm run build-prod && npm run compile && npm run cpupdate",
     "tsc-compile": "tsc && npm run tsc-d",
     "compile": "kunsam-tools run compile",
     "watch-dev": "kunsam-tools run watch-compile-with-lib"
@@ -49,6 +48,7 @@
   "dependencies": {
     "@types/node": "^11.13.7",
     "classnames": "^2.2.6",
+    "cross-env": "^5.2.0",
     "events": "^3.0.0",
     "fuse.js": "^3.4.4",
     "hasharray": "^1.1.1",

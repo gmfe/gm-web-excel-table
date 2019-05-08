@@ -4,21 +4,21 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
-
+const isLocalDev = process.env.NODE_ENV === 'dev'
 
 const config = {
   entry: {
-    main: ['./src/components/index.tsx' ],
+    main: [ './src/components/index.tsx' ],
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].js',
-    libraryTarget: 'umd2'
+    filename: '[name].js'
   },
   devtool: 'inline-source-map',
   // devtool: 'source-map',
   devServer: {
-    port: 9000,
+    hot: true,
+    port: 9002,
     compress: false,
     host: '0.0.0.0',
     contentBase: path.join(__dirname, 'dist')
@@ -85,12 +85,12 @@ const config = {
       appMountId: 'app',
       template: require('html-webpack-template'),
     }),
-		new webpack.DllPlugin({
-      context: __dirname,
-			name: "[name]_[hash]",
-			path: path.join(__dirname, "dist/dll", "[name]-manifest.json"),
-    }),
-    
+    // [NOTICE] this dllplugin cannot work with dev-server
+		// new webpack.DllPlugin({
+    //   context: __dirname,
+		// 	name: "[name]_[hash]",
+		// 	path: path.join(__dirname, "dist/dll", "[name]-manifest.json"),
+    // }),
     // new webpack.optimize.UglifyJsPlugin({
     //   minimize: true,
     //   sourceMap: true,
