@@ -2,7 +2,7 @@
 
 
 // Be sure to include styles at some point, probably during your bootstrapping
-import 'react-datasheet/lib/react-datasheet.css';
+// import 'react-datasheet/lib/react-datasheet.css';
 import './index.less'
 import * as React from 'react';
 import ReactDataSheet from 'react-datasheet';
@@ -13,8 +13,8 @@ import { rowDragSource, rowDropTarget } from '../../../../third-js/drag-drop.js'
 const ROW_DRAGGER_WIDTH = 20;
 const RowRenderer = rowDropTarget(rowDragSource((props: any) => {
   const { isOver, disable, children, canDragRow, connectDropTarget, connectDragPreview, connectDragSource } = props;
-  console.log(children, 'children')
-  
+  console.log(canDragRow, 'canDragRowcanDragRow')
+
   if (!canDragRow) {
     return (<tr>{children}</tr>);
   }
@@ -29,6 +29,8 @@ const RowRenderer = rowDropTarget(rowDragSource((props: any) => {
     </tr>
   ))
 }));
+
+
 
 
 export default class ExcelSheetBody extends React.Component<any, any> {
@@ -59,7 +61,7 @@ export default class ExcelSheetBody extends React.Component<any, any> {
 
   handleOnContextMenu = (event: MouseEvent, cell: any, i: any, j: any) => {
     event.preventDefault();
-    console.log(cell, i , j, 'handleOnContextMenu')
+    console.log(cell, i, j, 'handleOnContextMenu')
     // can show a menu 
   }
 
@@ -78,21 +80,28 @@ export default class ExcelSheetBody extends React.Component<any, any> {
       const { onTableLoad } = this.props;
       onTableLoad && onTableLoad(this._container)
     }
-   
+
   }
 
 
   render() {
     // TODO 静态样式配置拆出去
     const {
+      columns,
       tableWidth,
+      columnsMapData,
       tableController,
     } = this.props;
 
+    console.log(columns, 'columnscolumns')
     const csyle: any = { height: 200, overflowY: 'scroll', overflowX: 'hidden' }
     if (tableWidth !== undefined) {
       csyle.width = tableWidth;
     }
+
+    const fixData = columnsMapData.map((col: any) => col.slice(0, 2));
+    const nofixData = columnsMapData.map((col: any) => col.slice(2));
+
 
     return (
       <div ref={(c: any) => { this._container = c }} style={csyle}>
@@ -100,12 +109,29 @@ export default class ExcelSheetBody extends React.Component<any, any> {
         {/* https://github.com/nadbm/react-datasheet#cell-renderer */}
         <ReactDataSheet
           overflow="nowrap"
-          data={this.props.columnsMapData}
+          data={fixData}
           valueRenderer={(cell: any) => cell.value}
           onCellsChanged={(changes: any) => {
             console.log(changes, 'onCellsChanged')
           }}
           className={"gm-react-data-sheet"}
+          sheetRenderer={props => {
+            console.log(props, 'gm-react-data-sheet')
+            return (
+              <div style={{ position: 'relative' }}>
+                <table cellSpacing={0} className={props.className + ' my-awesome-extra-class'}>
+                  <thead>
+                    <tr>
+                      {columns.map((col: any) => (<th>{col.Header}</th>))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {props.children}
+                  </tbody>
+                </table>
+              </div>
+            )
+          }}
           // cellRenderer={(props: any) => {
           //   const { cell, style, selected, className } = props;
           //   console.log(props, 'classNameclassNameclassName')
@@ -124,6 +150,46 @@ export default class ExcelSheetBody extends React.Component<any, any> {
           }}
           onContextMenu={this.handleOnContextMenu}
         />
+
+        <ReactDataSheet
+          overflow="nowrap"
+          data={nofixData}
+          valueRenderer={(cell: any) => cell.value}
+          onCellsChanged={(changes: any) => {
+            console.log(changes, 'onCellsChanged')
+          }}
+          sheetRenderer={props => {
+            console.log(props, 'gm-react-data-sheet')
+            return (
+              <div style={{ position: 'relative' }}>
+                <table cellSpacing={0} className={props.className + ' my-awesome-extra-class'}>
+                  <thead>
+                    <tr>
+                      {columns.map((col: any) => (<th>{col.Header}</th>))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {props.children}
+                  </tbody>
+                </table>
+              </div>
+            )
+          }}
+          className={"gm-react-data-sheet"}
+          selected={tableController.selectedCells}
+          rowRenderer={this.renderRow}
+          onSelect={(select: CellSelectedState) => {
+            tableController.select(select);
+            console.log(select, 'onSelect')
+          }}
+          dataEditor={this.renderDataEditor}
+          parsePaste={(string: string) => {
+            console.log(string, 'parsePaste')
+            return [];
+          }}
+          onContextMenu={this.handleOnContextMenu}
+        />
+
       </div>
     )
   }

@@ -43,9 +43,9 @@ export interface GMExcelTableProps {
 
 
 export interface GMConfigData<T> {
+  initData: T[]
+  defaultData: T
   fetchData: Promise<T>
-  fillBlankData: Object,
-  initData: T[] // mocksDatas(20),
 }
 
 

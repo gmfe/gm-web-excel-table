@@ -2,13 +2,6 @@
 
 
 
-export interface WithDataManagerProps<T> {
-  initData: T[]
-  defaultData: T
-  fetchData: Promise<T>
-}
-
-
 export enum DataManagerEvents {
   added = 'added',
   deleted = 'deleted',

@@ -170,10 +170,13 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
       }
   
       columnsMaptoCells = (data: any[], columns: GMExcelTableColumn[]): ICellInDataSheet[][] => {
+
         return data.map((rowData: any) => {
           return columns.map(column => {
+
             return {
               ...column,
+              className: column.fixColumn ? 'fix-column' : '',
               value: column.dataIndex ? rowData[column.dataIndex] : '',
             }
           })

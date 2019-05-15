@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { TableTransactionUtil } from '../transactions/transactionutil';
-import { WithDataManagerProps, DataManagerEvents } from './interface';
+import { DataManagerEvents } from './interface';
+import { GMConfigData } from '../interface';
 
 
 // https://reactjs.org/docs/higher-order-components.html
@@ -14,7 +15,7 @@ type IData = any;
 export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>) {
 
   // defaultData, fetchData., 1234sdsd
-  return ({ initData  }: WithDataManagerProps<IData>) => {
+  return ({ initData, defaultData  }: GMConfigData<IData>) => {
     return class extends React.Component<any, any> {
 
       public _addedListeners: Function[]
@@ -73,17 +74,19 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
         }
       }
 
-      handleAdd = (item: IData, rowIndex?: number, callback?: () => void) => {
+      handleAdd = (item?: IData, rowIndex?: number, callback?: () => void) => {
         // TODO 可以加一个字段校验，与当前的 item keys 需要匹配
         let data = this.state.data;
+
+        const addCandiate = item || defaultData;
         if (rowIndex !== undefined && rowIndex >= 0 && rowIndex <= data.length) {
-          data.splice(rowIndex, 0, item);
+          data.splice(rowIndex, 0, addCandiate);
         } else {
-          data = data.concat([item]);
+          data = data.concat([addCandiate]);
         }
 
         this._addedListeners.forEach(listener => {
-          listener(item, rowIndex);
+          listener(addCandiate, rowIndex);
         });
 
         this.setState({ data }, () => {

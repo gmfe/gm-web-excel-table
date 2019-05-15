@@ -9,6 +9,7 @@ const isLocalDev = process.env.NODE_ENV === 'dev'
 const config = {
   entry: {
     main: [ './src/components/index.tsx' ],
+    story: [ './src/story/index.tsx']
   },
   output: {
     path: path.resolve(__dirname, 'dist'),

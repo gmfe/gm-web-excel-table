@@ -38,7 +38,7 @@ export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExce
     const {
       columnsConfig: { getColumns },
       searchConfig,
-      dataConfig: { fillBlankData, initData, fetchData }
+      dataConfig: { defaultData, initData, fetchData }
     } = this.props;
     
     const DeliveryComponent = enhanceWithFlows(GMTableExcel, [
@@ -60,7 +60,7 @@ export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExce
         args: {
           initData,
           fetchData,
-          fillBlankData,
+          defaultData,
         }
       },
     ]);
@@ -82,7 +82,7 @@ export class TableRef {
   }
   addBlank = () => {
     console.log(this.props, 'handleAddhandleAdd')
-    this.props.dataManager.onAdd(this.props.dataConfig.fillBlankData);
+    this.props.dataManager.onAdd(this.props.dataConfig.defaultData);
   }
   add = (item: any, rowIndex?: number) => {
     this.props.dataManager.onAdd(item, rowIndex);
@@ -93,7 +93,7 @@ export class TableRef {
 class GMTableExcel extends React.Component<GMExcelTableProps & GMTableExcelStaticConfig, any> {
 
   static defaultProps = {
-    canDragRow: true, // NOTICE 
+    canDragRow: false, // NOTICE 
   }
 
   // constructor(props: GMExcelTableProps & GMTableExcelStaticConfig) {
@@ -114,14 +114,34 @@ class GMTableExcel extends React.Component<GMExcelTableProps & GMTableExcelStati
       columnRowManager,
     } = this.props
     console.log(this.props, 'GMTableExcelGMTableExcel')
+
+    const fixColumns = columns.slice(0, 2);
+    const otherColumns = columns.slice(2);
+
     return (
       <div
         style={containerStyle}
         className={classnames("gm-excel-table", className)}
       >
-        <div style={tableWidth ? { width: tableWidth } : {}}>
-          <ColumnHeader
+
+
+      <div>
+        {/* <div style={tableWidth ? { width: tableWidth } : {}}> */}
+          {/* <ColumnHeader
             columns={columns}
+            onResizeStart={columnRowManager.onResizeColumnStart}
+            onResizeColumn={columnRowManager.onResizeColumn}
+            containerStyle={canDragRow ? { paddingLeft: ROW_DRAGGER_WIDTH } : {}}
+          /> */}
+          <ExcelSheetBody
+            {...this.props}
+            // tableWidth={tableWidth}
+          />
+        </div>
+
+        {/* <div>
+          <ColumnHeader
+            columns={otherColumns}
             onResizeStart={columnRowManager.onResizeColumnStart}
             onResizeColumn={columnRowManager.onResizeColumn}
             containerStyle={canDragRow ? { paddingLeft: ROW_DRAGGER_WIDTH } : {}}
@@ -130,7 +150,9 @@ class GMTableExcel extends React.Component<GMExcelTableProps & GMTableExcelStati
             {...this.props}
             tableWidth={tableWidth}
           />
-        </div>
+        </div> */}
+
+
       </div>
     )
   }
