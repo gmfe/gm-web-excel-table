@@ -8,7 +8,7 @@ export enum DataManagerEvents {
   changed = 'changed',
 }
 
-export interface IDataManager<T>{
+export interface IDataManager<T> {
   getData: () => T[];
   setData: (data: T[]) => void;
   onDelete: (index: number) => void;

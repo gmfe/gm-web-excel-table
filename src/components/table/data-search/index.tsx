@@ -1,9 +1,9 @@
 import Fuse from 'fuse.js'
 import * as React from 'react';
-import { GMTableExcelSearchArgs } from '../interface';
+import { GMTableExcelSearchArgs } from '../constants';
 import { DataManagerEvents } from '../datamanager/interface';
 import { RowcolIndextoSelectedState } from '../utils/datamap';
-import { ICellInDataSheet } from '../columnrowmanager/interface';
+
 
 import TrieSearch  from '../../../third-js/triesearch';
 // https://www.npmjs.com/package/trie-search
@@ -24,6 +24,7 @@ export function WithTableDataSearch(Target: React.ComponentClass<any, any>) {
 
     return class extends React.Component<any, any> {
 
+      
       private _trieTree: any;
       private _fuseSearch?: Fuse<any, any>;
 
@@ -74,8 +75,8 @@ export function WithTableDataSearch(Target: React.ComponentClass<any, any>) {
         const dealwith: { key: string, value: string, rowIndex: number, colIndex: number }[] = [];
         const searchTrieKeysMap = new Map();
         searchKeys.forEach(k => searchTrieKeysMap.set(k, true));
-        this.props.columnsMapData.forEach((row: ICellInDataSheet[], ri: number) => {
-          row.forEach((cell: ICellInDataSheet, cellIndex: number) => {
+        this.props.columnsMapData.forEach((row: any[], ri: number) => {
+          row.forEach((cell: any, cellIndex: number) => {
             if (cell.dataIndex && searchTrieKeysMap.has(cell.dataIndex)) {
               dealwith.push({
                 rowIndex: ri,

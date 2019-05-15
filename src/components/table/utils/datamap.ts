@@ -1,4 +1,4 @@
-import { CellSelectedState } from '../interface';
+import { CellSelectedState } from '../constants';
 
 
   export function RowcolIndextoSelectedState (rowIndex: number, colIndex: number): CellSelectedState {

@@ -75,7 +75,7 @@ const config = {
     ]
   },
   plugins: [
-    new HardSourceWebpackPlugin(),
+    // new HardSourceWebpackPlugin(), // https://github.com/mzgoddard/hard-source-webpack-plugin#hot-reloading-is-not-working
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[name].css',

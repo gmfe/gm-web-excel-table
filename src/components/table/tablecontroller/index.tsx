@@ -1,17 +1,12 @@
 import * as React from 'react'
-import { WithTableControllerConfig } from './constants';
-import { CellSelectedState } from '../interface';
-// import { AppBase, MouseEventContext } from 'kunsam-app-model';
+import { WithTableControllerConfig, TableControllerInterface } from './interface';
+import { CellSelectedState } from '../constants/interface';
 
 
-
-
-// todo 需要传入 tableKey
-// 传入 Table Header 高，左边界 (定位到第一个单元格左上角)
 export function WithTableController(Target: React.ComponentClass<any, any>) {
 
   return (config: WithTableControllerConfig) => {
-    return class extends React.Component<any, any> {
+    return class extends React.Component<any, any>  {
       // columnKey
       public _editMap: Map<string, boolean>;
       // private _refMap: Map<string, HTMLElement>;
@@ -64,11 +59,6 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         return `${config.tableKey}-${columnKey}-${row}`;
       }
   
-      handleMoveFollowing(nextIndex: any) {
-        // 增加一个自身当前宽高的尺寸
-        console.log(nextIndex, 'nextIndex')
-      }
-
       select = (state: CellSelectedState) => {
         this.setState({ selected: state });
         // TODO 还需要增加 XY方向上的滚动定位
@@ -106,9 +96,8 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
             <Target
               tableController = {{
                 selectedCells: this.state.selected,
-                handleEdit: this.handleEdit.bind(this),
                 select: this.select.bind(this),
-                handleMoveFollowing: this.handleMoveFollowing.bind(this),
+                edit: this.handleEdit.bind(this),
               }}
               {...this.props}
             />

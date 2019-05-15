@@ -1,10 +1,7 @@
-import { GMExcelTableColumn } from '../constants/interface';
+import { ColumnProps } from 'antd/lib/table';
 import { IDataManager } from '../datamanager/interface';
 
 
-export interface ICellInDataSheet extends GMExcelTableColumn {
-  value: string
-}
 
 export type onResizeColumn = (nextSize: IWeekSize, callback?: (size: IWeekSize) => void) => boolean;
 
@@ -15,11 +12,9 @@ export interface IColumnManager {
   findCellDom: (row: number, col: number) => HTMLElement | undefined;
 }
 
-export interface ConfigColumnProps{
-  data: any[]
-  canDragRow?: boolean
-  fullContainerWidth?: boolean // 需要作出说明
-  dataManager: IDataManager<any>
+export interface ConfigColumnProps<T> {
+  data: T[]
+  dataManager: IDataManager<T>
 }
 
 export interface IWeekSize{
@@ -38,7 +33,7 @@ export interface IWeekSizeRange{
   }
 }
 
-export type IGetColumnsFunc = (props: ConfigColumnProps, columnRowManager: IColumnManager) => GMExcelTableColumn[];
+export type IGetColumnsFunc = (props: ConfigColumnProps<any>, columnRowManager: IColumnManager) => ColumnProps<any>[];
 
 export interface WithColumnRowManagerConfig{
   getColumns: IGetColumnsFunc 

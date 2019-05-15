@@ -1,23 +1,21 @@
 
-import './index.less'
+
 import * as React from 'react';
-import classnames from 'classnames'
+
 import { WithDataManager } from './datamanager';
-import HTML5Backend from 'react-dnd-html5-backend'
-import { DragDropContextProvider } from 'react-dnd';
 import { WithTableDataSearch } from './data-search';
-import ExcelSheetBody from './components/sheet-body';
-import ColumnHeader from './components/columnheader';
-import { ROW_DRAGGER_WIDTH } from './constants/config';
 import { WithTableController } from './tablecontroller';
+import { GMTableExcel } from './components/table-content';
+import { GMTableExcelStaticConfig } from './constants/interface';
 import { ClientAppModel, enhanceWithFlows } from 'kunsam-app-model';
-import { GMExcelTableProps, GMTableExcelStaticConfig } from './interface';
 import { WithColumnRowManager } from './columnrowmanager/with-column-row-manager';
 
 
+// 装配出厂
 export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExcelStaticConfig, any> {
 
   private _app: ClientAppModel;
+
   constructor(props: GMTableExcelStaticConfig) {
     super(props);
     if (!props.app) {
@@ -65,98 +63,7 @@ export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExce
       },
     ]);
     return (
-      <DragDropContextProvider backend={HTML5Backend}>
-        <DeliveryComponent {...this.props} app={this._app} />
-      </DragDropContextProvider>
+      <DeliveryComponent {...this.props} app={this._app} />
     )
   }
 }
-
-export class TableRef {
-  public component: GMTableExcel;
-  constructor(component: GMTableExcel) {
-    this.component = component;
-  }
-  public get props() {
-    return this.component.props;
-  }
-  addBlank = () => {
-    console.log(this.props, 'handleAddhandleAdd')
-    this.props.dataManager.onAdd(this.props.dataConfig.defaultData);
-  }
-  add = (item: any, rowIndex?: number) => {
-    this.props.dataManager.onAdd(item, rowIndex);
-  }
-}
-
-
-class GMTableExcel extends React.Component<GMExcelTableProps & GMTableExcelStaticConfig, any> {
-
-  static defaultProps = {
-    canDragRow: false, // NOTICE 
-  }
-
-  // constructor(props: GMExcelTableProps & GMTableExcelStaticConfig) {
-  //   super(props);
-  // }
-
-  componentDidMount() {
-    this.props.tableRef(new TableRef(this));
-  }
-
-  render() {
-    const {
-      columns,
-      className,
-      tableWidth,
-      canDragRow,
-      containerStyle,
-      columnRowManager,
-    } = this.props
-    console.log(this.props, 'GMTableExcelGMTableExcel')
-
-    const fixColumns = columns.slice(0, 2);
-    const otherColumns = columns.slice(2);
-
-    return (
-      <div
-        style={containerStyle}
-        className={classnames("gm-excel-table", className)}
-      >
-
-
-      <div>
-        {/* <div style={tableWidth ? { width: tableWidth } : {}}> */}
-          {/* <ColumnHeader
-            columns={columns}
-            onResizeStart={columnRowManager.onResizeColumnStart}
-            onResizeColumn={columnRowManager.onResizeColumn}
-            containerStyle={canDragRow ? { paddingLeft: ROW_DRAGGER_WIDTH } : {}}
-          /> */}
-          <ExcelSheetBody
-            {...this.props}
-            // tableWidth={tableWidth}
-          />
-        </div>
-
-        {/* <div>
-          <ColumnHeader
-            columns={otherColumns}
-            onResizeStart={columnRowManager.onResizeColumnStart}
-            onResizeColumn={columnRowManager.onResizeColumn}
-            containerStyle={canDragRow ? { paddingLeft: ROW_DRAGGER_WIDTH } : {}}
-          />
-          <ExcelSheetBody
-            {...this.props}
-            tableWidth={tableWidth}
-          />
-        </div> */}
-
-
-      </div>
-    )
-  }
-}
-
-
-

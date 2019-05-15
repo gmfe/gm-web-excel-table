@@ -1,12 +1,11 @@
+
 import * as React from 'react'
+import { GMConfigData } from '../constants/interface';
+import { DataManagerEvents, IDataManager } from './interface';
 import { TableTransactionUtil } from '../transactions/transactionutil';
-import { DataManagerEvents } from './interface';
-import { GMConfigData } from '../interface';
 
 
-// https://reactjs.org/docs/higher-order-components.html
-
-// todo 后续 initData 这里应该是传入 fetchData的逻辑
+// TODO 后续 initData 这里应该是传入 fetchData的逻辑
 
 
 type IData = any;
@@ -127,21 +126,24 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
         app.transactionManager().commit(groupTransaction);
       }
 
+      public dataManager () : IDataManager<any> {
+        return {
+          onAdd: this.handleAdd,
+          onDelete: this.handleDelete,
+          onUpdate: this.handleUpdate,
+          addEventListener: this.addEventListener,
+          getData: () => { return this.state.data },
+          removeEventListener: this.removeEventListener,
+          setData: (data: any[]) => { this.setState({ data }) },
+        }
+      }
 
       render() {
         return (
           <WrappedComponent
-            data={this.state.data}
             {...this.props}
-            dataManager={{
-              onAdd: this.handleAdd,
-              onDelete: this.handleDelete,
-              onUpdate: this.handleUpdate,
-              addEventListener: this.addEventListener,
-              getData: () => { return this.state.data },
-              removeEventListener: this.removeEventListener,
-              setData: (data: any[]) => { this.setState({ data }) },
-            }}
+            data={this.state.data}
+            dataManager={this.dataManager()}
           />
         )
       }
