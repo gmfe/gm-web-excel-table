@@ -3,6 +3,7 @@ import { ColumnProps } from 'antd/lib/table';
 import * as React from 'react';
 import { Data_IRefundExcel } from './interface';
 import { ConfigColumnProps, IGetColumnsFunc, IColumnManager } from '../../components/table/columnrowmanager/interface';
+import { Header } from './components/header';
 
 
 export enum GM_REFUND_TABLE_COLUMNS_KEYS {
@@ -23,17 +24,18 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
 
   // 序号 | 商品名 | 商品分类 | 退货数 | 退货单价 | 补差 | 退货金额 | 退货批次 | 	操作人
 
+
+
+
   const columns: ColumnProps<Data_IRefundExcel>[] = [
 
     // 序号
     {
       width: 49,
-      title: '序号',
+      title: Header('序号'),
       fixed: 'left',
-      dataIndex: 'number',
       defaultSortOrder: 'ascend',
       key: GM_REFUND_TABLE_COLUMNS_KEYS.number,
-
       render: (text: any, record: Data_IRefundExcel, index: number) => {
         return index;
       },
@@ -46,19 +48,17 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       key: 'action',
       width: 113,
       fixed: 'left',
-      title: '操作',
-      render: (props: any) => {
-        console.log(props, componentProps,  'action valueViewer propsprops')
+      title: Header('操作'),
+      render: (_: any, __: any, index: number) => {
         return (
-          <div>123</div>
-          // <div style={{ cursor: 'default'}}> 
-          //   <a  style={{ cursor: 'pointer'}} onClick={() => {
-          //     componentProps.dataManager.onAdd(undefined, props.row + 1);
-          //   }}>添加</a>
-          //   <a style={{ marginLeft: 5, cursor: 'pointer'}} onClick={() => {
-          //     componentProps.dataManager.onDelete(props.row);
-          //   }}>删除</a>
-          // </div>
+          <div > 
+            <a style={{ cursor: 'pointer'}} onClick={() => {
+              componentProps.dataManager.onAdd(undefined, index+ 1);
+            }}>添加</a>
+            <a style={{ marginLeft: 5, cursor: 'pointer'}} onClick={() => {
+              componentProps.dataManager.onDelete(index);
+            }}>删除</a>
+          </div>
         )
       }
     },
@@ -70,11 +70,11 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       width: 250,
       dataIndex: 'orderName',
       render: (text: any, record: Data_IRefundExcel, index: number) => {
-        return index;
+        return text;
       },
 
     },
-  
+
     // 商品分类
     {
       title: '商品分类',
@@ -82,7 +82,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       width: 80,
       dataIndex: 'category'
     },
-  
+
     // 退货数
     {
       title: '退货数',
@@ -90,7 +90,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       width: 200,
       dataIndex: 'returnOrderNumber',
       render: (text: any, record: Data_IRefundExcel, index: number) => {
-        return index;
+        return text;
       },
       // dataEditor: (props: any) => {
       //   console.log(componentProps, props, 'componentProps')
@@ -99,7 +99,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       //   }}></input>
       // }
     },
-  
+
     // 退货单价
     {
       title: '退货单价',
@@ -107,11 +107,10 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       width: 80,
       dataIndex: 'returnOrderPerPrice',
       render: (text: any, record: Data_IRefundExcel, index: number) => {
-        return index;
+        return text;
       },
-      // d
     },
-  
+
     // 补差
     {
       title: '补差',
@@ -119,7 +118,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       width: 80,
       dataIndex: 'fillPriceDiff'
     },
-  
+
     // 退货金额
     {
       title: '退货金额',
@@ -127,14 +126,8 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       width: 100,
       dataIndex: 'returnTotalPrice',
       render: (text: any, record: Data_IRefundExcel, index: number) => {
-        return index;
+        return text;
       },
-      // dataEditor: (props: any) => {
-      //   console.log(componentProps, props, 'componentProps')
-      //   return <input onChange={e => {
-      //     console.log(e.target.value, 'onChange')
-      //   }}></input>
-      // }
     },
 
     // 退货批次

@@ -50,12 +50,13 @@ export default class TabelExcelContainer extends React.PureComponent<any, any> {
         tableKey='key'
 
         tableConfig={{
-          scroll: { x: 1300 }
+          bordered: true,
+          scroll: { x: 'max-content' },
         }}
 
         containerStyle={{
-          margin: 5,
-          paddingBottom: 20,
+          height: 400,
+          overflowY: 'scroll',
           border: '1px solid #ccc',
         }}
 
@@ -72,10 +73,14 @@ export default class TabelExcelContainer extends React.PureComponent<any, any> {
 
         dataConfig={{
           defaultData: {
-            amount: null,
-            type: '',
-            note: '',
-            date: '',
+            orderName: '',
+            category: '',
+            returnOrderNumber: 0,
+            returnOrderPerPrice: 0,
+            fillPriceDiff: 0, // 补差价
+            returnTotalPrice: 0, // 退货金额	
+            returnBatchNumber: 0, // 退货批次
+            chargerPerson: '' // '操作人'
           },
           initData: new Array(15).fill(MOCK_DATA[0]),
           fetchData: Promise.resolve(),

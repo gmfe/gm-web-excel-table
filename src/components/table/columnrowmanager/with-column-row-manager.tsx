@@ -30,7 +30,7 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
           findCellDom: this.findCellDom,
         }
   
-        const columns = configOption.getColumns(props, this._columnRowManager).map(c => ({ ...c, origin: {} }))
+        const columns = configOption.getColumns(props, this._columnRowManager).map(c => ({ ...c, origin: { ...c } }))
         this._tableCellDomMap = new Map();
 
         this.state = {

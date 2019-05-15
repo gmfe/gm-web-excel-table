@@ -3,7 +3,7 @@ import * as React from 'react'
 import { GMConfigData } from '../constants/interface';
 import { DataManagerEvents, IDataManager } from './interface';
 import { TableTransactionUtil } from '../transactions/transactionutil';
-
+import uniqid from 'uniqid';
 
 // TODO 后续 initData 这里应该是传入 fetchData的逻辑
 
@@ -23,7 +23,7 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
 
       constructor(props: any) {
         super(props);
-        this.state = { data: initData };
+        this.state = { data: this.withUUid(initData) };
         this._addedListeners = [];
         this._removedListeners = [];
         this._changedListeners = [];
@@ -81,14 +81,16 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
         if (rowIndex !== undefined && rowIndex >= 0 && rowIndex <= data.length) {
           data.splice(rowIndex, 0, addCandiate);
         } else {
-          data = data.concat([addCandiate]);
+          data = data.concat([ addCandiate ]);
         }
 
         this._addedListeners.forEach(listener => {
           listener(addCandiate, rowIndex);
         });
 
-        this.setState({ data }, () => {
+        console.log(data, 'datadatadata')
+
+        this.setState({ data: this.withUUid(data) }, () => {
           if (callback) callback();
         });
 
@@ -100,7 +102,7 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
           listener(data[index], index);
         });
         data.splice(index, 1);
-        this.setState({ data });
+        this.setState({ data: this.withUUid(data) });
       }
 
       handleUpdate = (newItem: Object, rowIndex: number) => {
@@ -116,7 +118,7 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
           { ...oldItem, ...newItem },
           (commitedItem: any) => {
             newData.splice(rowIndex, 1, commitedItem);
-            this.setState({ data: newData }, () => {
+            this.setState({ data: this.withUUid(newData) }, () => {
               //  TODO 这个应该传进去 undo redo 的时候可以释放更新
               this._changedListeners.forEach(listener => {
                 listener(commitedItem, rowIndex);
@@ -134,8 +136,13 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
           addEventListener: this.addEventListener,
           getData: () => { return this.state.data },
           removeEventListener: this.removeEventListener,
-          setData: (data: any[]) => { this.setState({ data }) },
+          setData: (data: any[]) => { this.setState({ data: this.withUUid(data) }) },
         }
+      }
+
+      public withUUid(data: IData[]) {
+        // TODO can add memo
+        return data.map(d => ({ ...d, uuid: d.uuid || uniqid() }))
       }
 
       render() {

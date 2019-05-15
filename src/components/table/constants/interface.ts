@@ -38,7 +38,7 @@ export interface GMTableExcelSearchArgs {
 export interface GMTableExcelStaticConfig {
   app?: ClientAppModel;
   tableKey: string;
-  containerStyle: Object
+  containerStyle?: Object
   searchConfig: GMTableExcelSearchArgs,
   columnsConfig: {
     getColumns: IGetColumnsFunc

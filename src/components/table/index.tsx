@@ -14,6 +14,12 @@ import { WithColumnRowManager } from './columnrowmanager/with-column-row-manager
 // 装配出厂
 export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExcelStaticConfig, any> {
 
+  static defaultProps = {
+    tableConfig: {
+      pagination: false
+    }
+  }
+
   private _app: ClientAppModel;
 
   constructor(props: GMTableExcelStaticConfig) {
@@ -38,7 +44,7 @@ export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExce
       searchConfig,
       dataConfig: { defaultData, initData, fetchData }
     } = this.props;
-    
+
     const DeliveryComponent = enhanceWithFlows(GMTableExcel, [
       // 拓展搜索
       {
@@ -63,7 +69,11 @@ export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExce
       },
     ]);
     return (
-      <DeliveryComponent {...this.props} app={this._app} />
+      <DeliveryComponent
+        app={this._app}
+        {...this.props}
+        tableConfig={{ ...GMTableExcelStaticConfigWrapper.defaultProps.tableConfig, ...this.props.tableConfig }}
+      />
     )
   }
 }

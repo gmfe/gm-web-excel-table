@@ -1,11 +1,13 @@
+
+import 'antd/lib/table/style/index.css';
 import './index.less'
 import * as React from 'react';
 import classnames from 'classnames'
 import { GMTableExcelStaticConfig } from "../../constants";
 import { GMExcelTableProps } from './interface'
-
 import Table from 'antd/lib/table';
-import 'antd/lib/table/style/index.css';
+import { DataManagerEvents } from '../../datamanager/interface';
+import { TweenOneGroup } from 'rc-tween-one';
 
 export class TableRef {
   public component: GMTableExcel;
@@ -24,22 +26,63 @@ export class TableRef {
   }
 }
 
+const AnimateBody = (props: any) => {
+  return (
+    <TweenOneGroup
+      component="tbody"
+      className="ant-table-tbody"
+      enter={[
+        { opacity: 0, y: -30, backgroundColor: '#fffeee', duration: 0 },
+        { opacity: 1, y: 0, duration: 250, ease: 'linear' },
+        { delay: 1000,  backgroundColor: '#fff', onEnd: () => {} },
+      ]}
+      leave={[
+        { duration: 400, opacity: 0 },
+        { height: 0, duration: 200, ease: 'easeOutQuad' },
+      ]}
+      appear={false}
+      exclusive
+    >
+      {props.children}
+    </TweenOneGroup>
+  )
+};
 
 
 export class GMTableExcel extends React.Component<GMExcelTableProps<any> & GMTableExcelStaticConfig, any> {
+
+  static defaultProps = {
+    containerStyle: {}
+  }
+
+  constructor(props: GMExcelTableProps<any> & GMTableExcelStaticConfig) {
+    super(props);
+  }
 
   componentDidMount() {
     if (this.props.tableRef) {
       this.props.tableRef(new TableRef(this));
     }
 
+    // this.props.dataManager.addEventListener(DataManagerEvents.added, () => {
+    //   console.log('data added');
+    //   this.setState({ isPageTween: false });
+    // });
+    // this.props.dataManager.addEventListener(DataManagerEvents.deleted, () => {
+    //   console.log('data deleted');
+    //   this.setState({ isPageTween: false });
+    // })
+
   }
+
 
   render() {
     const {
+      data,
       columns,
       className,
       containerStyle,
+      tableConfig,
       columnRowManager,
     } = this.props
     console.log(this.props, 'GMTableExcelGMTableExcel')
@@ -49,9 +92,13 @@ export class GMTableExcel extends React.Component<GMExcelTableProps<any> & GMTab
         style={containerStyle}
         className={classnames("gm-excel-table", className)}
       >
-
-        {/* <Table columns={columns} dataSource={data} scroll={{ x: 1300 }} />, */}
-
+        <Table
+          columns={columns}
+          dataSource={data}
+          {...tableConfig}
+          rowKey={(d: any) => d.uuid}
+          components={{ body: { wrapper: AnimateBody } }}
+        />
       </div>
     )
   }
