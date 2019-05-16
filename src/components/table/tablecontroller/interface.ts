@@ -1,5 +1,8 @@
 
-
+export interface CellUniqueObject {
+  columnKey: string;
+  rowKey: string;
+}
 
 export interface WithTableControllerConfig {
   tableKey: string,
@@ -7,7 +10,14 @@ export interface WithTableControllerConfig {
 }
 
 export interface TableControllerInterface {
-  edit: () => void,
+  edit: (obj: CellUniqueObject) => void,
+  uniqueEdit: (obj: CellUniqueObject) => void,
+  cancelEdit: (obj: CellUniqueObject) => void,
+
+
   select: () => void;
   selectedCells: number;
+  query: {
+    isEditing: (obj: CellUniqueObject) => boolean;
+  }
 }

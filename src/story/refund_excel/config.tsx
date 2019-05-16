@@ -1,9 +1,10 @@
 
 import { ColumnProps } from 'antd/lib/table';
 import * as React from 'react';
-import { Data_IRefundExcel } from './interface';
+import { Data_IRefundExcel, DataWithController_IRefundExcel } from './interface';
 import { ConfigColumnProps, IGetColumnsFunc, IColumnManager } from '../../components/table/columnrowmanager/interface';
 import { Header } from './components/header';
+import SearchSelect from './components/cells/search-select';
 
 
 export enum GM_REFUND_TABLE_COLUMNS_KEYS {
@@ -20,14 +21,15 @@ export enum GM_REFUND_TABLE_COLUMNS_KEYS {
 
 
 
+// dataManager
+// columnRowManager
+// tableController
+
 export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: ConfigColumnProps<Data_IRefundExcel>, columnrowmanager: IColumnManager) => {
 
   // 序号 | 商品名 | 商品分类 | 退货数 | 退货单价 | 补差 | 退货金额 | 退货批次 | 	操作人
 
-
-
-
-  const columns: ColumnProps<Data_IRefundExcel>[] = [
+  const columns: ColumnProps<DataWithController_IRefundExcel>[] = [
 
     // 序号
     {
@@ -36,10 +38,9 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       fixed: 'left',
       defaultSortOrder: 'ascend',
       key: GM_REFUND_TABLE_COLUMNS_KEYS.number,
-      render: (text: any, record: Data_IRefundExcel, index: number) => {
+      render: (_: any, __: DataWithController_IRefundExcel, index: number) => {
         return index;
       },
-
     },
 
 
@@ -51,7 +52,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       title: Header('操作'),
       render: (_: any, __: any, index: number) => {
         return (
-          <div > 
+          <div> 
             <a style={{ cursor: 'pointer'}} onClick={() => {
               componentProps.dataManager.onAdd(undefined, index+ 1);
             }}>添加</a>
@@ -60,7 +61,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
             }}>删除</a>
           </div>
         )
-      }
+      },
     },
 
     // 商品名
@@ -69,17 +70,51 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       key: GM_REFUND_TABLE_COLUMNS_KEYS.orderName,
       width: 250,
       dataIndex: 'orderName',
-      render: (text: any, record: Data_IRefundExcel, index: number) => {
-        return text;
-      },
+      render: (text: string, record: DataWithController_IRefundExcel, index: number) => {
 
+        const isEditing = record.tableController.query.isEditing({
+          columnKey: GM_REFUND_TABLE_COLUMNS_KEYS.orderName,
+          rowKey: record.rowKey,
+        });
+
+        // console.log(isEditing, index, 'indexindexindex')
+
+        return (
+          <div>
+            { isEditing ? <SearchSelect value={text} onSelect={(value: string) => {
+
+              componentProps.dataManager.onUpdate({ orderName: value }, index);
+            }}/> : text }
+          </div>
+        )
+      },
+      onCell: (record: DataWithController_IRefundExcel, rowIndex: any) => {
+        return {
+          onClick: (e: any) => {
+            record.tableController.uniqueEdit({
+              columnKey: GM_REFUND_TABLE_COLUMNS_KEYS.orderName,
+              rowKey: record.rowKey,
+            });
+          },
+          // onBlur: (e: any) => {
+          //   record.tableController.cancelEdit({
+          //     columnKey: GM_REFUND_TABLE_COLUMNS_KEYS.orderName,
+          //     rowKey: record.rowKey,
+          //   });
+          // }
+          // onDoubleClick: event => {}, // double click row
+          // onContextMenu: event => {}, // right button click row
+          // onMouseEnter: event => {}, // mouse enter row
+          // onMouseLeave: event => {}, // mouse leave row
+        };
+      }
     },
 
     // 商品分类
     {
       title: '商品分类',
       key: GM_REFUND_TABLE_COLUMNS_KEYS.orderCategory,
-      width: 80,
+      width: 110,
       dataIndex: 'category'
     },
 

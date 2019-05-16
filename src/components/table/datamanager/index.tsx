@@ -23,7 +23,7 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
 
       constructor(props: any) {
         super(props);
-        this.state = { data: this.withUUid(initData) };
+        this.state = { data: this.withRowKey(initData) };
         this._addedListeners = [];
         this._removedListeners = [];
         this._changedListeners = [];
@@ -88,9 +88,7 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
           listener(addCandiate, rowIndex);
         });
 
-        console.log(data, 'datadatadata')
-
-        this.setState({ data: this.withUUid(data) }, () => {
+        this.setState({ data: this.withRowKey(data) }, () => {
           if (callback) callback();
         });
 
@@ -102,11 +100,10 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
           listener(data[index], index);
         });
         data.splice(index, 1);
-        this.setState({ data: this.withUUid(data) });
+        this.setState({ data: this.withRowKey(data) });
       }
 
       handleUpdate = (newItem: Object, rowIndex: number) => {
-
         // can do sequence
         const newData = [...this.state.data];
         const oldItem = newData[rowIndex];
@@ -118,7 +115,7 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
           { ...oldItem, ...newItem },
           (commitedItem: any) => {
             newData.splice(rowIndex, 1, commitedItem);
-            this.setState({ data: this.withUUid(newData) }, () => {
+            this.setState({ data: this.withRowKey(newData) }, () => {
               //  TODO 这个应该传进去 undo redo 的时候可以释放更新
               this._changedListeners.forEach(listener => {
                 listener(commitedItem, rowIndex);
@@ -136,13 +133,13 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
           addEventListener: this.addEventListener,
           getData: () => { return this.state.data },
           removeEventListener: this.removeEventListener,
-          setData: (data: any[]) => { this.setState({ data: this.withUUid(data) }) },
+          setData: (data: any[]) => { this.setState({ data: this.withRowKey(data) }) },
         }
       }
 
-      public withUUid(data: IData[]) {
+      public withRowKey(data: IData[]) {
         // TODO can add memo
-        return data.map(d => ({ ...d, uuid: d.uuid || uniqid() }))
+        return data.map(d => ({ ...d, rowKey: d.rowKey || uniqid() }))
       }
 
       render() {

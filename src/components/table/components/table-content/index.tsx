@@ -75,6 +75,16 @@ export class GMTableExcel extends React.Component<GMExcelTableProps<any> & GMTab
 
   }
 
+  onClickCell = () => {
+
+  }
+
+  tableDataWithProps = () => {
+    const { data, tableController } = this.props;
+    return data.map(d => ({ ...d,
+      tableController,
+    }));
+  }
 
   render() {
     const {
@@ -83,10 +93,12 @@ export class GMTableExcel extends React.Component<GMExcelTableProps<any> & GMTab
       className,
       containerStyle,
       tableConfig,
+      columnsConfig,
       columnRowManager,
+      tableController,
     } = this.props
     console.log(this.props, 'GMTableExcelGMTableExcel')
-
+    const dataWithProps = this.tableDataWithProps();
     return (
       <div
         style={containerStyle}
@@ -94,9 +106,9 @@ export class GMTableExcel extends React.Component<GMExcelTableProps<any> & GMTab
       >
         <Table
           columns={columns}
-          dataSource={data}
+          dataSource={dataWithProps}
           {...tableConfig}
-          rowKey={(d: any) => d.uuid}
+          rowKey={(d: any) => d.rowKey}
           components={{ body: { wrapper: AnimateBody } }}
         />
       </div>

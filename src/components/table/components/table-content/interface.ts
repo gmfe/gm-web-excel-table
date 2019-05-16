@@ -2,7 +2,7 @@ import { TableRef } from './index';
 import { ColumnProps } from 'antd/lib/table'
 import { AppBase } from 'kunsam-app-model';
 import { IDataManager } from '../../datamanager/interface';
-import { IColumnManager, IGetColumnsFunc } from '../../columnrowmanager/interface';
+import { IColumnManager } from '../../columnrowmanager/interface';
 import { TableControllerInterface } from '../../tablecontroller/interface';
 
 export interface GMExcelTableProps<T> {
