@@ -5,15 +5,20 @@ import { DataManagerEvents, IDataManager } from './interface';
 import { TableTransactionUtil } from '../transactions/transactionutil';
 import uniqid from 'uniqid';
 
+
+
 // TODO 后续 initData 这里应该是传入 fetchData的逻辑
-
-
 type IData = any;
 
-// 只与数据操作有关的逻辑
+/**
+ * 数据管理 | 数据注入
+ * 
+ * @export
+ * @param {React.ComponentClass<any, any>} WrappedComponent
+ * @returns
+ */
 export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>) {
 
-  // defaultData, fetchData., 1234sdsd
   return ({ initData, defaultData  }: GMConfigData<IData>) => {
     return class extends React.Component<any, any> {
 
@@ -73,19 +78,22 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
         }
       }
 
-      handleAdd = (item?: IData, rowIndex?: number, callback?: () => void) => {
+      handleAdd = (item?: IData[], rowIndex?: number, callback?: () => void) => {
         // TODO 可以加一个字段校验，与当前的 item keys 需要匹配
         let data = this.state.data;
 
-        const addCandiate = item || defaultData;
-        if (rowIndex !== undefined && rowIndex >= 0 && rowIndex <= data.length) {
-          data.splice(rowIndex, 0, addCandiate);
-        } else {
-          data = data.concat([ addCandiate ]);
-        }
+        const addCandiateList: IData[] = item && item.length ? item : new Array(5).fill(defaultData);
+
+        addCandiateList.forEach((addCandiate: IData, index: number) => {
+          if (rowIndex !== undefined && rowIndex >= 0 && rowIndex <= data.length) {
+            data.splice(rowIndex + index, 0, addCandiate);
+          } else {
+            data = data.concat(addCandiateList);
+          }
+        });
 
         this._addedListeners.forEach(listener => {
-          listener(addCandiate, rowIndex);
+          listener(addCandiateList, rowIndex);
         });
 
         this.setState({ data: this.withRowKey(data) }, () => {
@@ -138,7 +146,6 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
       }
 
       public withRowKey(data: IData[]) {
-        // TODO can add memo
         return data.map(d => ({ ...d, rowKey: d.rowKey || uniqid() }))
       }
 

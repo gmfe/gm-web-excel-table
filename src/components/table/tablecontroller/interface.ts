@@ -19,8 +19,9 @@ export interface CellUniqueObject {
 }
 
 export enum MoveEditType {
+  tab = 'tab',
+  enter = 'enter',
   arrow = 'arrow',
-  tab = 'tab'
 }
 
 
@@ -29,8 +30,9 @@ export interface WithTableControllerConfig {
   // columns: any[],
   moveEdit: {
     // 允许多个移动逻辑
-    [MoveEditType.arrow]?: TableControllerMoveEditAllowConfig,
-    [MoveEditType.tab]?: TableControllerMoveEditAllowConfig,
+    [MoveEditType.arrow]?: TableControllerMoveEditAllowConfig
+    [MoveEditType.tab]?: TableControllerMoveEditAllowConfig
+    [MoveEditType.enter]?: TableControllerMoveEditAllowConfig
   }
 }
 
@@ -54,17 +56,17 @@ export interface TableControllerMoveEditAllowConfig {
 export type MoveEditingCellFunction = (type: MoveEditType, cell: CellUniqueObject) => void;
 
 export interface TableControllerInterface {
-  edit: (obj: CellUniqueObject) => void,
-  cancelEdit: (obj: CellUniqueObject) => void,
+  edit: (obj: CellUniqueObject) => void;
+  cancelEdit: (obj: CellUniqueObject) => void
+  // select: () => void;
+  // selectedCells: number;
 
-
-  select: () => void;
-  selectedCells: number;
   query: {
     isEditing: (obj: CellUniqueObject) => boolean;
     isCellOnFirstRow: (obj: CellUniqueObject) => boolean;
     isCellOnLastRow: (obj: CellUniqueObject) => boolean;
-  }
+  };
+
   move: {
     moveToNextEditableCell: MoveEditingCellFunction;
     moveToPreviousEditableCell: MoveEditingCellFunction;
@@ -73,10 +75,15 @@ export interface TableControllerInterface {
   }
 }
 
-
 export interface TableControllerKeyboardHanlder {
   onKeyUp_ArrowRight: () => void;
   onKeyUp_ArrowLeft: () => void;
   onKeyUp_ArrowDown:  () => void;
   onKeyUp_ArrowUp: () => void;
+  moveToNextEditableCell: (type: MoveEditType) => void;
+}
+
+export interface IScrollerInfo {
+  row: { start: number, end: number },
+  col: { start: number, end: number },
 }

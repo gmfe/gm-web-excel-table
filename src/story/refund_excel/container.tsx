@@ -54,9 +54,14 @@ export default class TabelExcelContainer extends React.PureComponent<any, any> {
             [MoveEditType.arrow]: {
               allowUpAddRow: true, // 允许向上增行
               allowDownAddRow: true, // 允许向下增行
+              allowColumnRightBreakRow: true,
+              allowColumnLeftBackRow: true,
             },
             [MoveEditType.tab]: {
-              allowUpAddRow: true, // 允许向上增行
+              allowDownAddRow: false, // 允许向下增行
+            },
+            [MoveEditType.enter]: {
+              allowColumnRightBreakRow: true,
               allowDownAddRow: true, // 允许向下增行
             }
           },

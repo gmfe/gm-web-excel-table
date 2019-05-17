@@ -6,7 +6,7 @@ import './index.less'
 import { Select, Spin, Input } from 'antd';
 import React, { Component } from 'react';
 import debounce from 'lodash/debounce';
-import { TableControllerKeyboardHanlder } from '../../../../../components'
+import { MoveEditType, TableControllerUtil, WithKeyboardHandlerProviderProps } from '../../../../../components'
 
 const Option = Select.Option;
 
@@ -21,7 +21,7 @@ export default class SearchSelect extends Component<{
   value?: string;
   onSelect: (value: any) => void;
   handleKeyUp: (e: React.KeyboardEvent, value?: string | number) => void;
-} & TableControllerKeyboardHanlder, any> {
+} & WithKeyboardHandlerProviderProps, any> {
 
   private _selectRef: any;
   private _lastFetchId: number = 0;
@@ -47,10 +47,6 @@ export default class SearchSelect extends Component<{
     this.focusInput();
   }
 
-  componentDidUpdate() {
-    // this.focusInput();
-  }
-
   focusInput = () => {
     if (this._inputRef) {
       this._inputRef.focus();
@@ -71,9 +67,14 @@ export default class SearchSelect extends Component<{
         }
         const data = body.results.map((user: any) => ({
           text: `${user.name.first} ${user.name.last}`,
-          value: user.login.username,
+          value: `${user.name.first} ${user.name.last}`,
         }));
-        this.setState({ data, fetching: false });
+        this.setState({ data, fetching: false }, () => {
+          console.log(this._selectRef, 'this._selectRef')
+          if (this._selectRef) {
+            this._selectRef.rcSelect.inputRef.focus();
+          }
+        });
       });
   };
 
@@ -86,21 +87,24 @@ export default class SearchSelect extends Component<{
     });
   };
 
-  handleInputKeyDown = (e: any) => {
-    // console.log(e, 'handleInputKeyDown')
+  handleInputKeyDown = (e: React.KeyboardEvent) => {
+    switch (e.key) {
+      case 'Enter': {
+        this.props.moveToNextEditableCell(MoveEditType.enter);
+        TableControllerUtil.lockAKeyup = true; // 要不然会多触发一次keyUp
+        break;
+      }
+    }
   }
 
   render() {
-    const { onSelect, value, handleKeyUp } = this.props;
     const { fetching, data } = this.state;
+    const { onSelect, value, handleKeyUp } = this.props;
 
     return (
       <div
         style={{ position: 'relative' }}
         className="gm-search-select-container"
-        onBlur={() => {
-          console.log('gm-search-select-container blur')
-        }}
         onClick={(e: React.MouseEvent) => { e.stopPropagation(); }}
       >
         <Input
@@ -113,24 +117,28 @@ export default class SearchSelect extends Component<{
           }}
           // onKeyPress
           onKeyUp={(e: React.KeyboardEvent) => {
-            handleKeyUp(e, value);
+            if (data.length) {
+              return;
+            }
+            handleKeyUp(e, value)
           }}
           ref={(c: any) => { if (c) { this._inputRef = c; } }}
         />
         <Select
+          autoFocus
           showSearch
           open={true}
-          // value={value}
+          value={value}
           showArrow={false}
           filterOption={false}
           // onSearch={this.fetchUser}
           className="gm-search-select"
           onChange={this.handleChange}
-          defaultActiveFirstOption={false}
+          // defaultActiveFirstOption={false}
           onSelect={(value: any) => { onSelect(value); }}
           onInputKeyDown={this.handleInputKeyDown}
           notFoundContent={fetching ? <Spin size="small" /> : null}
-        // ref={(c: any) => { if (c) { this._selectRef = c; }}}
+          ref={(c: any) => { if (c) { this._selectRef = c; }}}
         >
           {data.map((d: SearchSelectData) => (
             <Option key={d.value}>{d.text}</Option>

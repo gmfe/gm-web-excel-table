@@ -13,8 +13,10 @@
 
 .gm-search-select-container{
   .ant-table-fixed-left, .ant-table-fixed-right{
-    // TODO not corect 还有下拉选择框的
     z-index: 101;
+  }
+  .ant-input:focus{
+    box-shadow: 0 0 0 1px rgba(49, 61, 72, 0.1);
   }
   .gm-search-select-input{
     top: 0;
@@ -26,5 +28,6 @@
     z-index: 99;
     position: absolute;
     box-sizing: border-box;
+    border-radius: 0px;
   }
 }

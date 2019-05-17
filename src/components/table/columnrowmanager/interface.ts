@@ -2,6 +2,7 @@ import { ColumnProps } from 'antd/lib/table';
 import { IDataManager } from '../datamanager/interface';
 
 export interface GMExtendedColumnProps<T> extends ColumnProps<T>{
+  static?: any;
   editable?: boolean;       // 用于计算可编辑矩阵，光标移动时有效目标等，可编辑单元格必须指定
   uniqueEditable?: boolean; // 用于高阶函数快速获得唯一编辑态
 }
@@ -36,8 +37,8 @@ export interface IWeekSizeRange{
   }
 }
 
-export type IGetColumnsFunc = (props: ConfigColumnProps<any>, columnRowManager: IColumnManager) => ColumnProps<any>[];
+export type IGetColumnsFunc = (props: ConfigColumnProps<any>, columnRowManager: IColumnManager) => GMExtendedColumnProps<any>[];
 
-export interface WithColumnRowManagerConfig{
+export interface WithColumnRowManagerConfig {
   getColumns: IGetColumnsFunc 
 }

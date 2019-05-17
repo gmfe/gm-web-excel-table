@@ -1,8 +1,9 @@
 
 import * as React from 'react'
-import { IColumnManager, ConfigColumnProps } from './interface';
+import { IColumnManager, ConfigColumnProps, GMExtendedColumnProps } from './interface';
 import { IWeekSize, WithColumnRowManagerConfig, IWeekSizeRange } from './interface';
 import { ColumnProps } from 'antd/lib/table';
+import { _GM_TABLE_SCROLL_CELL_PREFIX_ } from '../constants';
 
 
 
@@ -13,14 +14,14 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
 
   return (configOption: WithColumnRowManagerConfig) => {
     const CellId = (_: number, ci: number) => `${1}${ci}`;
-    
+
     return class extends React.Component<ConfigColumnProps<any>, any> {
       public _tableContainerDom?: HTMLElement;
       public _columnRowManager: IColumnManager;
-      public _currentSizeRange?: IWeekSizeRange ;
+      public _currentSizeRange?: IWeekSizeRange;
       public _tableCellDomMap: Map<string, HTMLElement>;
       public _isInitAllAssignWidth: boolean = false;
-  
+
       constructor(props: any) {
         super(props);
         this._columnRowManager = {
@@ -29,25 +30,25 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
           onResizeRow: this.hanldeResizeRow,
           findCellDom: this.findCellDom,
         }
-  
-        const columns = configOption.getColumns(props, this._columnRowManager).map(c => ({ ...c, origin: { ...c } }))
+
+        const columns = withUniqueEditableColumnsProps(configOption.getColumns(props, this._columnRowManager));
         this._tableCellDomMap = new Map();
 
         this.state = {
           columns,
         }
-  
+
       }
 
       handleResizeColumnStart = (index: number) => () => {
       }
-  
+
       handleResizeColumn = (index: number) => (nextSize: IWeekSize, callback?: (size: IWeekSize) => void) => {
         return true;
       }
-  
+
       hanldeResizeRow() {
-  
+
       }
 
       onTableLoaded = (container: HTMLElement) => {
@@ -55,7 +56,7 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
         if (this._tableContainerDom && container.id === this._tableContainerDom.id) return;
         this._tableContainerDom = container;
       }
-  
+
       columnsMaptoCells = (data: any[], columns: ColumnProps<any>[]): any[][] => {
         return data.map((rowData: any) => {
           return columns.map(column => {
@@ -66,7 +67,7 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
           })
         })
       }
-  
+
       public _getCellDom(tableContainerDom: HTMLElement, rowIndex: number, columnIndex: number): HTMLElement | undefined {
         const tbody = tableContainerDom.children[0].children[0].children[0];
         const tr = tbody.children[rowIndex];
@@ -89,7 +90,7 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
         }
         return cellDom;
       }
-  
+
       render() {
         const {
           data,
@@ -98,19 +99,64 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
           <Target
             {...this.props}
             onTableLoad={this.onTableLoaded}
-  
+
             columns={this.state.columns}
             columnRowManager={this._columnRowManager}
             columnsMapData={this.columnsMaptoCells(data, this.state.columns)}
 
-            // TODO 需要有种机制 标记最初的来源负责人是哪
+          // TODO 需要有种机制 标记最初的来源负责人是哪
           />
         )
       }
-  
+
     }
   }
 
 
 
+}
+
+
+export function withUniqueEditableColumnsProps(data: GMExtendedColumnProps<any>[]): GMExtendedColumnProps<any>[] {
+  return data.map(d => {
+    if (d.uniqueEditable) {
+      if (!d.onCell) {
+        d.onCell = (record: any, rowIndex: any) => {
+          return {
+            onClick: (_: any) => {
+              record.tableController.edit({
+                columnKey: d.key,
+                rowKey: record.rowKey,
+              });
+            },
+            // onBlur: (e: any) => {
+            //   record.tableController.cancelEdit({
+            //     columnKey: GM_REFUND_TABLE_COLUMNS_KEYS.orderName,
+            //     rowKey: record.rowKey,
+            //   });
+            // }
+            // onDoubleClick: event => {}, // double click row
+            // onContextMenu: event => {}, // right button click row
+            // onMouseEnter: event => {}, // mouse enter row
+            // onMouseLeave: event => {}, // mouse leave row
+          };
+        }
+      }
+    }
+
+
+
+    const oldRender = d.render;
+    d.render = (text: any, record: any, index: number) => {
+      return (<div id={`${_GM_TABLE_SCROLL_CELL_PREFIX_}${d.key}${record.rowKey}`} style={{ width: '100%', height: '100%' }}>
+        {oldRender ? oldRender(text, record, index) : text }
+      </div>)
+    }
+
+    d.static = {
+      width: d.width,
+    }
+
+    return d;
+  })
 }

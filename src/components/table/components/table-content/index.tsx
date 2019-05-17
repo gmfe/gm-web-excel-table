@@ -3,7 +3,7 @@ import 'antd/lib/table/style/index.css';
 import './index.less'
 import * as React from 'react';
 import classnames from 'classnames'
-import { GMTableExcelStaticConfig } from "../../constants";
+import { GMTableExcelStaticConfig, _GM_TABLE_SCROLL_Y_CONTAINER_ } from "../../constants";
 import { GMExcelTableProps } from './interface'
 import Table from 'antd/lib/table';
 import { DataManagerEvents } from '../../datamanager/interface';
@@ -19,10 +19,10 @@ export class TableRef {
   }
   addBlank = () => {
     console.log(this.props, 'handleAddhandleAdd')
-    this.props.dataManager.onAdd(this.props.dataConfig.defaultData);
+    this.props.dataManager.onAdd([this.props.dataConfig.defaultData]);
   }
   add = (item: any, rowIndex?: number) => {
-    this.props.dataManager.onAdd(item, rowIndex);
+    this.props.dataManager.onAdd([item], rowIndex);
   }
 }
 
@@ -88,20 +88,18 @@ export class GMTableExcel extends React.Component<GMExcelTableProps<any> & GMTab
 
   render() {
     const {
-      data,
+      tableKey,
       columns,
       className,
       containerStyle,
       tableConfig,
-      columnsConfig,
-      columnRowManager,
-      tableController,
     } = this.props
     console.log(this.props, 'GMTableExcelGMTableExcel')
     const dataWithProps = this.tableDataWithProps();
     return (
       <div
         style={containerStyle}
+        id={`${_GM_TABLE_SCROLL_Y_CONTAINER_}${tableKey}`}
         className={classnames("gm-excel-table", className)}
       >
         <Table

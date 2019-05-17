@@ -1,31 +1,19 @@
 
 
 import React, { Component } from 'react'
-import 'antd/lib/input-number/style/index.css'
 import 'antd/lib/input/style/index.css'
 import './index.less'
-import { Input, InputNumber } from 'antd';
-import { TableControllerKeyboardHanlder, TableControllerUtil } from '../../../../../components'
+import { Input } from 'antd';
+import { WithKeyboardHandlerProviderProps } from '../../../../../components'
 
 export default class EditableInputNumber extends Component<{
   value: number;
   editing?: boolean;
   onEdit: (value?: number) => void;
   handleKeyUp: (e: React.KeyboardEvent, value?: string | number) => void;
-} & TableControllerKeyboardHanlder, any> {
-
-
-  private _isPressArrowUpDown?: boolean;
-
-  // onChange = (value?: number) => {
-  //   console.log(this._isPressArrowUpDown, value, 'this._isPressArrowUpDown')
-  //   if (this._isPressArrowUpDown) return;
-  //   this.props.onEdit(value);
-  // }
+} & WithKeyboardHandlerProviderProps, any> {
 
   onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(this._isPressArrowUpDown, value, 'this._isPressArrowUpDown')
-    if (this._isPressArrowUpDown) return;
     this.props.onEdit(parseInt(e.target.value, 10));
   }
 
@@ -47,7 +35,7 @@ export default class EditableInputNumber extends Component<{
           autoFocus
           value={value}
           onChange={this.onChange}
-          onKeyUp={(e: React.KeyboardEvent) => {
+          onKeyDown={(e: React.KeyboardEvent) => {
             handleKeyUp(e, value);
           }}
         />

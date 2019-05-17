@@ -6,8 +6,19 @@ import {
 import { TableControllerUtil } from './tabelcontroller-util';
 
 
+export interface WithKeyboardHandlerProviderProps {
+  handleKeyUp: (e: React.KeyboardEvent, value?: string | number) => void;
+  moveToNextEditableCell: (type: MoveEditType) => void;
+}
 
 
+/**
+ * 对于需要响应键盘操作的输入框 统一注入处理 keyUp 函数
+ *
+ * @export
+ * @param {React.ComponentClass<any, any>} Target
+ * @returns
+ */
 export function WithKeyboardHandler(Target: React.ComponentClass<any, any>) {
 
   return class extends React.Component<{
@@ -39,11 +50,17 @@ export function WithKeyboardHandler(Target: React.ComponentClass<any, any>) {
                   onKeyUp_ArrowRight: () => {
                     tableController.move.moveToNextEditableCell(MoveEditType.arrow, cell);
                   },
+                  moveToNextEditableCell: (type: MoveEditType) => {
+                    tableController.move.moveToNextEditableCell(type, cell);
+                  }
                 },
                 isCellOnFirstRow: () => tableController.query.isCellOnFirstRow(cell),
                 isCellOnLastRow: () => tableController.query.isCellOnLastRow(cell),
               },
             );
+          }}
+          moveToNextEditableCell={(type: MoveEditType) => {
+            tableController.move.moveToNextEditableCell(type, cell);
           }}
         />
       )

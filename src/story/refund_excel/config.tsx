@@ -16,7 +16,6 @@ import {
   ConfigColumnProps,
   WithKeyboardHandler,
   GMExtendedColumnProps,
-  withUniqueEditableColumnsProps,
 } from '../../components';
 
 export enum GM_REFUND_TABLE_COLUMNS_KEYS {
@@ -209,7 +208,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
 
   ]
 
-  return withUniqueEditableColumnsProps(columns);
+  return columns;
 }
 
 
