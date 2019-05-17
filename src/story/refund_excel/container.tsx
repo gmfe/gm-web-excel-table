@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { configOrderTable1Columns } from './config';
 import { Data_IRefundExcel } from './interface';
-import { GMTableExcelStaticConfigWrapper, SearchRenderProps } from '../../components';
+import { GMTableExcelStaticConfigWrapper, SearchRenderProps, MoveEditType } from '../../components';
 
 import './index.less';
 
@@ -47,7 +47,20 @@ export default class TabelExcelContainer extends React.PureComponent<any, any> {
         // app={APP} // 多个表格实例的时候可以在共同容器中使用独立实例
         // tableRef={(c: TableRef) => this._tableRef = c}
 
-        tableKey='key'
+        tableKey='refund-excel'
+
+        controllerConfig={{
+          moveEdit: {
+            [MoveEditType.arrow]: {
+              allowUpAddRow: true, // 允许向上增行
+              allowDownAddRow: true, // 允许向下增行
+            },
+            [MoveEditType.tab]: {
+              allowUpAddRow: true, // 允许向上增行
+              allowDownAddRow: true, // 允许向下增行
+            }
+          },
+        }}
 
         tableConfig={{
           bordered: true,

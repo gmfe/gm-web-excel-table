@@ -6,7 +6,7 @@ import './index.less'
 import { Select, Spin, Input } from 'antd';
 import React, { Component } from 'react';
 import debounce from 'lodash/debounce';
-
+import { TableControllerKeyboardHanlder } from '../../../../../components'
 
 const Option = Select.Option;
 
@@ -20,14 +20,15 @@ interface SearchSelectData {
 export default class SearchSelect extends Component<{
   value?: string;
   onSelect: (value: any) => void;
-}, any> {
+  handleKeyUp: (e: React.KeyboardEvent, value?: string | number) => void;
+} & TableControllerKeyboardHanlder, any> {
 
   private _selectRef: any;
   private _lastFetchId: number = 0;
   private _inputRef?: any;
 
   static defaultProps = {
-    onSelect: () => {}
+    onSelect: () => { }
   }
 
   constructor(props: any) {
@@ -47,7 +48,7 @@ export default class SearchSelect extends Component<{
   }
 
   componentDidUpdate() {
-    this.focusInput();
+    // this.focusInput();
   }
 
   focusInput = () => {
@@ -90,8 +91,8 @@ export default class SearchSelect extends Component<{
   }
 
   render() {
-    const { onSelect } = this.props;
-    const { fetching, data, value } = this.state;
+    const { onSelect, value, handleKeyUp } = this.props;
+    const { fetching, data } = this.state;
 
     return (
       <div
@@ -103,14 +104,18 @@ export default class SearchSelect extends Component<{
         onClick={(e: React.MouseEvent) => { e.stopPropagation(); }}
       >
         <Input
-          value={this.props.value}
+          value={value}
           type="text"
           className="gm-search-select-input"
           onChange={(e: any) => {
             onSelect(e.target.value);
             this.fetchUser(e.target.value);
           }}
-          ref={(c: any) => { if (c) { this._inputRef = c; }}}
+          // onKeyPress
+          onKeyUp={(e: React.KeyboardEvent) => {
+            handleKeyUp(e, value);
+          }}
+          ref={(c: any) => { if (c) { this._inputRef = c; } }}
         />
         <Select
           showSearch
@@ -125,7 +130,7 @@ export default class SearchSelect extends Component<{
           onSelect={(value: any) => { onSelect(value); }}
           onInputKeyDown={this.handleInputKeyDown}
           notFoundContent={fetching ? <Spin size="small" /> : null}
-          // ref={(c: any) => { if (c) { this._selectRef = c; }}}
+        // ref={(c: any) => { if (c) { this._selectRef = c; }}}
         >
           {data.map((d: SearchSelectData) => (
             <Option key={d.value}>{d.text}</Option>

@@ -39,7 +39,6 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
   
       }
 
-
       handleResizeColumnStart = (index: number) => () => {
       }
   

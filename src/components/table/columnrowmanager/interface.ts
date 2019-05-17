@@ -1,7 +1,10 @@
 import { ColumnProps } from 'antd/lib/table';
 import { IDataManager } from '../datamanager/interface';
 
-
+export interface GMExtendedColumnProps<T> extends ColumnProps<T>{
+  editable?: boolean;       // 用于计算可编辑矩阵，光标移动时有效目标等，可编辑单元格必须指定
+  uniqueEditable?: boolean; // 用于高阶函数快速获得唯一编辑态
+}
 
 export type onResizeColumn = (nextSize: IWeekSize, callback?: (size: IWeekSize) => void) => boolean;
 

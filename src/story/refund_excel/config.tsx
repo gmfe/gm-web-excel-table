@@ -2,10 +2,22 @@
 import { ColumnProps } from 'antd/lib/table';
 import * as React from 'react';
 import { Data_IRefundExcel, DataWithController_IRefundExcel } from './interface';
-import { ConfigColumnProps, IGetColumnsFunc, IColumnManager } from '../../components/table/columnrowmanager/interface';
+
+
+
 import { Header } from './components/header';
 import SearchSelect from './components/cells/search-select';
+import EditableInputNumber from './components/cells/editable-input-number';
 
+// import { ConfigColumnProps, IGetColumnsFunc, IColumnManager, GMExtendedColumnProps } from '../../components/table/columnrowmanager/interface';
+import {
+  IColumnManager,
+  IGetColumnsFunc,
+  ConfigColumnProps,
+  WithKeyboardHandler,
+  GMExtendedColumnProps,
+  withUniqueEditableColumnsProps,
+} from '../../components';
 
 export enum GM_REFUND_TABLE_COLUMNS_KEYS {
   number = 'number', // 序号
@@ -25,11 +37,16 @@ export enum GM_REFUND_TABLE_COLUMNS_KEYS {
 // columnRowManager
 // tableController
 
+
+const KeyBoardSearchSelect = WithKeyboardHandler(SearchSelect);
+const KeyBoardEditableInputNumber = WithKeyboardHandler(EditableInputNumber);
+
+
 export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: ConfigColumnProps<Data_IRefundExcel>, columnrowmanager: IColumnManager) => {
 
   // 序号 | 商品名 | 商品分类 | 退货数 | 退货单价 | 补差 | 退货金额 | 退货批次 | 	操作人
 
-  const columns: ColumnProps<DataWithController_IRefundExcel>[] = [
+  const columns: GMExtendedColumnProps<DataWithController_IRefundExcel>[] = [
 
     // 序号
     {
@@ -52,11 +69,11 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       title: Header('操作'),
       render: (_: any, __: any, index: number) => {
         return (
-          <div> 
-            <a style={{ cursor: 'pointer'}} onClick={() => {
-              componentProps.dataManager.onAdd(undefined, index+ 1);
+          <div>
+            <a style={{ cursor: 'pointer' }} onClick={() => {
+              componentProps.dataManager.onAdd(undefined, index + 1);
             }}>添加</a>
-            <a style={{ marginLeft: 5, cursor: 'pointer'}} onClick={() => {
+            <a style={{ marginLeft: 5, cursor: 'pointer' }} onClick={() => {
               componentProps.dataManager.onDelete(index);
             }}>删除</a>
           </div>
@@ -70,44 +87,35 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       key: GM_REFUND_TABLE_COLUMNS_KEYS.orderName,
       width: 250,
       dataIndex: 'orderName',
+      editable: true,
+      uniqueEditable: true,
+
       render: (text: string, record: DataWithController_IRefundExcel, index: number) => {
 
-        const isEditing = record.tableController.query.isEditing({
+        const cell = {
           columnKey: GM_REFUND_TABLE_COLUMNS_KEYS.orderName,
           rowKey: record.rowKey,
-        });
-
+        };
+        const isEditing = record.tableController.query.isEditing(cell);
         // console.log(isEditing, index, 'indexindexindex')
-
         return (
           <div>
-            { isEditing ? <SearchSelect value={text} onSelect={(value: string) => {
-
-              componentProps.dataManager.onUpdate({ orderName: value }, index);
-            }}/> : text }
+            {!isEditing ? text :
+              (
+                <KeyBoardSearchSelect
+                  cell={cell}
+                  value={text}
+                  tableController={record.tableController}
+                  onSelect={(value: string) => {
+                    componentProps.dataManager.onUpdate({ orderName: value }, index);
+                  }}
+                />
+              )
+            }
           </div>
         )
       },
-      onCell: (record: DataWithController_IRefundExcel, rowIndex: any) => {
-        return {
-          onClick: (e: any) => {
-            record.tableController.uniqueEdit({
-              columnKey: GM_REFUND_TABLE_COLUMNS_KEYS.orderName,
-              rowKey: record.rowKey,
-            });
-          },
-          // onBlur: (e: any) => {
-          //   record.tableController.cancelEdit({
-          //     columnKey: GM_REFUND_TABLE_COLUMNS_KEYS.orderName,
-          //     rowKey: record.rowKey,
-          //   });
-          // }
-          // onDoubleClick: event => {}, // double click row
-          // onContextMenu: event => {}, // right button click row
-          // onMouseEnter: event => {}, // mouse enter row
-          // onMouseLeave: event => {}, // mouse leave row
-        };
-      }
+
     },
 
     // 商品分类
@@ -123,16 +131,31 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       title: '退货数',
       key: GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderNumber,
       width: 200,
+      editable: true,
+      uniqueEditable: true,
       dataIndex: 'returnOrderNumber',
-      render: (text: any, record: Data_IRefundExcel, index: number) => {
-        return text;
+      render: (text: any, record: DataWithController_IRefundExcel, index: number) => {
+        const cell = {
+          columnKey: GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderNumber,
+          rowKey: record.rowKey,
+        }
+        const isEditing = record.tableController.query.isEditing(cell);
+        // console.log(isEditing, index, 'isEditingisEditing')
+        const number = parseInt(text, 10);
+        return (
+          <KeyBoardEditableInputNumber
+            cell = {cell}
+            value={number}
+            editing={isEditing}
+            tableController={record.tableController}
+            onEdit={(value?: number) => {
+              if (value) {
+                componentProps.dataManager.onUpdate({ returnOrderNumber: value }, index);
+              }
+            }}
+          />
+        );
       },
-      // dataEditor: (props: any) => {
-      //   console.log(componentProps, props, 'componentProps')
-      //   return <input onChange={e => {
-      //     console.log(e.target.value, 'onChange')
-      //   }}></input>
-      // }
     },
 
     // 退货单价
@@ -186,7 +209,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
 
   ]
 
-  return columns;
+  return withUniqueEditableColumnsProps(columns);
 }
 
 

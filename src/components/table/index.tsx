@@ -40,6 +40,8 @@ export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExce
 
   render() {
     const {
+      tableKey,
+      controllerConfig,
       columnsConfig: { getColumns },
       searchConfig,
       dataConfig: { defaultData, initData, fetchData }
@@ -52,7 +54,7 @@ export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExce
         args: searchConfig,
       },
       // 表格控制
-      { enhance: WithTableController, args: { tableKey: 'key' } },
+      { enhance: WithTableController, args: controllerConfig },
       // 业务表格配置 行列管理
       {
         enhance: WithColumnRowManager,

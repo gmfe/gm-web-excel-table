@@ -3,6 +3,7 @@ import { TableProps } from 'antd/lib/table'
 import { ClientAppModel } from 'kunsam-app-model';
 import { IGetColumnsFunc } from '../columnrowmanager/interface';
 import { TableRef } from '../components/table-content';
+import { WithTableControllerConfig } from '../tablecontroller/interface';
 
 export interface CellSelectedState {
   start: { i: number, j: number}
@@ -43,6 +44,7 @@ export interface GMTableExcelStaticConfig {
   columnsConfig: {
     getColumns: IGetColumnsFunc
   }
+  controllerConfig: WithTableControllerConfig;
   dataConfig: GMConfigData<any>;
   tableConfig: TableProps<any>;
   tableRef?: (tref: TableRef) => void;
