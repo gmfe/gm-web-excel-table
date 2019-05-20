@@ -90,6 +90,7 @@ export default class SearchSelect extends Component<{
   handleInputKeyDown = (e: React.KeyboardEvent) => {
     switch (e.key) {
       case 'Enter': {
+        console.log('onKeyUponKeyUp EnterEnter')
         this.props.moveToNextEditableCell(MoveEditType.enter);
         TableControllerUtil.lockAKeyup = true; // 要不然会多触发一次keyUp
         break;
@@ -115,11 +116,11 @@ export default class SearchSelect extends Component<{
             onSelect(e.target.value);
             this.fetchUser(e.target.value);
           }}
-          // onKeyPress
           onKeyUp={(e: React.KeyboardEvent) => {
             if (data.length) {
               return;
             }
+            console.log('onKeyUponKeyUp 11')
             handleKeyUp(e, value)
           }}
           ref={(c: any) => { if (c) { this._inputRef = c; } }}

@@ -35,7 +35,8 @@ export default class EditableInputNumber extends Component<{
           autoFocus
           value={value}
           onChange={this.onChange}
-          onKeyDown={(e: React.KeyboardEvent) => {
+          onKeyUp={(e: React.KeyboardEvent) => {
+            console.log('onKeyUponKeyUp 22')
             handleKeyUp(e, value);
           }}
         />

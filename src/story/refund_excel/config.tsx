@@ -41,18 +41,54 @@ const KeyBoardSearchSelect = WithKeyboardHandler(SearchSelect);
 const KeyBoardEditableInputNumber = WithKeyboardHandler(EditableInputNumber);
 
 
+
+
+
+
 export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: ConfigColumnProps<Data_IRefundExcel>, columnrowmanager: IColumnManager) => {
 
   // 序号 | 商品名 | 商品分类 | 退货数 | 退货单价 | 补差 | 退货金额 | 退货批次 | 	操作人
+
+  const RenderKeyBoardEditableInputNumber = (key: string, dataIndex: string) => (text: any, record: DataWithController_IRefundExcel, index: number) => {
+    const cell = {
+      columnKey: GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderNumber,
+      rowKey: record.rowKey,
+    }
+    const isEditing = record.tableController.query.isEditing(cell);
+    const number = parseInt(text, 10);
+    return (
+      <KeyBoardEditableInputNumber
+        cell = {cell}
+        value={number}
+        editing={isEditing}
+        tableController={record.tableController}
+        onEdit={(value?: number) => {
+          if (value) {
+            componentProps.dataManager.onUpdate({ [dataIndex]: value }, index);
+          }
+        }}
+      />
+    );
+  }
+
+  const RenderKeyBoardEditableInputNumber1 = RenderKeyBoardEditableInputNumber(GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderNumber, 'returnOrderNumber');
+  const RenderKeyBoardEditableInputNumber2 = RenderKeyBoardEditableInputNumber(GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderPerPrice, 'returnOrderPerPrice');
+  const RenderKeyBoardEditableInputNumber3 = RenderKeyBoardEditableInputNumber(GM_REFUND_TABLE_COLUMNS_KEYS.returnTotalPrice, 'returnTotalPrice');
+  // const RenderKeyBoardEditableInputNumber4 = RenderKeyBoardEditableInputNumber(GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderNumber, 'returnOrderNumber');
 
   const columns: GMExtendedColumnProps<DataWithController_IRefundExcel>[] = [
 
     // 序号
     {
       width: 49,
+      sorter: (a: DataWithController_IRefundExcel, b: DataWithController_IRefundExcel) => {
+        return a.index - b.index;
+      },
+      sortDirections: ['descend', 'ascend'],
+      defaultSortOrder: 'ascend',
       title: Header('序号'),
       fixed: 'left',
-      defaultSortOrder: 'ascend',
+
       key: GM_REFUND_TABLE_COLUMNS_KEYS.number,
       render: (_: any, __: DataWithController_IRefundExcel, index: number) => {
         return index;
@@ -90,7 +126,6 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       uniqueEditable: true,
 
       render: (text: string, record: DataWithController_IRefundExcel, index: number) => {
-
         const cell = {
           columnKey: GM_REFUND_TABLE_COLUMNS_KEYS.orderName,
           rowKey: record.rowKey,
@@ -130,42 +165,25 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       title: '退货数',
       key: GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderNumber,
       width: 200,
+
+      dataIndex: 'returnOrderNumber',
+
       editable: true,
       uniqueEditable: true,
-      dataIndex: 'returnOrderNumber',
-      render: (text: any, record: DataWithController_IRefundExcel, index: number) => {
-        const cell = {
-          columnKey: GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderNumber,
-          rowKey: record.rowKey,
-        }
-        const isEditing = record.tableController.query.isEditing(cell);
-        // console.log(isEditing, index, 'isEditingisEditing')
-        const number = parseInt(text, 10);
-        return (
-          <KeyBoardEditableInputNumber
-            cell = {cell}
-            value={number}
-            editing={isEditing}
-            tableController={record.tableController}
-            onEdit={(value?: number) => {
-              if (value) {
-                componentProps.dataManager.onUpdate({ returnOrderNumber: value }, index);
-              }
-            }}
-          />
-        );
-      },
+      render: RenderKeyBoardEditableInputNumber1,
     },
 
     // 退货单价
     {
       title: '退货单价',
       key: GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderPerPrice,
-      width: 80,
+      width: 200,
+
       dataIndex: 'returnOrderPerPrice',
-      render: (text: any, record: Data_IRefundExcel, index: number) => {
-        return text;
-      },
+
+      // editable: true,
+      // uniqueEditable: true,
+      // render: RenderKeyBoardEditableInputNumber2,
     },
 
     // 补差
@@ -180,11 +198,13 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
     {
       title: '退货金额',
       key: GM_REFUND_TABLE_COLUMNS_KEYS.returnTotalPrice,
-      width: 100,
+      width: 200,
+
       dataIndex: 'returnTotalPrice',
-      render: (text: any, record: Data_IRefundExcel, index: number) => {
-        return text;
-      },
+
+      // editable: true,
+      // uniqueEditable: true,
+      // render: RenderKeyBoardEditableInputNumber3,
     },
 
     // 退货批次
@@ -193,9 +213,6 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       key: GM_REFUND_TABLE_COLUMNS_KEYS.returnBatchNumber,
       width: 100,
       dataIndex: 'returnBatchNumber',
-      render: (text: any, record: Data_IRefundExcel, index: number) => {
-        return index;
-      },
     },
 
     // 操作人

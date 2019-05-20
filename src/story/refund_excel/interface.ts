@@ -15,5 +15,6 @@ export interface Data_IRefundExcel {
 
 export interface DataWithController_IRefundExcel extends Data_IRefundExcel {
   rowKey: string;
+  index: number;
   tableController: TableControllerInterface
 }

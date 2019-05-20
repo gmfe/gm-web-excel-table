@@ -27,6 +27,7 @@ export class TableControllerUtil {
 
     if (this.lockAKeyup) {
       this.lockAKeyup = false;
+      return;
     }
 
     let { handler, value, isCellOnFirstRow, isCellOnLastRow } = props;

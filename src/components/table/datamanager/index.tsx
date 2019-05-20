@@ -146,7 +146,7 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
       }
 
       public withRowKey(data: IData[]) {
-        return data.map(d => ({ ...d, rowKey: d.rowKey || uniqid() }))
+        return data.map((d, index) => ({ ...d, rowKey: d.rowKey || uniqid(), index }));
       }
 
       render() {

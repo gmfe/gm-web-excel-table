@@ -34,7 +34,7 @@ export function WithKeyboardHandler(Target: React.ComponentClass<any, any>) {
         <Target
           {...this.props}
           handleKeyUp={(e: React.KeyboardEvent, value?: string | number) => {
-            e.preventDefault();
+            // e.preventDefault();
             TableControllerUtil.onInputKeyUp(e,{
                 value: `${value}`,
                 handler: {
