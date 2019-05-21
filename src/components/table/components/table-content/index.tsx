@@ -109,15 +109,16 @@ export class GMTableExcel extends React.Component<GMExcelTableProps<any> & GMTab
           rowKey={(d: any) => d.rowKey}
           components={{ body: { wrapper: AnimateBody } }}
 
-          rowSelection={{
-            onChange: (selectedRowKeys, selectedRows) => {
-              console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-            },
-            getCheckboxProps: record => ({
-              disabled: record.name === 'Disabled User', // Column configuration not to be checked
-              name: record.name,
-            }),
-          }}
+          // 暂不开放选择
+          // rowSelection={{
+          //   onChange: (selectedRowKeys, selectedRows) => {
+          //     console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+          //   },
+          //   getCheckboxProps: record => ({
+          //     disabled: record.name === 'Disabled User', // Column configuration not to be checked
+          //     name: record.name,
+          //   }),
+          // }}
         />
       </div>
     )

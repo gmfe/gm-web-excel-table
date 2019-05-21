@@ -3,14 +3,12 @@
 // import "antd/dist/antd.css";
 
 
-// import 'react-datasheet/lib/react-datasheet.css';
-
 import * as React from 'react';
 import { configOrderTable1Columns } from './config';
 import { Data_IRefundExcel } from './interface';
 import { GMTableExcelStaticConfigWrapper, SearchRenderProps, MoveEditType } from '../../components';
 
-import './index.less';
+import './style/index.less';
 
 // import times from 'lodash/times'
 
@@ -21,7 +19,7 @@ const searchKeys = [
 const MOCK_DATA: Data_IRefundExcel[] = [
   {
     orderName: '',
-    category: '分类1',
+    category: '分类分类1',
     returnOrderNumber: 55,
     returnOrderPerPrice: 100,
     fillPriceDiff: 2, // 补差价
@@ -70,6 +68,7 @@ export default class TabelExcelContainer extends React.PureComponent<any, any> {
         tableConfig={{
           bordered: true,
           scroll: { x: 'max-content' },
+          // scroll: { x: 8000 },
         }}
 
         containerStyle={{

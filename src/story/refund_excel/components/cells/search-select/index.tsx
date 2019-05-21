@@ -44,7 +44,8 @@ export default class SearchSelect extends Component<{
 
   componentDidMount() {
     // fetchData
-    this.focusInput();
+    // this.focusInput();
+    // TODO 控制器需要focus
   }
 
   focusInput = () => {
@@ -126,9 +127,9 @@ export default class SearchSelect extends Component<{
           ref={(c: any) => { if (c) { this._inputRef = c; } }}
         />
         <Select
-          autoFocus
+          // autoFocus
           showSearch
-          open={true}
+          open={data.length > 0 || fetching}
           value={value}
           showArrow={false}
           filterOption={false}

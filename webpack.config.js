@@ -8,8 +8,8 @@ const isLocalDev = process.env.NODE_ENV === 'dev'
 
 const config = {
   entry: {
-    main: [ './src/components/index.tsx' ],
-    story: [ './src/story/index.tsx']
+    main: ['./src/components/index.tsx'],
+    story: ['./src/story/index.tsx']
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -63,7 +63,11 @@ const config = {
             }
           }
         ]
-      }
+      },
+      {
+        test: /\.svg$/,
+        loader: 'svg-inline-loader'
+      },
     ]
   },
   resolve: {
@@ -87,10 +91,10 @@ const config = {
       template: require('html-webpack-template'),
     }),
     // [NOTICE] this dllplugin cannot work with dev-server
-		// new webpack.DllPlugin({
+    // new webpack.DllPlugin({
     //   context: __dirname,
-		// 	name: "[name]_[hash]",
-		// 	path: path.join(__dirname, "dist/dll", "[name]-manifest.json"),
+    // 	name: "[name]_[hash]",
+    // 	path: path.join(__dirname, "dist/dll", "[name]-manifest.json"),
     // }),
     // new webpack.optimize.UglifyJsPlugin({
     //   minimize: true,

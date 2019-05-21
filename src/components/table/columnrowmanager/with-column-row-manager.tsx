@@ -118,7 +118,7 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
 
 
 export function withUniqueEditableColumnsProps(data: GMExtendedColumnProps<any>[]): GMExtendedColumnProps<any>[] {
-  return data.map((d, index) => {
+  return data.map((d, dataIndex) => {
     if (d.uniqueEditable) {
       if (!d.onCell) {
         d.onCell = (record: any, rowIndex: any) => {
@@ -146,13 +146,23 @@ export function withUniqueEditableColumnsProps(data: GMExtendedColumnProps<any>[
 
     const oldRender = d.render;
     d.render = (text: any, record: any, index: number) => {
-      return (<div id={`${_GM_TABLE_SCROLL_CELL_PREFIX_}${d.key}${record.rowKey}`} style={{ width: '100%', height: '100%' }}>
-        {oldRender ? oldRender(text, record, index) : text }
-      </div>)
+      let style: any = { width: '100%', height: '100%' }
+      if (d.cellWidth) style.width = d.cellWidth;
+      if (d.minWidth) style.minWidth = d.minWidth;
+      if (d.maxWidth) style.maxWidth = d.maxWidth;
+      return (
+        <div
+          style={style}
+          className="gm-web-table-cell"
+          id={`${_GM_TABLE_SCROLL_CELL_PREFIX_}${d.key}${record.rowKey}`}
+        >
+          {oldRender ? oldRender(text, record, index) : text}
+        </div>
+      )
     }
 
     d.static = {
-      index: index,
+      index: dataIndex,
       width: d.width,
     }
 

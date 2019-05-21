@@ -1,7 +1,5 @@
 
 
-
-import './index.less'
 import React, { Component } from 'react'
 import TabelExcelWrapper from './container';
 

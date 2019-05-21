@@ -1,33 +1,51 @@
-.gm-search-select{
-  width: 100%;
+@base-z-index: 90;
+@import '../../../style/input.less';
+@import '../../../../common/style/function.less';
+
+.gm-search-select {
+  width : 100%;
   height: 100%;
-  .ant-select-selection{
+
+  .ant-select-selection {
     border: 0px;
     height: 100%;
-    .ant-select-selection__rendered{
-      line-height: 32px; // todo 客户加个变量
+
+    .ant-select-selection__rendered {
+      // line-height: 60px;
     }
   }
 }
 
+.ant-select-dropdown {
+  z-index: @base-z-index + 10;
+}
 
-.gm-search-select-container{
-  .ant-table-fixed-left, .ant-table-fixed-right{
-    z-index: 101;
+.gm-search-select-container {
+
+  .ant-table-fixed-left,
+  .ant-table-fixed-right {
+    z-index: @base-z-index + 20;
   }
-  .ant-input:focus{
+
+  .ant-input:focus {
     box-shadow: 0 0 0 1px rgba(49, 61, 72, 0.1);
   }
-  .gm-search-select-input{
-    top: 0;
-    left: 0;
-    border: 0;
-    outline: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 99;
-    position: absolute;
-    box-sizing: border-box;
+
+  .gm-search-select-input {
+    top          : 0;
+    left         : 0;
+    outline      : 0;
     border-radius: 0px;
+    width        : 100%;
+    height       : 100%;
+    position     : absolute;
+    box-sizing   : border-box;
+    z-index      : @base-z-index;
+    .gme-common-input();
+    width: 168px;
+    .Center(false, true);
+  }
+  .ant-select-search__field{
+    display: none;
   }
 }

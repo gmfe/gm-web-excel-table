@@ -1,0 +1,41 @@
+@import './function.less';
+@import './theme.less';
+@import './selector.less';
+
+
+// .ant-table-thead > tr > th,
+// .ant-table-tbody > tr > td {
+//   padding: 0;
+// }
+// 单元格通用设置
+@{table-any-head-cell-selector},
+@{table-any-body-cell-selector} {
+  padding: 0;
+  // box-sizing: border-box;
+}
+
+@{table-any-head-cell-inner-selector},
+@{table-any-body-cell-inner-selector} {
+  padding    : 0;
+  box-sizing: border-box;
+}
+
+// padding
+@{table-any-head-cell-inner-selector},
+@{table-any-body-cell-inner-selector} {
+  .dynamic-screen-cell-padding();
+}
+@{table-any-head-cell-selector}{
+  text-align: center;
+}
+// 字体
+@{table-any-head-cell-inner-selector} {
+  font-size  : @GME-title-font-size;
+  font-family: @GME-title-font-family;
+  color      : @GME-text-color;
+}
+@{table-any-body-cell-inner-selector} {
+  font-size: @GME-content-font-size;
+  font-family: @GME-content-nondigit-text-font-family;
+}
+

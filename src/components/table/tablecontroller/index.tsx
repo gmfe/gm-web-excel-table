@@ -212,7 +212,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
           });
         });
 
-        console.log(this._cellIdQueryPositionMap, 'this._cellIdQueryPositionMap')
+        console.log('表格行列数据更新!');
       }
 
 
@@ -391,7 +391,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         const rowMax = this.props.data.length;
         let nextCol = currentPositionOfCell.nextCol;
         let nextRow = currentPositionOfCell.nextRow;
-        // console.log(currentPositionOfCell, config, type, 'moveToNextEditableCell')
+        console.log(currentPositionOfCell, config, type, 'moveToNextEditableCell')
         if (!(nextCol !== undefined && nextRow !== undefined)) {
           // 某一个不存在，最后一个可编辑单元格
           if (config.allowDownAddRow) {
@@ -407,7 +407,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
           }
         } else {
           const nextCell = this.getCell(nextCol, nextRow);
-          // console.log(nextCell, 'moveToNextEditableCell nextCell')
+          console.log(nextCell, 'moveToNextEditableCell nextCell')
           if (nextCell) {
             if (currentPositionOfCell.row === nextRow - 1) {
               // 右方换行

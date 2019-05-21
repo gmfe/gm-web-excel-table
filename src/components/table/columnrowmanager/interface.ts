@@ -4,8 +4,11 @@ import { IDataManager } from '../datamanager/interface';
 export interface GMExtendedColumnProps<T> extends ColumnProps<T>{
   static?: any;
   _indexNumber?: number;
-  editable?: boolean;       // 用于计算可编辑矩阵，光标移动时有效目标等，可编辑单元格必须指定
+  minWidth?: number;
+  maxWidth?: number;
+  cellWidth?: string | number;
   uniqueEditable?: boolean; // 用于高阶函数快速获得唯一编辑态
+  editable?: boolean;       // 用于计算可编辑矩阵，光标移动时有效目标等，可编辑单元格必须指定
 }
 
 export type onResizeColumn = (nextSize: IWeekSize, callback?: (size: IWeekSize) => void) => boolean;
