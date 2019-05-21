@@ -12,6 +12,17 @@
   // line-height: 1;
 }
 
+@{table-any-head-cell-selector} {
+  background-color: #F2F3F9;
+  height: 40px;
+}
+
+@{table-any-body-row-selector} {
+  &>td:nth-child(1) {
+    text-align: center;
+  }
+}
+
 
 // .ant-table-content {
 //   tbody.ant-table-tbody>tr>td {
@@ -34,7 +45,7 @@
   .ant-table-tbody>tr.ant-table-row-hover:not(.ant-table-expanded-row)>td,
   .ant-table-thead>tr:hover:not(.ant-table-expanded-row)>td,
   .ant-table-tbody>tr:hover:not(.ant-table-expanded-row)>td {
-    background: @GME-content-background-color;
+    background: none;
   }
   .ant-select-focused .ant-select-selection,
   .ant-select-selection:focus,

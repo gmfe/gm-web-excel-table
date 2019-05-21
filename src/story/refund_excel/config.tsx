@@ -113,30 +113,32 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       key: 'action',
       fixed: 'left',
       title: () => {
-        return <div>操作</div>
+        return <div style={{ width: 14 }} dangerouslySetInnerHTML={{ __html: ActionSvg }}></div>
       },
       minWidth: 61,
       maxWidth: 82,
       render: (_: any, __: any, index: number) => {
         return (
-          <div>
-            <div style={{ width: 12 }} dangerouslySetInnerHTML={{ __html: MinusSquareSvg }}></div>
-            {/* <MinusSquareSvg width={59} /> */}
-            {/* <HoverIcon
+          [
+            <HoverIcon
               onClick={() => {
-                console.log('HoverIconHoverIcon')
+                componentProps.dataManager.onAdd(undefined, index + 1);
               }}
-              Placeholder = {MinusSquareSvg}
-              Hover = {MinusSquareClickedSvg}
-            /> */}
+              key="plus"
+              style={{ marginRight: 18 }}
+              Placeholder={() => <div style={{ width: 18, display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: PlusSquareSvg }} />}
+              Hover={() => <div style={{ width: 18, display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: PlusSquareClickedSvg }} />}
+            />,
 
-            <a style={{ cursor: 'pointer' }} onClick={() => {
-              componentProps.dataManager.onAdd(undefined, index + 1);
-            }}>添加</a>
-            <a style={{ marginLeft: 5, cursor: 'pointer' }} onClick={() => {
-              componentProps.dataManager.onDelete(index);
-            }}>删除</a>
-          </div>
+            <HoverIcon
+              onClick={() => {
+                componentProps.dataManager.onDelete(index);
+              }}
+              key="minus"
+              Placeholder={() => <div style={{ width: 18, display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: MinusSquareSvg }} />}
+              Hover={() => <div style={{ width: 18, display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: MinusSquareClickedSvg }} />}
+            />
+          ]
         )
       },
     },
@@ -160,6 +162,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
           <KeyBoardSearchSelect
             cell={cell}
             value={text}
+            editing={isEditing}
             tableController={record.tableController}
             onSelect={(value: string) => {
               componentProps.dataManager.onUpdate({ orderName: value }, index);

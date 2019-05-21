@@ -7,6 +7,7 @@ import { Select, Spin, Input } from 'antd';
 import React, { Component } from 'react';
 import debounce from 'lodash/debounce';
 import { MoveEditType, TableControllerUtil, WithKeyboardHandlerProviderProps } from '../../../../../components'
+import { WithInputFocus } from '../with-input-focus';
 
 const Option = Select.Option;
 
@@ -16,9 +17,11 @@ interface SearchSelectData {
   text: string;
 }
 
+
 // 商品搜索选择
-export default class SearchSelect extends Component<{
+export class SearchSelect extends Component<{
   value?: string;
+  getInputRef: (c: any) => void;
   onSelect: (value: any) => void;
   handleKeyUp: (e: React.KeyboardEvent, value?: string | number) => void;
 } & WithKeyboardHandlerProviderProps, any> {
@@ -71,13 +74,13 @@ export default class SearchSelect extends Component<{
           value: `${user.name.first} ${user.name.last}`,
         }));
         this.setState({ data, fetching: false }, () => {
-          console.log(this._selectRef, 'this._selectRef')
-          if (this._selectRef) {
-            this._selectRef.rcSelect.inputRef.focus();
-          }
+          // console.log(this._selectRef, 'this._selectRef')
+          // if (this._selectRef) {
+          //   this._selectRef.rcSelect.inputRef.focus();
+          // }
         });
       });
-  };
+  }
 
   handleChange = (value: string) => {
     console.log(value, 'handleChangehandleChange')
@@ -86,10 +89,14 @@ export default class SearchSelect extends Component<{
       data: [],
       fetching: false,
     });
-  };
+  }
 
   handleInputKeyDown = (e: React.KeyboardEvent) => {
     switch (e.key) {
+      case 'Tab': {
+        e.preventDefault();
+        break;
+      }
       case 'Enter': {
         console.log('onKeyUponKeyUp EnterEnter')
         this.props.moveToNextEditableCell(MoveEditType.enter);
@@ -101,7 +108,7 @@ export default class SearchSelect extends Component<{
 
   render() {
     const { fetching, data } = this.state;
-    const { onSelect, value, handleKeyUp } = this.props;
+    const { onSelect, value, handleKeyUp, getInputRef, onInputFocus } = this.props;
 
     return (
       <div
@@ -121,10 +128,11 @@ export default class SearchSelect extends Component<{
             if (data.length) {
               return;
             }
-            console.log('onKeyUponKeyUp 11')
             handleKeyUp(e, value)
           }}
-          ref={(c: any) => { if (c) { this._inputRef = c; } }}
+          onKeyDown={this.handleInputKeyDown}
+          onFocus={onInputFocus}
+          ref={getInputRef}
         />
         <Select
           // autoFocus
@@ -140,7 +148,7 @@ export default class SearchSelect extends Component<{
           onSelect={(value: any) => { onSelect(value); }}
           onInputKeyDown={this.handleInputKeyDown}
           notFoundContent={fetching ? <Spin size="small" /> : null}
-          ref={(c: any) => { if (c) { this._selectRef = c; }}}
+          // ref={(c: any) => { if (c) { this._selectRef = c; }}}s
         >
           {data.map((d: SearchSelectData) => (
             <Option key={d.value}>{d.text}</Option>
@@ -150,3 +158,6 @@ export default class SearchSelect extends Component<{
     )
   }
 }
+
+
+export default WithInputFocus(SearchSelect);

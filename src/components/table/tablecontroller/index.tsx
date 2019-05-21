@@ -54,6 +54,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
       // 一些数据缓存
       private _firstCell?: CellUniqueObject;
       private _lastCell?: CellUniqueObject;
+      private _editingCell?: CellUniqueObject;
       private _cacheEditableCellMarixUpdateIndex?: any;
       private _scrollerInfo: IScrollerInfo = {
         row: { start: 0, end: 0 },
@@ -141,8 +142,17 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
 
       componentDidMount() {
         const app: AppBase = this.props.app;
+        const editingCell = this._editingCell;
         app.eventManager().keyboardEvents().listenKeyDown((context: KeyboardEventContext) => {
-          console.log(context, 'contextcontextcontext')
+          console.log(context, 'listenKeyDown context')
+          if (context.args) {
+            if (context.args.keyCode === 'Tab') {
+              const cell = this._editingCell || this.getCell(0, 0);
+              if (cell) {
+                this.moveToNextEditableCell(MoveEditType.tab, cell);
+              }
+            }
+          }
         });
         this.updateTableCellMatrix();
       }
@@ -215,8 +225,8 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         console.log('表格行列数据更新!');
       }
 
-
       edit(obj: CellUniqueObject, isUniqueEdit: boolean = true, callback: Function = () => { }) {
+        console.log(obj, 'edit  objobjobjobjobjobj')
         const itemId = this.CellUniqueObject2Id(obj);
         if (this._editingMap.get(itemId)) {
           return;
@@ -224,6 +234,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         if (isUniqueEdit) {
           this._editingMap.clear();
         }
+        this._editingCell = obj;
         this._editingMap.set(itemId, true);
         this.setState({ editingToggle: !this.state.editingToggle }, () => { callback() });
       }
@@ -391,7 +402,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         const rowMax = this.props.data.length;
         let nextCol = currentPositionOfCell.nextCol;
         let nextRow = currentPositionOfCell.nextRow;
-        console.log(currentPositionOfCell, config, type, 'moveToNextEditableCell')
+        console.log(type, config, 'moveToNextEditableCell config')
         if (!(nextCol !== undefined && nextRow !== undefined)) {
           // 某一个不存在，最后一个可编辑单元格
           if (config.allowDownAddRow) {
@@ -407,7 +418,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
           }
         } else {
           const nextCell = this.getCell(nextCol, nextRow);
-          console.log(nextCell, 'moveToNextEditableCell nextCell')
+          console.log(currentPositionOfCell, nextCell, 'moveToNextEditableCell  currentPositionOfCell nextCell')
           if (nextCell) {
             if (currentPositionOfCell.row === nextRow - 1) {
               // 右方换行

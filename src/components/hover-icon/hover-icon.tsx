@@ -10,10 +10,11 @@ export default class HoverIcon extends Component<any, any> {
   }
 
   render() {
-    const { Placeholder, Hover, ...containerProps } = this.props;
+    const { Placeholder, Hover, style = {}, ...containerProps } = this.props;
     return (
       <div
         {...containerProps}
+        style={{ ...style, display: 'inline-block' }}
         onMouseEnter={() => { this.setState({ hoverd: true }) }}
         onMouseLeave={() => { this.setState({ hoverd: false }) }}
       >
