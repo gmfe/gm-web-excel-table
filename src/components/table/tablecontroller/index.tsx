@@ -280,14 +280,19 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
             for (let i = this._scrollerInfo.row.start; i <= position.row; i++) {
               const row = this.props.data[i];
               const cell = document.getElementById(`${_GM_TABLE_SCROLL_CELL_PREFIX_}${obj.columnKey}${row.rowKey}`);
-              // console.log(cell, i , 'cell Rowroworw')
-              if (cell) {
-                topReduceWidth += cell.clientHeight;
+              console.log(cell && cell.parentElement, i , 'cell Rowroworw')
+              if (cell && cell.parentElement) {
+                topReduceWidth += cell.parentElement.clientHeight;
               }
             }
             // 目前看Y会自动滚动
             if (scroller.yScroller) {
-              scroller.yScroller.scrollTo(scroller.xScroller && scroller.xScroller.scrollLeft || 0, topReduceWidth);
+              scroller.yScroller.scrollTo(scroller.xScroller && scroller.xScroller.scrollLeft || 0, topReduceWidth + 50);
+            }
+          }
+          if (position.row === 0) {
+            if (scroller.yScroller) {
+              scroller.yScroller.scrollTo(scroller.xScroller && scroller.xScroller.scrollLeft || 0, 0);
             }
           }
 
@@ -309,7 +314,11 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         if (nextRow < 0) {
           // 向上增加一行
           if (config.allowUpAddRow) {
-            this.props.dataManager.onAdd(undefined, 0);
+            this.props.dataManager.onAdd([undefined], 0, () => {
+              if (this._firstCell) {
+                this.edit(this._firstCell, true, () => this.scroll2Cell(this._firstCell!, true));
+              }
+            });
           }
         } else {
           const nextCell = this.getCell(nextCol, nextRow);
@@ -334,9 +343,9 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         let nextRow = currentPositionOfCell.row + 1;
 
         if (nextRow >= rowMax) {
-          // 向下增加一行
+          // 向下增加五行
           if (config.allowDownAddRow) {
-            this.props.dataManager.onAdd(undefined, rowMax, () => {
+            this.props.dataManager.onAdd(new Array(5).fill(undefined), rowMax, () => {
               const cell = this._cellPositionQueryIdMap.get(this.PositionId({ col: nextCol, row: rowMax }));
               if (cell) {
                 this.edit(cell, true, () => this.scroll2Cell(cell, true));
@@ -406,12 +415,19 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         if (!(nextCol !== undefined && nextRow !== undefined)) {
           // 某一个不存在，最后一个可编辑单元格
           if (config.allowDownAddRow) {
-            // 向下增加一行
-            this.props.dataManager.onAdd(undefined, rowMax);
+            // 向下增加五行
+            this.props.dataManager.onAdd(new Array(5).fill(undefined), rowMax, () => {
+              if (this._lastCell) {
+                const position = this._cellIdQueryPositionMap.get(this.CellUniqueObject2Id(this._lastCell));
+                if (position) {
+                  const lastRowFisrtCell = this.getCell(0, position.row);
+                  lastRowFisrtCell && this.edit(lastRowFisrtCell);
+                }
+              }
+            });
           } else {
             if (config.allowBottom2Up) {
               if (this._firstCell) {
-                // 回到上方 TODO 增加滚动定位
                 this.edit(this._firstCell, true, () => this.scroll2Cell(this._firstCell!));
               }
             }

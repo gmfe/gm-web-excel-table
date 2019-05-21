@@ -122,7 +122,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
           [
             <HoverIcon
               onClick={() => {
-                componentProps.dataManager.onAdd(undefined, index + 1);
+                componentProps.dataManager.onAdd([undefined], index + 1);
               }}
               key="plus"
               style={{ marginRight: 18 }}

@@ -38,6 +38,9 @@ export function WithInputFocus(Target: React.ComponentClass<any, any>) {
           if (this._inputRef) {
             this._inputRef.focus();
             this._focused = true;
+            if (this._inputRef.value) {
+              this._inputRef.selectionStart = this._inputRef.selectionEnd = this._inputRef.value.length;
+            }
           }
         }
       }

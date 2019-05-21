@@ -78,12 +78,10 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
         }
       }
 
-      handleAdd = (item?: IData[], rowIndex?: number, callback?: () => void) => {
+      handleAdd = (item: (IData | undefined)[], rowIndex?: number, callback?: () => void) => {
         // TODO 可以加一个字段校验，与当前的 item keys 需要匹配
         let data = this.state.data;
-
-        const addCandiateList: IData[] = item && item.length ? item : new Array(5).fill(defaultData);
-
+        const addCandiateList: IData[] = item.map(d => d === undefined ? defaultData : d);
         addCandiateList.forEach((addCandiate: IData, index: number) => {
           if (rowIndex !== undefined && rowIndex >= 0 && rowIndex <= data.length) {
             data.splice(rowIndex + index, 0, addCandiate);
@@ -91,11 +89,9 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
             data = data.concat(addCandiateList);
           }
         });
-
         this._addedListeners.forEach(listener => {
           listener(addCandiateList, rowIndex);
         });
-
         this.setState({ data: this.withRowKey(data) }, () => {
           if (callback) callback();
         });
