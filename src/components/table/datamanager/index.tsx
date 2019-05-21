@@ -1,32 +1,34 @@
 
-
-
 import * as React from 'react'
-import { AppBase } from '../../../core/appbase';
+import { GMConfigData } from '../constants/interface';
+import { DataManagerEvents, IDataManager } from './interface';
 import { TableTransactionUtil } from '../transactions/transactionutil';
-import { WithDataManagerProps, DataManagerEvents } from './interface';
+import uniqid from 'uniqid';
 
 
-// https://reactjs.org/docs/higher-order-components.html
 
-// todo 后续 initData 这里应该是传入 fetchData的逻辑
-
-
+// TODO 后续 initData 这里应该是传入 fetchData的逻辑
 type IData = any;
 
-// 只与数据操作有关的逻辑
+/**
+ * 数据管理 | 数据注入
+ * 
+ * @export
+ * @param {React.ComponentClass<any, any>} WrappedComponent
+ * @returns
+ */
 export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>) {
 
-  return ({ initData, defaultData, fetchData }: WithDataManagerProps<IData>) => {
+  return ({ initData, defaultData  }: GMConfigData<IData>) => {
     return class extends React.Component<any, any> {
 
-      private _addedListeners: Function[]
-      private _removedListeners: Function[]
-      private _changedListeners: Function[]
+      public _addedListeners: Function[]
+      public _removedListeners: Function[]
+      public _changedListeners: Function[]
 
       constructor(props: any) {
         super(props);
-        this.state = { data: initData };
+        this.state = { data: this.withRowKey(initData) };
         this._addedListeners = [];
         this._removedListeners = [];
         this._changedListeners = [];
@@ -47,6 +49,7 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
           case DataManagerEvents.changed: {
             this._changedListeners.push(listener);
             break;
+
           }
         }
       }
@@ -75,20 +78,21 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
         }
       }
 
-      handleAdd = (item: IData, rowIndex?: number, callback?: () => void) => {
+      handleAdd = (item: (IData | undefined)[], rowIndex?: number, callback?: () => void) => {
         // TODO 可以加一个字段校验，与当前的 item keys 需要匹配
         let data = this.state.data;
-        if (rowIndex !== undefined && rowIndex >= 0 && rowIndex <= data.length) {
-          data.splice(rowIndex, 0, item);
-        } else {
-          data = data.concat([item]);
-        }
-
-        this._addedListeners.forEach(listener => {
-          listener(item, rowIndex);
+        const addCandiateList: IData[] = item.map(d => d === undefined ? defaultData : d);
+        addCandiateList.forEach((addCandiate: IData, index: number) => {
+          if (rowIndex !== undefined && rowIndex >= 0 && rowIndex <= data.length) {
+            data.splice(rowIndex + index, 0, addCandiate);
+          } else {
+            data = data.concat(addCandiateList);
+          }
         });
-
-        this.setState({ data }, () => {
+        this._addedListeners.forEach(listener => {
+          listener(addCandiateList, rowIndex);
+        });
+        this.setState({ data: this.withRowKey(data) }, () => {
           if (callback) callback();
         });
 
@@ -100,11 +104,10 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
           listener(data[index], index);
         });
         data.splice(index, 1);
-        this.setState({ data });
+        this.setState({ data: this.withRowKey(data) });
       }
 
       handleUpdate = (newItem: Object, rowIndex: number) => {
-
         // can do sequence
         const newData = [...this.state.data];
         const oldItem = newData[rowIndex];
@@ -116,7 +119,7 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
           { ...oldItem, ...newItem },
           (commitedItem: any) => {
             newData.splice(rowIndex, 1, commitedItem);
-            this.setState({ data: newData }, () => {
+            this.setState({ data: this.withRowKey(newData) }, () => {
               //  TODO 这个应该传进去 undo redo 的时候可以释放更新
               this._changedListeners.forEach(listener => {
                 listener(commitedItem, rowIndex);
@@ -126,21 +129,28 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
         app.transactionManager().commit(groupTransaction);
       }
 
+      public dataManager () : IDataManager<any> {
+        return {
+          onAdd: this.handleAdd,
+          onDelete: this.handleDelete,
+          onUpdate: this.handleUpdate,
+          addEventListener: this.addEventListener,
+          getData: () => { return this.state.data },
+          removeEventListener: this.removeEventListener,
+          setData: (data: any[]) => { this.setState({ data: this.withRowKey(data) }) },
+        }
+      }
+
+      public withRowKey(data: IData[]) {
+        return data.map((d, index) => ({ ...d, rowKey: d.rowKey || uniqid(), index }));
+      }
 
       render() {
         return (
           <WrappedComponent
-            data={this.state.data}
             {...this.props}
-            dataManager={{
-              onAdd: this.handleAdd,
-              onDelete: this.handleDelete,
-              onUpdate: this.handleUpdate,
-              addEventListener: this.addEventListener,
-              getData: () => { return this.state.data },
-              removeEventListener: this.removeEventListener,
-              setData: (data: any[]) => { this.setState({ data }) },
-            }}
+            data={this.state.data}
+            dataManager={this.dataManager()}
           />
         )
       }

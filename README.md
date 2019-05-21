@@ -1,5 +1,8 @@
 
 
+# NOTICE
+* this component not support ssr
+
 
 # 需求
 
@@ -65,3 +68,6 @@
     - 下拉选择组件
     - 日历选择组件
     - 按钮组件
+
+
+    // TODO 放弃使用 react-data-sheet

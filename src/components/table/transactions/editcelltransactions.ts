@@ -1,6 +1,5 @@
-import { TableTransactionTypes } from './../constants/transactiontypes';
-import { Transaction, ITransactionContext } from "../../../core/transaction/transaction";
-
+import { TableTransactionTypes } from '../constants/transactiontypes';
+import { Transaction, ITransactionContext } from "kunsam-app-model";
 
 
 export class EditCellTransaction extends Transaction {

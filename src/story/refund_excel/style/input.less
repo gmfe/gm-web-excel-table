@@ -1,0 +1,18 @@
+@import '../../common/style/theme.less';
+
+
+@GME-common-input-height: 32px;
+
+.gme-common-input{
+  border-width: 1px;
+  border-style: solid;
+  height: @GME-common-input-height;
+  border-color: @GME-input-writing-color;
+  border-radius: @GME-common-input-height / 4;
+  &:hover{
+    border-color: @GME-input-focus-color;
+  }
+  &:focus{
+    border-color: @GME-input-wrote-color;
+  }
+}

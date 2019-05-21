@@ -1,9 +1,14 @@
-import { GMExcelTableColumn } from './../constants/interface';
-import { IDataManager } from './../datamanager/interface';
+import { ColumnProps } from 'antd/lib/table';
+import { IDataManager } from '../datamanager/interface';
 
-
-export interface ICellInDataSheet extends GMExcelTableColumn {
-  value: string
+export interface GMExtendedColumnProps<T> extends ColumnProps<T>{
+  static?: any;
+  _indexNumber?: number;
+  minWidth?: number;
+  maxWidth?: number;
+  cellWidth?: string | number;
+  uniqueEditable?: boolean; // 用于高阶函数快速获得唯一编辑态
+  editable?: boolean;       // 用于计算可编辑矩阵，光标移动时有效目标等，可编辑单元格必须指定
 }
 
 export type onResizeColumn = (nextSize: IWeekSize, callback?: (size: IWeekSize) => void) => boolean;
@@ -15,11 +20,9 @@ export interface IColumnManager {
   findCellDom: (row: number, col: number) => HTMLElement | undefined;
 }
 
-export interface IColumnManagerProps{
-  data: any[]
-  canDragRow?: boolean
-  fullScreenWidth?: boolean
-  dataManager: IDataManager<any>
+export interface ConfigColumnProps<T> {
+  data: T[]
+  dataManager: IDataManager<T>
 }
 
 export interface IWeekSize{
@@ -38,8 +41,8 @@ export interface IWeekSizeRange{
   }
 }
 
-export type IGetColumnsFunc = (props: IColumnManagerProps, columnRowManager: IColumnManager) => GMExcelTableColumn[];
+export type IGetColumnsFunc = (props: ConfigColumnProps<any>, columnRowManager: IColumnManager) => GMExtendedColumnProps<any>[];
 
-export interface WithColumnRowManagerConfig{
+export interface WithColumnRowManagerConfig {
   getColumns: IGetColumnsFunc 
 }
