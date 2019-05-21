@@ -226,7 +226,6 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
       }
 
       edit(obj: CellUniqueObject, isUniqueEdit: boolean = true, callback: Function = () => { }) {
-        console.log(obj, 'edit  objobjobjobjobjobj')
         const itemId = this.CellUniqueObject2Id(obj);
         if (this._editingMap.get(itemId)) {
           return;

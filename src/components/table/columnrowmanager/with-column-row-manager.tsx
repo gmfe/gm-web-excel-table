@@ -52,7 +52,6 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
       }
 
       onTableLoaded = (container: HTMLElement) => {
-        console.log(this.state.tableWidth, container.offsetWidth, container.clientWidth, 'this.state.tableWidththis.state.tableWidth')
         if (this._tableContainerDom && container.id === this._tableContainerDom.id) return;
         this._tableContainerDom = container;
       }

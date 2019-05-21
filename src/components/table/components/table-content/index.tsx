@@ -18,7 +18,6 @@ export class TableRef {
     return this.component.props;
   }
   addBlank = () => {
-    console.log(this.props, 'handleAddhandleAdd')
     this.props.dataManager.onAdd([this.props.dataConfig.defaultData]);
   }
   add = (item: any, rowIndex?: number) => {

@@ -23,10 +23,6 @@ export function WithInputFocus(Target: React.ComponentClass<any, any>) {
     render() {
 
       const { editing } = this.props;
-
-      if (editing && !this._focused) {
-        console.log(this.props, this._inputRef, 'this._focusedthis._focused')
-      }
       
       if (!editing) {
         this._focused = false;
