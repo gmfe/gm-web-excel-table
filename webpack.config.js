@@ -1,14 +1,13 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
+
+
 const isLocalDev = process.env.NODE_ENV === 'dev'
 
-const os = require('os');
-const HappyPack = require('happypack');
-const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
 
 const config = {
   entry: {
@@ -42,7 +41,7 @@ const config = {
             ],
             plugins: [
               "@babel/plugin-proposal-function-bind",
-              "@babel/plugin-proposal-class-properties",
+              "@babel/plugin-proposal-class-properties"
             ]
           }
         },
@@ -53,21 +52,6 @@ const config = {
         ],
 
       },
-      // {
-      //   test: /\.js$/,
-      //   loader: 'happypack/loader?id=js',
-      //   exclude: [
-      //     /node_modules\/(?!(react-gm|ANOTHER-ONE)\/).*/,
-      //     path.join(__dirname, 'src/third-js')
-      //   ],
-      //   options: {
-      //     presets: [
-      //       '@babel/preset-env',
-      //       '@babel/preset-react',
-      //     ]
-      //   }
-      //   // include: [ path.join(__dirname, 'node_modules/react-gm') ]
-      // },
       {
         test: /\.(ts|tsx)?$/,
         loader: 'ts-loader',
@@ -106,6 +90,16 @@ const config = {
         loader: 'svg-inline-loader'
       },
       {
+        test: /\.(jpe?g|png|gif|svg)$/,
+        use: [{
+          loader: 'url-loader',
+          options: {
+            limit: 1024,
+            name: 'img/[name].[hash:8].[ext]'
+          }
+        }]
+      },
+      {
         test: /(fontawesome-webfont|glyphicons-halflings-regular|iconfont)\.(woff|woff2|ttf|eot|svg)($|\?)/,
         use: [{
           loader: 'url-loader',
@@ -126,14 +120,6 @@ const config = {
     ]
   },
   plugins: [
-    // new HappyPack({
-    //   id: 'js',
-    //   threadPool: happyThreadPool,
-    //   loaders: [{
-    //     path: 'babel-loader',
-    //     query: { cacheDirectory: true }
-    //   }]
-    // }),
     // new HardSourceWebpackPlugin(), // https://github.com/mzgoddard/hard-source-webpack-plugin#hot-reloading-is-not-working
     new MiniCssExtractPlugin({
       filename: '[name].css',
@@ -145,17 +131,7 @@ const config = {
       appMountId: 'app',
       template: require('html-webpack-template'),
     }),
-    // [NOTICE] this dllplugin cannot work with dev-server
-    // new webpack.DllPlugin({
-    //   context: __dirname,
-    // 	name: "[name]_[hash]",
-    // 	path: path.join(__dirname, "dist/dll", "[name]-manifest.json"),
-    // }),
-    // new webpack.optimize.UglifyJsPlugin({
-    //   minimize: true,
-    //   sourceMap: true,
-    //   include: /\.min\.js$/,
-    // })
+
   ],
   optimization: {
     runtimeChunk: 'single',
@@ -169,6 +145,23 @@ const config = {
       }
     }
   }
+}
+
+if (!isLocalDev) {
+  config.plugins.push(new HardSourceWebpackPlugin())
+  config.plugins.push(
+    new UglifyJsPlugin({
+      minimize: true
+    })
+  );
+  // [NOTICE] this dllplugin cannot work with dev-server
+  config.plugins.push(
+    new webpack.DllPlugin({
+      context: __dirname,
+      name: "[name]_[hash]",
+      path: path.join(__dirname, "dist/dll", "[name]-manifest.json"),
+    }),
+  )
 }
 
 module.exports = config;

@@ -1,21 +1,12 @@
 
 
-import 'antd/lib/select/style/index.css'
-import 'antd/lib/spin/style/index.css'
 import './index.less'
-import 'react-gm/src/index.less'
-// import { MoreSelect } from 'react-gm/lib'
-
-import { Select, Spin } from 'antd';
-
-import { FilterSelect, DropSelect, Flex, MoreSelect } from 'react-gm'
-
+import { MoreSelect } from 'react-gm'
 import debounce from 'lodash/debounce';
 import React, { Component, useMemo } from 'react';
 import { WithInputFocus } from '../with-input-focus';
 import { MoveEditType, TableControllerUtil, WithKeyboardHandlerProviderProps, CellUniqueObject } from '../../../../../components'
 
-const Option = Select.Option;
 
 
 interface SearchSelectData {
@@ -94,31 +85,6 @@ export class SearchSelect extends Component<{
           text: `${user.name.first} ${user.name.last} ${value}`,
           value: `${user.name.first} ${user.name.last}`,
         }));
-
-        // const dataGroup = [{
-        //   label: '夏天',
-        //   children: [{
-        //     value: 1,
-        //     text: '科技园'
-        //   }, {
-        //     value: 2,
-        //     text: '科技园'
-        //   }, {
-        //     value: 3,
-        //     text: '大新'
-        //   }]
-        // }, {
-        //   label: '冬天',
-        //   children: [{
-        //     value: 4,
-        //     text: '西乡'
-        //   }, {
-        //     value: 5,
-        //     text: '固戍'
-        //   }]
-        // }]
-
-
         this.setState({
           fetching: false,
           data: [{ label: 'x', children: data }],
@@ -175,25 +141,8 @@ export class SearchSelect extends Component<{
 
 
   render() {
-    const { fetching, data, showMoreSelectPopWindow } = this.state;
-    const { onSelect, value, cell, handleKeyUp, onEditStart } = this.props;
-
-    // if (!editing) {
-    //   this._focused = false;
-    //   if (this._inputRef) {
-    //     this._inputRef.blur();
-    //   }
-    // } else {
-    //   if (!this._focused) {
-    //     if (this._inputRef) {
-    //       this._inputRef.focus();
-    //       this._focused = true;
-    //       if (this._inputRef.value) {
-    //         this._inputRef.selectionStart = this._inputRef.selectionEnd = this._inputRef.value.length;
-    //       }
-    //     }
-    //   }
-    // }
+    const { data } = this.state;
+    const { onSelect, value, handleKeyUp, onEditStart } = this.props;
 
     return (
       <div
@@ -205,43 +154,6 @@ export class SearchSelect extends Component<{
           }
         }}
       >
-        {/* <input
-          value={value}
-          type="text"
-          className="gm-search-select-input"
-          onChange={(e: any) => {
-            onSelect(e.target.value);
-            this.fetchUser(e.target.value);
-          }}
-          onKeyUp={(e: React.KeyboardEvent) => {
-            if (data.length) {
-              return;
-            }
-            handleKeyUp(e, value)
-          }}
-          onKeyDown={this.handleInputKeyDown}
-          onFocus={onEditStart}
-          ref={getInputRef}
-        /> */}
-
-        {/* <QuickDetail first={{ a: 1 }} /> */}
-        {/* <Select
-          showSearch
-          open={data.length > 0 || fetching}
-          value={value}
-          showArrow={false}
-          filterOption={false}
-          className="gm-search-select"
-          onChange={this.handleChange}
-          onSelect={(value: any) => { onSelect(value); }}
-          onInputKeyDown={this.handleInputKeyDown}
-          notFoundContent={fetching ? <Spin size="small" /> : null}
-          // ref={(c: any) => { if (c) { this._selectRef = c; }}}s
-        >
-          {data.map((d: SearchSelectData) => (
-            <Option key={d.value}>{d.text}</Option>
-          ))}
-        </Select> */}
 
         <MoreSelect
           data={data}

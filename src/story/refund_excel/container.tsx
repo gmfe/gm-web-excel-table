@@ -5,9 +5,9 @@ import { configOrderTable1Columns } from './config';
 import { Data_IRefundExcel } from './interface';
 import { GMTableExcelStaticConfigWrapper, SearchRenderProps, MoveEditType } from '../../components';
 
+import 'react-gm/src/index.less'
 import './style/index.less';
 
-// import times from 'lodash/times'
 
 const searchKeys = [
   'orderName',

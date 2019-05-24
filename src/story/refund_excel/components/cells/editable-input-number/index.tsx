@@ -1,9 +1,8 @@
 
 
 import React, { Component } from 'react'
-import 'antd/lib/input/style/index.css'
 import './index.less'
-// import { Input } from 'antd';
+
 import { WithKeyboardHandlerProviderProps } from '../../../../../components'
 import { WithInputFocus } from '../with-input-focus';
 

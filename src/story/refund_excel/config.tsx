@@ -25,6 +25,8 @@ import {
 import HoverIcon from '../../components/hover-icon/hover-icon';
 import { CellInfo } from 'react-table';
 
+import { SvgBluetooth } from 'gm-svg'
+
 export enum GM_REFUND_TABLE_COLUMNS_KEYS {
   number = 'number', // 序号
   orderName = 'orderName', // 商品名
@@ -134,7 +136,9 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
               key="minus"
               Placeholder={() => <div style={{ width: 18, display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: MinusSquareSvg }} />}
               Hover={() => <div style={{ width: 18, display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: MinusSquareClickedSvg }} />}
-            />
+            />,
+
+            <SvgBluetooth key="123" />
           ]
         )
       },
@@ -154,7 +158,6 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
           rowKey: original.rowKey,
         };
         const isEditing = original.tableController.query.isEditing(cellObj);
-        // console.log(isEditing, index, 'indexindexindex')
         return (
           <KeyBoardSearchSelect
             cell={cellObj}

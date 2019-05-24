@@ -5,6 +5,7 @@ declare module '*/triesearch';
 declare module 'uniqid';
 
 declare module 'react-gm';
+declare module 'gm-svg';
 
 
 declare module 'react-gm/lib';
