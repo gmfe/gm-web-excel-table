@@ -1,8 +1,5 @@
 
 
-// import "antd/dist/antd.css";
-
-
 import * as React from 'react';
 import { configOrderTable1Columns } from './config';
 import { Data_IRefundExcel } from './interface';
@@ -66,14 +63,16 @@ export default class TabelExcelContainer extends React.PureComponent<any, any> {
         }}
 
         tableConfig={{
-          bordered: true,
-          scroll: { x: 'max-content' },
+          showPagination: false,
+          resizable: false,
+          style: { height: 400 }
+          // scroll: { x: 'max-content' },
           // scroll: { x: 8000 },
         }}
 
         containerStyle={{
-          height: 400,
-          overflowY: 'scroll',
+          // height: 400,
+          // overflowY: 'scroll',
           border: '1px solid #ccc',
         }}
 

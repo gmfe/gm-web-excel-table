@@ -2,8 +2,9 @@
 import * as React from 'react'
 import { IColumnManager, ConfigColumnProps, GMExtendedColumnProps } from './interface';
 import { IWeekSize, WithColumnRowManagerConfig, IWeekSizeRange } from './interface';
-import { ColumnProps } from 'antd/lib/table';
 import { _GM_TABLE_SCROLL_CELL_PREFIX_ } from '../constants';
+import { CellInfo, TableCellRenderer } from 'react-table';
+
 
 
 
@@ -56,16 +57,16 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
         this._tableContainerDom = container;
       }
 
-      columnsMaptoCells = (data: any[], columns: ColumnProps<any>[]): any[][] => {
-        return data.map((rowData: any) => {
-          return columns.map(column => {
-            return {
-              ...column,
-              value: column.dataIndex ? rowData[column.dataIndex] : '',
-            }
-          })
-        })
-      }
+      // columnsMaptoCells = (data: any[], columns: Column[]): any[][] => {
+      //   return data.map((rowData: any) => {
+      //     return columns.map(column => {
+      //       return {
+      //         ...column,
+      //         value: column.dataIndex ? rowData[column.dataIndex] : '',
+      //       }
+      //     })
+      //   })
+      // }
 
       public _getCellDom(tableContainerDom: HTMLElement, rowIndex: number, columnIndex: number): HTMLElement | undefined {
         const tbody = tableContainerDom.children[0].children[0].children[0];
@@ -98,11 +99,9 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
           <Target
             {...this.props}
             onTableLoad={this.onTableLoaded}
-
             columns={this.state.columns}
             columnRowManager={this._columnRowManager}
-            columnsMapData={this.columnsMaptoCells(data, this.state.columns)}
-
+            // columnsMapData={this.columnsMaptoCells(data, this.state.columns)}
           // TODO 需要有种机制 标记最初的来源负责人是哪
           />
         )
@@ -116,49 +115,62 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
 }
 
 
-export function withUniqueEditableColumnsProps(data: GMExtendedColumnProps<any>[]): GMExtendedColumnProps<any>[] {
+export function withUniqueEditableColumnsProps(data: GMExtendedColumnProps[]): GMExtendedColumnProps[] {
   return data.map((d, dataIndex) => {
-    if (d.uniqueEditable) {
-      if (!d.onCell) {
-        d.onCell = (record: any, rowIndex: any) => {
-          return {
-            onClick: (_: any) => {
-              record.tableController.edit({
-                columnKey: d.key,
-                rowKey: record.rowKey,
-              });
-            },
-            // onBlur: (e: any) => {
-            //   record.tableController.cancelEdit({
-            //     columnKey: GM_REFUND_TABLE_COLUMNS_KEYS.orderName,
-            //     rowKey: record.rowKey,
-            //   });
-            // }
-            // onDoubleClick: event => {}, // double click row
-            // onContextMenu: event => {}, // right button click row
-            // onMouseEnter: event => {}, // mouse enter row
-            // onMouseLeave: event => {}, // mouse leave row
-          };
-        }
-      }
-    }
+    // if (d.uniqueEditable) {
+    //   if (!d.onCell) {
+    //     d.onCell = (record: any, rowIndex: any) => {
+    //       return {
+    //         onClick: (_: any) => {
+    //           record.tableController.edit({
+    //             columnKey: d.key,
+    //             rowKey: record.rowKey,
+    //           });
+    //         },
+    //         // onBlur: (e: any) => {
+    //         //   record.tableController.cancelEdit({
+    //         //     columnKey: GM_REFUND_TABLE_COLUMNS_KEYS.orderName,
+    //         //     rowKey: record.rowKey,
+    //         //   });
+    //         // }
+    //         // onDoubleClick: event => {}, // double click row
+    //         // onContextMenu: event => {}, // right button click row
+    //         // onMouseEnter: event => {}, // mouse enter row
+    //         // onMouseLeave: event => {}, // mouse leave row
+    //       };
+    //     }
+    //   }
+    // }
 
-    const oldRender = d.render;
-    d.render = (text: any, record: any, index: number) => {
+    const OldCellRender = d.Cell;
+    d.Cell = (cell: CellInfo, column: any) => {
       let style: any = { width: '100%', height: '100%' }
-      if (d.cellWidth) style.width = d.cellWidth;
-      if (d.minWidth) style.minWidth = d.minWidth;
-      if (d.maxWidth) style.maxWidth = d.maxWidth;
+      // if (d.cellWidth) style.width = d.cellWidth;
+      // if (d.minWidth) style.minWidth = d.minWidth;
+      // if (d.maxWidth) style.maxWidth = d.maxWidth;
       return (
         <div
           style={style}
           className="gm-web-table-cell"
-          id={`${_GM_TABLE_SCROLL_CELL_PREFIX_}${d.key}${record.rowKey}`}
+          // onClick={() => {
+          //   console.log(cell, 'onEditStartonEditStart')
+          // }}
+          id={`${_GM_TABLE_SCROLL_CELL_PREFIX_}${d.key}${cell.original.rowKey}`}
         >
-          {oldRender ? oldRender(text, record, index) : text}
+          {OldCellRender ? ( OldCellRender instanceof Function ?  OldCellRender(cell, column) : OldCellRender) : cell.value}
         </div>
       )
     }
+
+    const OldHeaderRender = d.Header;
+    d.Header = (cell: CellInfo, column: any) => {
+      return (
+        <div className="gm-web-table-header-cell-inner">
+          {OldHeaderRender ? ( OldHeaderRender instanceof Function ?  OldHeaderRender(cell, column) : OldHeaderRender) : cell.value}
+        </div>
+      )
+    }
+
 
     d.static = {
       index: dataIndex,

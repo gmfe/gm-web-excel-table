@@ -36,7 +36,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
       data: any[]
       tableKey: string
       dataManager: IDataManager<any>
-      columns: GMExtendedColumnProps<any>[]
+      columns: GMExtendedColumnProps[]
     }, {
       [key: string]: any,
       editingToggle: boolean,
@@ -69,6 +69,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
             isEditing: (obj: CellUniqueObject) => { return this._editingMap.has(this.CellUniqueObject2Id(obj)) },
             isCellOnFirstRow: this.isCellOnFirstRow,
             isCellOnLastRow: this.isCellOnLastRow,
+            getCellPosition: this.getCellPosition.bind(this),
           },
           move: {
             moveToNextEditableCell: this.moveToNextEditableCell,
@@ -98,7 +99,11 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
       public CellUniqueObject2Id(obj: CellUniqueObject) { return `${obj.columnKey}-${obj.rowKey}` }
       public PositionId(pos: CellUniquePosition) { return `${pos.col}-${pos.row}` }
 
-      public getCell(nextCol: number, nextRow: number): CellUniqueObject | undefined {
+      public getCellPosition(cell: CellUniqueObject): CellUniquePositionLinkedList | undefined {
+        return this._cellIdQueryPositionMap.get(this.CellUniqueObject2Id(cell));
+      }
+
+      public getCellByPosition(nextCol: number, nextRow: number): CellUniqueObject | undefined {
         const nextCell = this._cellPositionQueryIdMap.get(this.PositionId({
           col: nextCol,
           row: nextRow,
@@ -125,14 +130,16 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
       /**
        * 可编辑单元格映射对象，用于作为是否更新可编辑态矩阵的索引
        *
-       * @param {GMExtendedColumnProps<any>[]} columns
+       * @param {GMExtendedColumnProps[]} columns
        * @param {any[]} data
        * @returns
        */
-      public editableCellMarixUpdateIndex(columns: GMExtendedColumnProps<any>[], data: any[]) {
-        let ed_columns: GMExtendedColumnProps<any>[] = [];
+      public editableCellMarixUpdateIndex(columns: GMExtendedColumnProps[], data: any[]) {
+        let ed_columns: GMExtendedColumnProps[] = [];
         columns.forEach((c, index) => {
-          if (c.editable) ed_columns.push({ key: `${c.key}-${index}` });
+          if (c.editable) {
+            ed_columns.push({ key: `${c.key}-${index}` });
+          }
         });
         return {
           columns: ed_columns,
@@ -147,14 +154,17 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
           console.log(context, 'listenKeyDown context')
           if (context.args) {
             if (context.args.keyCode === 'Tab') {
-              const cell = this._editingCell || this.getCell(0, 0);
+              console.log(this._editingCell, '_editingCellv_editingCell')
+              const cell = this._editingCell || this.getCellByPosition(0, 0);
               if (cell) {
                 this.moveToNextEditableCell(MoveEditType.tab, cell);
               }
             }
           }
         });
+
         this.updateTableCellMatrix();
+        this._cacheEditableCellMarixUpdateIndex = this.editableCellMarixUpdateIndex(this.props.columns, this.props.data);
       }
 
 
@@ -222,12 +232,22 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
           });
         });
 
-        console.log('表格行列数据更新!');
+        console.log('表格行列数据更新!', this._cellIdQueryPositionMap);
+      }
+
+      __logCell = (cell: CellUniqueObject, text: string) => {
+        const position = this.getCellPosition(cell);
+        if (position) {
+          console.log(`[tablerController-log] ${position.row}行${position.col}列 ${text}`);
+        }
       }
 
       edit(obj: CellUniqueObject, isUniqueEdit: boolean = true, callback: Function = () => { }) {
+        this.__logCell(obj, isUniqueEdit ? '进入唯一编辑状态' : '进入编辑状态');
+        // debugger
+        // NOTICE moreSelect input的onFocus会触发！！
         const itemId = this.CellUniqueObject2Id(obj);
-        if (this._editingMap.get(itemId)) {
+        if (this._editingMap.has(itemId)) {
           return;
         }
         if (isUniqueEdit) {
@@ -239,13 +259,18 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
       }
 
       cancelEdit = (obj: CellUniqueObject) => {
+        this.__logCell(obj, '取消编辑状态');
         const itemId = this.CellUniqueObject2Id(obj);
-        this._editingMap.delete(itemId);
-        this.setState({ editingToggle: !this.state.editingToggle });
+        if (this._editingMap.has(itemId)) {
+          this._editingMap.delete(itemId);
+          this._editingCell = undefined;
+          this.setState({ editingToggle: !this.state.editingToggle });
+        }
       }
 
       getScroller() {
         let xScroller: HTMLElement | null = null;
+        // TODO need to change
         if (document) {
           xScroller = document.querySelector(`#${_GM_TABLE_SCROLL_Y_CONTAINER_}${this.props.tableKey} .ant-table-content .ant-table-scroll .ant-table-body`);
         }
@@ -320,7 +345,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
             });
           }
         } else {
-          const nextCell = this.getCell(nextCol, nextRow);
+          const nextCell = this.getCellByPosition(nextCol, nextRow);
           if (nextCell) {
             this.edit(nextCell, true, () => this.scroll2Cell(nextCell));
           }
@@ -352,7 +377,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
             });
           }
         } else {
-          const nextCell = this.getCell(nextCol, nextRow);
+          const nextCell = this.getCellByPosition(nextCol, nextRow);
           if (nextCell) {
             this.edit(nextCell, true, () => this.scroll2Cell(nextCell));
           }
@@ -382,7 +407,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
             }
           }
         } else {
-          const nextCell = this.getCell(nextCol, nextRow);
+          const nextCell = this.getCellByPosition(nextCol, nextRow);
           // console.log(nextCell, 'moveToPreviousEditableCell nextCell')
           if (nextCell) {
             if (currentPositionOfCell.row === nextRow + 1) {
@@ -419,7 +444,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
               if (this._lastCell) {
                 const position = this._cellIdQueryPositionMap.get(this.CellUniqueObject2Id(this._lastCell));
                 if (position) {
-                  const lastRowFisrtCell = this.getCell(0, position.row);
+                  const lastRowFisrtCell = this.getCellByPosition(0, position.row);
                   lastRowFisrtCell && this.edit(lastRowFisrtCell);
                 }
               }
@@ -432,7 +457,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
             }
           }
         } else {
-          const nextCell = this.getCell(nextCol, nextRow);
+          const nextCell = this.getCellByPosition(nextCol, nextRow);
           console.log(currentPositionOfCell, nextCell, 'moveToNextEditableCell  currentPositionOfCell nextCell')
           if (nextCell) {
             if (currentPositionOfCell.row === nextRow - 1) {

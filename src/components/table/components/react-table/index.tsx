@@ -1,16 +1,22 @@
 
-import 'antd/lib/table/style/index.css';
+import "react-table/react-table.css";
+import 'react-table-hoc-fixed-columns/lib/styles.css'
 import './index.less'
+
 import * as React from 'react';
 import classnames from 'classnames'
 import { GMTableExcelStaticConfig, _GM_TABLE_SCROLL_Y_CONTAINER_ } from "../../constants";
-import { GMExcelTableProps } from './interface'
-import Table from 'antd/lib/table';
+import { GMTableComponentProps } from './interface'
 import { TweenOneGroup } from 'rc-tween-one';
 
+import ReactTable, { TableProps } from "react-table";
+import withFixedColumns from "react-table-hoc-fixed-columns";
+const ReactTableFixedColumns = withFixedColumns(ReactTable) as React.ComponentClass<Partial<TableProps<any, any>>, any>;
+
+
 export class TableRef {
-  public component: GMTableExcel;
-  constructor(component: GMTableExcel) {
+  public component: GMTableComponent;
+  constructor(component: GMTableComponent) {
     this.component = component;
   }
   public get props() {
@@ -47,13 +53,13 @@ const AnimateBody = (props: any) => {
 };
 
 
-export class GMTableExcel extends React.Component<GMExcelTableProps<any> & GMTableExcelStaticConfig, any> {
+export class GMTableComponent extends React.Component<GMTableComponentProps<any> & GMTableExcelStaticConfig, any> {
 
   static defaultProps = {
     containerStyle: {}
   }
 
-  constructor(props: GMExcelTableProps<any> & GMTableExcelStaticConfig) {
+  constructor(props: GMTableComponentProps<any> & GMTableExcelStaticConfig) {
     super(props);
   }
 
@@ -61,20 +67,6 @@ export class GMTableExcel extends React.Component<GMExcelTableProps<any> & GMTab
     if (this.props.tableRef) {
       this.props.tableRef(new TableRef(this));
     }
-
-    // this.props.dataManager.addEventListener(DataManagerEvents.added, () => {
-    //   console.log('data added');
-    //   this.setState({ isPageTween: false });
-    // });
-    // this.props.dataManager.addEventListener(DataManagerEvents.deleted, () => {
-    //   console.log('data deleted');
-    //   this.setState({ isPageTween: false });
-    // })
-
-  }
-
-  onClickCell = () => {
-
   }
 
   tableDataWithProps = () => {
@@ -84,6 +76,8 @@ export class GMTableExcel extends React.Component<GMExcelTableProps<any> & GMTab
     }));
   }
 
+  // static dataMap2
+
   render() {
     const {
       tableKey,
@@ -92,7 +86,7 @@ export class GMTableExcel extends React.Component<GMExcelTableProps<any> & GMTab
       containerStyle,
       tableConfig,
     } = this.props
-    console.log(this.props, 'GMTableExcelGMTableExcel')
+    console.log(this.props, 'GMTableComponent')
     const dataWithProps = this.tableDataWithProps();
     return (
       <div
@@ -100,23 +94,12 @@ export class GMTableExcel extends React.Component<GMExcelTableProps<any> & GMTab
         id={`${_GM_TABLE_SCROLL_Y_CONTAINER_}${tableKey}`}
         className={classnames("gm-excel-table", className)}
       >
-        <Table
-          columns={columns}
-          dataSource={dataWithProps}
+        <ReactTableFixedColumns
           {...tableConfig}
-          rowKey={(d: any) => d.rowKey}
-          components={{ body: { wrapper: AnimateBody } }}
-
-          // 暂不开放选择
-          // rowSelection={{
-          //   onChange: (selectedRowKeys, selectedRows) => {
-          //     console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-          //   },
-          //   getCheckboxProps: record => ({
-          //     disabled: record.name === 'Disabled User', // Column configuration not to be checked
-          //     name: record.name,
-          //   }),
-          // }}
+          data={dataWithProps} // The data prop should be immutable and only change when you want to update the table
+          columns={columns}
+          className="-striped -highlight"
+          // resolveData `resolveData` runs when the `data` prop changes!
         />
       </div>
     )

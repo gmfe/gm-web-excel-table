@@ -3,11 +3,17 @@
 import 'antd/lib/select/style/index.css'
 import 'antd/lib/spin/style/index.css'
 import './index.less'
-import { Select, Spin, Input } from 'antd';
-import React, { Component } from 'react';
+import 'react-gm/src/index.less'
+// import { MoreSelect } from 'react-gm/lib'
+
+import { Select, Spin } from 'antd';
+
+import { FilterSelect, DropSelect, Flex, MoreSelect } from 'react-gm'
+
 import debounce from 'lodash/debounce';
-import { MoveEditType, TableControllerUtil, WithKeyboardHandlerProviderProps } from '../../../../../components'
+import React, { Component, useMemo } from 'react';
 import { WithInputFocus } from '../with-input-focus';
+import { MoveEditType, TableControllerUtil, WithKeyboardHandlerProviderProps, CellUniqueObject } from '../../../../../components'
 
 const Option = Select.Option;
 
@@ -21,14 +27,20 @@ interface SearchSelectData {
 // 商品搜索选择
 export class SearchSelect extends Component<{
   value?: string;
+  cell: CellUniqueObject;
   getInputRef: (c: any) => void;
   onSelect: (value: any) => void;
+  withInputFous: {
+    cancelEdit: (fc: Function) => void,
+    edit: (fc: Function) => void,
+  },
   handleKeyUp: (e: React.KeyboardEvent, value?: string | number) => void;
 } & WithKeyboardHandlerProviderProps, any> {
 
   private _selectRef: any;
   private _lastFetchId: number = 0;
   private _inputRef?: any;
+  private _popRef: any;
 
   static defaultProps = {
     onSelect: () => { }
@@ -42,13 +54,22 @@ export class SearchSelect extends Component<{
       data: [],
       fetching: false,
       value: props.value || undefined,
+      showMoreSelectPopWindow: false,
+      selected: [],
     }
   }
 
   componentDidMount() {
-    // fetchData
-    // this.focusInput();
-    // TODO 控制器需要focus
+    this.props.withInputFous.cancelEdit(() => {
+      if (this._popRef) {
+        this._popRef.close();
+      }
+    });
+    this.props.withInputFous.edit(() => {
+      if (this._popRef) {
+        this._popRef.show();
+      }
+    });
   }
 
   focusInput = () => {
@@ -62,7 +83,7 @@ export class SearchSelect extends Component<{
     this._lastFetchId += 1;
     const fetchId = this._lastFetchId;
     this.setState({ data: [], fetching: true });
-    fetch('https://randomuser.me/api/?results=5')
+    return fetch('https://randomuser.me/api/?results=5')
       .then(response => response.json())
       .then(body => {
         if (fetchId !== this._lastFetchId) {
@@ -70,14 +91,37 @@ export class SearchSelect extends Component<{
           return;
         }
         const data = body.results.map((user: any) => ({
-          text: `${user.name.first} ${user.name.last}`,
+          text: `${user.name.first} ${user.name.last} ${value}`,
           value: `${user.name.first} ${user.name.last}`,
         }));
-        this.setState({ data, fetching: false }, () => {
-          // console.log(this._selectRef, 'this._selectRef')
-          // if (this._selectRef) {
-          //   this._selectRef.rcSelect.inputRef.focus();
-          // }
+
+        // const dataGroup = [{
+        //   label: '夏天',
+        //   children: [{
+        //     value: 1,
+        //     text: '科技园'
+        //   }, {
+        //     value: 2,
+        //     text: '科技园'
+        //   }, {
+        //     value: 3,
+        //     text: '大新'
+        //   }]
+        // }, {
+        //   label: '冬天',
+        //   children: [{
+        //     value: 4,
+        //     text: '西乡'
+        //   }, {
+        //     value: 5,
+        //     text: '固戍'
+        //   }]
+        // }]
+
+
+        this.setState({
+          fetching: false,
+          data: [{ label: 'x', children: data }],
         });
       });
   }
@@ -106,17 +150,62 @@ export class SearchSelect extends Component<{
     }
   }
 
+  handleEnter = (index: number) => {
+    console.log(index, this.state.coolData.list[index]);
+    this.setState({
+      input: this.state.coolData.list[index].name,
+      show: false
+    });
+  }
+
+  onHide = () => {
+    this.setState({
+      show: false
+    });
+  }
+
+
+
+  registerRef = (c: any) => {
+    this._selectRef = c;
+    if (c) {
+
+    }
+  }
+
+
   render() {
-    const { fetching, data } = this.state;
-    const { onSelect, value, handleKeyUp, getInputRef, onInputFocus } = this.props;
+    const { fetching, data, showMoreSelectPopWindow } = this.state;
+    const { onSelect, value, cell, handleKeyUp, onEditStart } = this.props;
+
+    // if (!editing) {
+    //   this._focused = false;
+    //   if (this._inputRef) {
+    //     this._inputRef.blur();
+    //   }
+    // } else {
+    //   if (!this._focused) {
+    //     if (this._inputRef) {
+    //       this._inputRef.focus();
+    //       this._focused = true;
+    //       if (this._inputRef.value) {
+    //         this._inputRef.selectionStart = this._inputRef.selectionEnd = this._inputRef.value.length;
+    //       }
+    //     }
+    //   }
+    // }
 
     return (
       <div
-        style={{ position: 'relative' }}
         className="gm-search-select-container"
-        onClick={(e: React.MouseEvent) => { e.stopPropagation(); }}
+        style={{ width: '100%', height: '100%' }}
+        onClick={(e: React.MouseEvent) => {
+          if (this._popRef) {
+            this._popRef.show();
+          }
+        }}
       >
-        <Input
+        {/* <input
           value={value}
           type="text"
           className="gm-search-select-input"
@@ -131,20 +220,19 @@ export class SearchSelect extends Component<{
             handleKeyUp(e, value)
           }}
           onKeyDown={this.handleInputKeyDown}
-          onFocus={onInputFocus}
+          onFocus={onEditStart}
           ref={getInputRef}
-        />
-        <Select
-          // autoFocus
+        /> */}
+
+        {/* <QuickDetail first={{ a: 1 }} /> */}
+        {/* <Select
           showSearch
           open={data.length > 0 || fetching}
           value={value}
           showArrow={false}
           filterOption={false}
-          // onSearch={this.fetchUser}
           className="gm-search-select"
           onChange={this.handleChange}
-          // defaultActiveFirstOption={false}
           onSelect={(value: any) => { onSelect(value); }}
           onInputKeyDown={this.handleInputKeyDown}
           notFoundContent={fetching ? <Spin size="small" /> : null}
@@ -153,7 +241,36 @@ export class SearchSelect extends Component<{
           {data.map((d: SearchSelectData) => (
             <Option key={d.value}>{d.text}</Option>
           ))}
-        </Select>
+        </Select> */}
+
+        <MoreSelect
+          data={data}
+          isGroupList
+          // multiple
+          selected={this.state.selected}
+          onSelect={(selected: any) => {
+            console.log(selected, 'selectedselected')
+            onSelect(selected.text)
+            this.setState({ selected })
+          }}
+          popRef={(pop: any) => { this._popRef = pop }}
+          popoverType={'click'}
+          onSearch={this.fetchUser}
+          onInputKeyUp={(e: React.KeyboardEvent) => {
+            if (data.length) {
+              return;
+            }
+            handleKeyUp(e, value)
+          }}
+          onInputFocus={() => {
+            onEditStart();
+          }}
+        >
+          <p>
+            {value}
+          </p>
+        </MoreSelect>
+
       </div>
     )
   }

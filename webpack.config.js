@@ -6,6 +6,10 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const isLocalDev = process.env.NODE_ENV === 'dev'
 
+const os = require('os');
+const HappyPack = require('happypack');
+const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
+
 const config = {
   entry: {
     main: ['./src/components/index.tsx'],
@@ -28,9 +32,42 @@ const config = {
     rules: [
       {
         test: /\.(js|jsx)$/,
-        use: 'babel-loader',
-        exclude: /node_modules/
+        use: {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+            presets: [
+              '@babel/preset-react',
+              '@babel/preset-env',
+            ],
+            plugins: [
+              "@babel/plugin-proposal-function-bind",
+              "@babel/plugin-proposal-class-properties",
+            ]
+          }
+        },
+        // exclude: /node_modules/,
+        exclude: [
+          /node_modules\/(?!(react-gm|gm-util)\/).*/,
+          path.join(__dirname, 'src/third-js')
+        ],
+
       },
+      // {
+      //   test: /\.js$/,
+      //   loader: 'happypack/loader?id=js',
+      //   exclude: [
+      //     /node_modules\/(?!(react-gm|ANOTHER-ONE)\/).*/,
+      //     path.join(__dirname, 'src/third-js')
+      //   ],
+      //   options: {
+      //     presets: [
+      //       '@babel/preset-env',
+      //       '@babel/preset-react',
+      //     ]
+      //   }
+      //   // include: [ path.join(__dirname, 'node_modules/react-gm') ]
+      // },
       {
         test: /\.(ts|tsx)?$/,
         loader: 'ts-loader',
@@ -68,6 +105,16 @@ const config = {
         test: /\.svg$/,
         loader: 'svg-inline-loader'
       },
+      {
+        test: /(fontawesome-webfont|glyphicons-halflings-regular|iconfont)\.(woff|woff2|ttf|eot|svg)($|\?)/,
+        use: [{
+          loader: 'url-loader',
+          options: {
+            limit: 1024,
+            name: 'font/[name].[hash:8].[ext]'
+          }
+        }]
+      }
     ]
   },
   resolve: {
@@ -79,6 +126,14 @@ const config = {
     ]
   },
   plugins: [
+    // new HappyPack({
+    //   id: 'js',
+    //   threadPool: happyThreadPool,
+    //   loaders: [{
+    //     path: 'babel-loader',
+    //     query: { cacheDirectory: true }
+    //   }]
+    // }),
     // new HardSourceWebpackPlugin(), // https://github.com/mzgoddard/hard-source-webpack-plugin#hot-reloading-is-not-working
     new MiniCssExtractPlugin({
       filename: '[name].css',

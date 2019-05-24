@@ -9,7 +9,8 @@ import { TableControllerUtil } from './tabelcontroller-util';
 export interface WithKeyboardHandlerProviderProps {
   handleKeyUp: (e: React.KeyboardEvent, value?: string | number) => void;
   moveToNextEditableCell: (type: MoveEditType) => void;
-  onInputFocus: (...args: any[]) => void;
+  onEditStart: () => void;
+  onEditEnd: () => void;
 }
 
 
@@ -34,9 +35,8 @@ export function WithKeyboardHandler(Target: React.ComponentClass<any, any>) {
       return (
         <Target
           {...this.props}
-          onInputFocus={() => {
-            tableController.edit(cell);
-          }}
+          onEditStart={() => { tableController.edit(cell); }}
+          onEditEnd={() => { tableController.cancelEdit(cell); }}
           handleKeyUp={(e: React.KeyboardEvent, value?: string | number) => {
             // e.preventDefault();
             TableControllerUtil.onInputKeyUp(e,{

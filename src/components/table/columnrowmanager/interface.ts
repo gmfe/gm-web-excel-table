@@ -1,11 +1,16 @@
-import { ColumnProps } from 'antd/lib/table';
+import { Column } from 'react-table';
+
 import { IDataManager } from '../datamanager/interface';
 
-export interface GMExtendedColumnProps<T> extends ColumnProps<T>{
+
+export interface GMExtendedColumnProps extends Column {
+  key: string;
+  fixed?: string;
+
   static?: any;
   _indexNumber?: number;
-  minWidth?: number;
-  maxWidth?: number;
+  // minWidth?: number;
+  // maxWidth?: number;
   cellWidth?: string | number;
   uniqueEditable?: boolean; // 用于高阶函数快速获得唯一编辑态
   editable?: boolean;       // 用于计算可编辑矩阵，光标移动时有效目标等，可编辑单元格必须指定
@@ -41,7 +46,7 @@ export interface IWeekSizeRange{
   }
 }
 
-export type IGetColumnsFunc = (props: ConfigColumnProps<any>, columnRowManager: IColumnManager) => GMExtendedColumnProps<any>[];
+export type IGetColumnsFunc = (props: ConfigColumnProps<any>, columnRowManager: IColumnManager) => GMExtendedColumnProps[];
 
 export interface WithColumnRowManagerConfig {
   getColumns: IGetColumnsFunc 
