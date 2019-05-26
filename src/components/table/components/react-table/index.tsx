@@ -5,15 +5,19 @@ import './index.less'
 
 import * as React from 'react';
 import classnames from 'classnames'
-import { GMTableExcelStaticConfig, _GM_TABLE_SCROLL_Y_CONTAINER_ } from "../../constants";
 import { GMTableComponentProps } from './interface'
-import { TweenOneGroup } from 'rc-tween-one';
-
 import ReactTable, { TableProps } from "react-table";
 import withFixedColumns from "react-table-hoc-fixed-columns";
+import { GMTableExcelStaticConfig, _GM_TABLE_SCROLL_Y_CONTAINER_ } from "../../constants";
+
 const ReactTableFixedColumns = withFixedColumns(ReactTable) as React.ComponentClass<Partial<TableProps<any, any>>, any>;
 
-
+/**
+ * 对外暴露的操作子
+ *
+ * @export
+ * @class TableRef
+ */
 export class TableRef {
   public component: GMTableComponent;
   constructor(component: GMTableComponent) {
@@ -29,28 +33,6 @@ export class TableRef {
     this.props.dataManager.onAdd([item], rowIndex);
   }
 }
-
-const AnimateBody = (props: any) => {
-  return (
-    <TweenOneGroup
-      component="tbody"
-      className="ant-table-tbody"
-      enter={[
-        { opacity: 0, y: -30, backgroundColor: '#fffeee', duration: 0 },
-        { opacity: 1, y: 0, duration: 250, ease: 'linear' },
-        { delay: 1000,  backgroundColor: '#fff', onEnd: () => {} },
-      ]}
-      leave={[
-        { duration: 400, opacity: 0 },
-        { height: 0, duration: 200, ease: 'easeOutQuad' },
-      ]}
-      appear={false}
-      exclusive
-    >
-      {props.children}
-    </TweenOneGroup>
-  )
-};
 
 
 export class GMTableComponent extends React.Component<GMTableComponentProps<any> & GMTableExcelStaticConfig, any> {
@@ -71,12 +53,8 @@ export class GMTableComponent extends React.Component<GMTableComponentProps<any>
 
   tableDataWithProps = () => {
     const { data, tableController } = this.props;
-    return data.map(d => ({ ...d,
-      tableController,
-    }));
+    return data.map(d => ({ ...d, tableController }));
   }
-
-  // static dataMap2
 
   render() {
     const {
@@ -85,8 +63,10 @@ export class GMTableComponent extends React.Component<GMTableComponentProps<any>
       className,
       containerStyle,
       tableConfig,
+      dataLoading,
+      data,
     } = this.props
-    console.log(this.props, 'GMTableComponent')
+    // console.log(this.props, 'GMTableComponent')
     const dataWithProps = this.tableDataWithProps();
     return (
       <div
@@ -96,9 +76,11 @@ export class GMTableComponent extends React.Component<GMTableComponentProps<any>
       >
         <ReactTableFixedColumns
           {...tableConfig}
+          pageSize={Math.max(data.length, 20)}
+          loading={dataLoading}
           data={dataWithProps} // The data prop should be immutable and only change when you want to update the table
           columns={columns}
-          className="-striped -highlight"
+          className="-highlight"
           // resolveData `resolveData` runs when the `data` prop changes!
         />
       </div>

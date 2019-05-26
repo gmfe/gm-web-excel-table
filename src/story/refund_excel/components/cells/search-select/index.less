@@ -1,25 +1,23 @@
-@base-z-index: 90;
+
 @import '../../../style/input.less';
+@import '../../../../../components/table/style/theme.less';
 @import '../../../../../components/table/style/function.less';
 
-.gm-search-select {
-  width : 100%;
-  height: 100%;
-}
 
 .gm-search-select-container {
-  .gm-search-select-input {
-    top          : 0;
-    left         : 0;
-    outline      : 0;
-    border-radius: 0px;
-    width        : 100%;
-    height       : 100%;
-    position     : absolute;
-    box-sizing   : border-box;
-    z-index      : @base-z-index;
+  .gm-more-select-selected {
+    padding: 0;
     .gme-common-input();
     width: 168px;
-    .Center(false, true);
+    .gm-more-select-selected-item{
+      width: 100%;
+      &>div.gm-flex-column{
+        display: inline-block;
+        .gme-common-input-text-style();
+        height: @GME-common-input-height;
+        line-height: @GME-common-input-height;
+      }
+    }
   }
+
 }

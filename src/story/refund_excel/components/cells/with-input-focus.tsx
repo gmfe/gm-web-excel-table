@@ -2,6 +2,15 @@
 import * as React from 'react';
 import { TableControllerInterface, WithKeyboardHandlerProviderProps } from '../../../../components';
 
+
+export interface WithInputFocusProviderProps{
+  getInputRef: (c: any) => void;
+  withInputFous: {
+    cancelEdit: (fc: Function) => void,
+    edit: (fc: Function) => void,
+  },
+}
+
 export function WithInputFocus(Target: React.ComponentClass<any, any>) {
 
   return class extends React.Component<{
@@ -16,28 +25,24 @@ export function WithInputFocus(Target: React.ComponentClass<any, any>) {
 
     startEdit = () => {
 
-      const position = this.props.tableController.query.getCellPosition(this.props.cell);
-      console.log(`[control-log] 当前${position && position.row}行${position && position.col}列 开始 编辑`)
-
-      const { onEditStart } = this.props;
+      // const position = this.props.tableController.query.getCellPosition(this.props.cell);
+      // console.log(`[control-log] 当前${position && position.row}行${position && position.col}列 开始 编辑`)
       this._focused = true;
       if (this._editFunction) {
         this._editFunction();
       } else {
         if (this._inputRef) {
-          console.log(this._inputRef, 'this._inputRef')
           this._inputRef.focus();
           if (this._inputRef.value) {
             this._inputRef.selectionStart = this._inputRef.selectionEnd = this._inputRef.value.length;
           }
         }
       }
-      // onEditStart();
     }
 
     endEdit = () => {
-      const position = this.props.tableController.query.getCellPosition(this.props.cell);
-      console.log(`[control-log] 当前${position && position.row}行${position && position.col}列 取消 编辑`)
+      // const position = this.props.tableController.query.getCellPosition(this.props.cell);
+      // console.log(`[control-log] 当前${position && position.row}行${position && position.col}列 取消 编辑`)
       const { onEditEnd } = this.props;
       this._focused = false;
       if (this._cancelEditFunction) {
@@ -56,9 +61,9 @@ export function WithInputFocus(Target: React.ComponentClass<any, any>) {
       }
     }
 
-    // componentWillUnmount() {
-    //   this.endEdit();
-    // }
+    componentWillUnmount() {
+      this.endEdit();
+    }
 
     componentDidUpdate() {
       const { editing } = this.props;

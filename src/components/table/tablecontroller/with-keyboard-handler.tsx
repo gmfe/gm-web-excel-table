@@ -35,7 +35,7 @@ export function WithKeyboardHandler(Target: React.ComponentClass<any, any>) {
       return (
         <Target
           {...this.props}
-          onEditStart={() => { tableController.edit(cell); }}
+          onEditStart={() => { tableController.onEditStart(cell); }}
           onEditEnd={() => { tableController.cancelEdit(cell); }}
           handleKeyUp={(e: React.KeyboardEvent, value?: string | number) => {
             // e.preventDefault();

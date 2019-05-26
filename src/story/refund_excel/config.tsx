@@ -1,9 +1,8 @@
 
 
 import * as React from 'react';
-import { Data_IRefundExcel, DataWithController_IRefundExcel } from './interface';
+import { Data_IRefundExcel } from './interface';
 
-import { Header } from './components/header';
 import SearchSelect from './components/cells/search-select';
 import EditableInputNumber from './components/cells/editable-input-number';
 
@@ -16,16 +15,13 @@ import PlusSquareClickedSvg from '../../static/icon/plus-square-clicked.svg'
 
 
 import {
-  IColumnManager,
   IGetColumnsFunc,
-  ConfigColumnProps,
   WithKeyboardHandler,
   GMExtendedColumnProps,
 } from '../../components';
 import HoverIcon from '../../components/hover-icon/hover-icon';
 import { CellInfo } from 'react-table';
 
-import { SvgBluetooth } from 'gm-svg'
 
 export enum GM_REFUND_TABLE_COLUMNS_KEYS {
   number = 'number', // 序号
@@ -40,35 +36,30 @@ export enum GM_REFUND_TABLE_COLUMNS_KEYS {
 }
 
 
-// dataManager
-// columnRowManager
-// tableController
-
-
 const KeyBoardSearchSelect = WithKeyboardHandler(SearchSelect);
 const KeyBoardEditableInputNumber = WithKeyboardHandler(EditableInputNumber);
 
 
 // 用于计算百分比占比的宽度列表
-const WIDTH_LIST = [
-  42,
-  78, // 74
-  194,
-  66,
-  148,
-  163,
-  55,
-  149,
-  107,
-];
-const TOTAL_WIDTH = WIDTH_LIST.reduce((a, b) => a + b, 0) / 100;
+// const WIDTH_LIST = [
+//   42,
+//   78, // 74
+//   194,
+//   66,
+//   148,
+//   163,
+//   55,
+//   149,
+//   107,
+// ];
+// const TOTAL_WIDTH = WIDTH_LIST.reduce((a, b) => a + b, 0) / 100;
 
 
-export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: ConfigColumnProps<Data_IRefundExcel>, columnrowmanager: IColumnManager) => {
+export const configOrderTable1Columns: IGetColumnsFunc = (componentProps) => {
 
   // 序号 | 商品名 | 商品分类 | 退货数 | 退货单价 | 补差 | 退货金额 | 退货批次 | 	操作人
 
-  const RenderKeyBoardEditableInputNumber = (key: string, dataIndex: string) => ({ original, value, viewIndex }: CellInfo) => {
+  const RenderKeyBoardEditableInputNumber = (key: string, dataIndex: string, className?: string) => ({ original, value, viewIndex }: CellInfo) => {
     const cell = { columnKey: key, rowKey: original.rowKey };
     const isEditing = original.tableController.query.isEditing(cell);
     const number = parseInt(value, 10);
@@ -77,6 +68,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
         cell={cell}
         value={number}
         editing={isEditing}
+        className={className}
         tableController={original.tableController}
         onChange={(value?: number) => {
           if (value) {
@@ -112,7 +104,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       key: 'action',
       fixed: 'left',
       Header: () => {
-        return <div style={{ width: 14, display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: ActionSvg }} />
+        return <div style={{ width: 14, display: 'inline-block', margin: 'auto' }} dangerouslySetInnerHTML={{ __html: ActionSvg }} />
       },
       minWidth: 61,
       maxWidth: 82,
@@ -137,12 +129,11 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
               Placeholder={() => <div style={{ width: 18, display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: MinusSquareSvg }} />}
               Hover={() => <div style={{ width: 18, display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: MinusSquareClickedSvg }} />}
             />,
-
-            <SvgBluetooth key="123" />
           ]
         )
       },
     },
+
 
     // 商品名
     {
@@ -152,17 +143,22 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       editable: true,
       uniqueEditable: true,
       minWidth: 173,
-      Cell: ({ value, original, viewIndex }: CellInfo, column: any) => {
+      className: 'cell-orderName',
+      sortable: false,
+      Cell: ({ value, original, viewIndex }: CellInfo) => {
         const cellObj = {
           columnKey: GM_REFUND_TABLE_COLUMNS_KEYS.orderName,
           rowKey: original.rowKey,
         };
         const isEditing = original.tableController.query.isEditing(cellObj);
+        // this is an ensure props by refund-table;
+        const { onSearchOrderName } = componentProps.custom;
         return (
           <KeyBoardSearchSelect
             cell={cellObj}
             value={value}
             editing={isEditing}
+            onSearch={onSearchOrderName}
             tableController={original.tableController}
             onSelect={(value: string) => {
               componentProps.dataManager.onUpdate({ orderName: value }, viewIndex);
@@ -179,6 +175,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       key: GM_REFUND_TABLE_COLUMNS_KEYS.orderCategory,
       accessor: 'category',
       minWidth: 32,
+      sortable: false,
     },
 
     // 退货数
@@ -189,7 +186,11 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       minWidth: 120,
       editable: true,
       uniqueEditable: true,
-      Cell: RenderKeyBoardEditableInputNumber(GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderNumber, 'returnOrderNumber'),
+      Cell: RenderKeyBoardEditableInputNumber(
+        GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderNumber,
+        'returnOrderNumber',
+        'returnOrderNumber'
+      ),
     },
 
     // 退货单价
@@ -200,7 +201,11 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       editable: true,
       uniqueEditable: true,
       minWidth: 126,
-      Cell: RenderKeyBoardEditableInputNumber(GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderPerPrice, 'returnOrderPerPrice'),
+      Cell: RenderKeyBoardEditableInputNumber(
+        GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderPerPrice,
+        'returnOrderPerPrice',
+        'returnOrderPerPrice'
+      ),
     },
 
     // 补差
@@ -217,6 +222,11 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
       minWidth: 105,
       key: GM_REFUND_TABLE_COLUMNS_KEYS.returnTotalPrice,
       accessor: 'returnTotalPrice',
+
+      // TODO 关联列值
+      // Cell: ({ value, original, viewIndex }: CellInfo, column: any) => {
+
+      // }
     },
 
     // 操作人
@@ -230,7 +240,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Config
   ]
 
   // return columns.map((c, i) => ({ ...c, width: c.fixed ? `${WIDTH_LIST[i] * (TOTAL_WIDTH * 100 / 1260) / TOTAL_WIDTH}vw` : undefined, cellWidth: `${WIDTH_LIST[i] * (TOTAL_WIDTH * 100 / 1260) / TOTAL_WIDTH}vw` }));
-  return columns.map((c, i) => ({ ...c, cellWidth: `${WIDTH_LIST[i] * (TOTAL_WIDTH * 100 / 1260) / TOTAL_WIDTH}vw` }));
+  return columns
 }
 
 

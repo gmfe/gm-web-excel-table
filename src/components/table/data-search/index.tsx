@@ -4,11 +4,19 @@ import { GMTableExcelSearchArgs } from '../constants';
 import { DataManagerEvents } from '../datamanager/interface';
 import { RowcolIndextoSelectedState } from '../utils/datamap';
 
-
 import TrieSearch  from '../../../third-js/triesearch';
 // https://www.npmjs.com/package/trie-search
 // 可能也不使用trie-tree 因为只能从开始搜索
 
+
+
+/**
+ * 字典搜索 / 表格内容全局搜索 高阶组件
+ *
+ * @export
+ * @param {React.ComponentClass<any, any>} Target
+ * @returns
+ */
 export function WithTableDataSearch(Target: React.ComponentClass<any, any>) {
 
   return (props: GMTableExcelSearchArgs) => {
@@ -24,7 +32,6 @@ export function WithTableDataSearch(Target: React.ComponentClass<any, any>) {
 
     return class extends React.Component<any, any> {
 
-      
       private _trieTree: any;
       private _fuseSearch?: Fuse<any, any>;
 
@@ -40,7 +47,7 @@ export function WithTableDataSearch(Target: React.ComponentClass<any, any>) {
         // 注册热键
         // this.initTrieSearch();
         this.initFuseSearch();
-        console.log(TrieSearch, indexKey, 'TrieSearch')
+        // console.log(TrieSearch, indexKey, 'TrieSearch')
       }
 
       onDataChanged = (...args: any) => {
@@ -96,7 +103,6 @@ export function WithTableDataSearch(Target: React.ComponentClass<any, any>) {
         // 订阅删除 订阅增加 订阅修改
         // console.log(dealwith, searchTrieKeys, this.props.dataManager, this.props.columnsMapData)
         // this.props.dataManager.addEventListener(DataManagerEvents.added, this.onDataAdded);
-
       }
 
       trieSearch = (text: string) => {

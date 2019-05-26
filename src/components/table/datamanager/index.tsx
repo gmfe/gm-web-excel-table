@@ -7,7 +7,7 @@ import uniqid from 'uniqid';
 
 
 
-// TODO 后续 initData 这里应该是传入 fetchData的逻辑
+
 type IData = any;
 
 /**
@@ -19,7 +19,7 @@ type IData = any;
  */
 export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>) {
 
-  return ({ initData, defaultData  }: GMConfigData<IData>) => {
+  return ({ initData, defaultData, fetchData }: GMConfigData<IData>) => {
     return class extends React.Component<any, any> {
 
       public _addedListeners: Function[]
@@ -28,11 +28,24 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
 
       constructor(props: any) {
         super(props);
-        this.state = { data: this.withRowKey(initData) };
+        this.state = {
+          data: this.withRowKey(initData),
+          dataLoading: false,
+        };
         this._addedListeners = [];
         this._removedListeners = [];
         this._changedListeners = [];
       }
+
+      componentWillMount() {
+        if (fetchData) {
+          this.setState({ dataLoading: true });
+          fetchData.then((d: any[]) => {
+            this.setState({ data: this.withRowKey(d), dataLoading: false })
+          })
+        }
+      }
+
 
       addEventListener = (eventKeys: DataManagerEvents, listener: Function) => {
         // 简单版实现，具体需要注意一些特殊情况
@@ -129,7 +142,7 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
         app.transactionManager().commit(groupTransaction);
       }
 
-      public dataManager () : IDataManager<any> {
+      public dataManager(): IDataManager<any> {
         return {
           onAdd: this.handleAdd,
           onDelete: this.handleDelete,
@@ -150,6 +163,7 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
           <WrappedComponent
             {...this.props}
             data={this.state.data}
+            dataLoading={this.state.dataLoading}
             dataManager={this.dataManager()}
           />
         )

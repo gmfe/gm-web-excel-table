@@ -1,19 +1,12 @@
 @import '../../../style/input.less';
 
-.gm-editable-input-number{
-  .ant-input-number{
-    width: 100%;
-    outline: 0;
-    border: 0;
-    box-shadow: none;
-  }
+.gm-excel-editable-input-number {
   input{
     border: 0;
     border-radius: 0;
     box-shadow: none;
     .gme-common-input();
-  }
-  .ant-input:focus{
-    box-shadow: none;
+    .gme-common-input-text-style();
+    width: 100px;
   }
 }

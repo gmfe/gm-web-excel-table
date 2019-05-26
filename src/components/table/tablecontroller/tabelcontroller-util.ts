@@ -100,10 +100,6 @@ export class TableControllerUtil {
         handler.moveToNextEditableCell(MoveEditType.enter);
         break;
       }
-      default: {
-        this.isInputSelectionArriveHorizonBoundary = false;
-        this.isInputSelectionArriveVerticalBoundary = false;
-      }
     }
   }
 }

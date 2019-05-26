@@ -57,6 +57,7 @@ export type MoveEditingCellFunction = (type: MoveEditType, cell: CellUniqueObjec
 
 export interface TableControllerInterface {
   edit: (obj: CellUniqueObject) => void;
+  onEditStart: (obj: CellUniqueObject) => void;
   cancelEdit: (obj: CellUniqueObject) => void
   // select: () => void;
   // selectedCells: number;

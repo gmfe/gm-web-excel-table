@@ -18,7 +18,7 @@ export interface CellSelectedState {
 export interface GMConfigData<T> {
   initData: T[]
   defaultData: T
-  fetchData: Promise<T>
+  fetchData?: Promise<T>
 }
 
 
@@ -42,14 +42,16 @@ export interface GMTableExcelSearchArgs {
 // 配置表格
 export interface GMTableExcelStaticConfig {
   app?: ClientAppModel;
+  custom: any;
   tableKey: string;
+
   containerStyle?: Object
+  dataConfig: GMConfigData<any>;
+  tableRef?: (tref: TableRef) => void;
   searchConfig: GMTableExcelSearchArgs,
+  tableConfig: Partial<TableProps<any, any>>;
+  controllerConfig: WithTableControllerConfig;
   columnsConfig: {
     getColumns: IGetColumnsFunc
   }
-  controllerConfig: WithTableControllerConfig;
-  dataConfig: GMConfigData<any>;
-  tableConfig: Partial<TableProps<any, any>>;
-  tableRef?: (tref: TableRef) => void;
 }

@@ -8,8 +8,6 @@ declare module 'react-gm';
 declare module 'gm-svg';
 
 
-declare module 'react-gm/lib';
-
 declare module 'react-table-hoc-fixed-columns';
 declare module "*.svg" {
   const content: any;

@@ -41,10 +41,10 @@ export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExce
 
   render() {
     const {
-      tableKey,
       controllerConfig,
       columnsConfig: { getColumns },
       searchConfig,
+      dataConfig,
       dataConfig: { defaultData, initData, fetchData }
     } = this.props;
 
@@ -64,11 +64,7 @@ export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExce
       // 数据管理
       {
         enhance: WithDataManager,
-        args: {
-          initData,
-          fetchData,
-          defaultData,
-        }
+        args: { ...dataConfig }
       },
     ]);
     return (

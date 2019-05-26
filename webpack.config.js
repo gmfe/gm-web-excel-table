@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
-
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const isLocalDev = process.env.NODE_ENV === 'dev'
 
@@ -12,7 +12,8 @@ const isLocalDev = process.env.NODE_ENV === 'dev'
 const config = {
   entry: {
     main: ['./src/components/index.tsx'],
-    story: ['./src/story/index.tsx']
+    story: ['./src/story/index.tsx'],
+    refund_excel: ['./src/story/refund_excel/index.tsx'],
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -90,16 +91,6 @@ const config = {
         loader: 'svg-inline-loader'
       },
       {
-        test: /\.(jpe?g|png|gif|svg)$/,
-        use: [{
-          loader: 'url-loader',
-          options: {
-            limit: 1024,
-            name: 'img/[name].[hash:8].[ext]'
-          }
-        }]
-      },
-      {
         test: /(fontawesome-webfont|glyphicons-halflings-regular|iconfont)\.(woff|woff2|ttf|eot|svg)($|\?)/,
         use: [{
           loader: 'url-loader',
@@ -149,11 +140,6 @@ const config = {
 
 if (!isLocalDev) {
   config.plugins.push(new HardSourceWebpackPlugin())
-  config.plugins.push(
-    new UglifyJsPlugin({
-      minimize: true
-    })
-  );
   // [NOTICE] this dllplugin cannot work with dev-server
   config.plugins.push(
     new webpack.DllPlugin({
