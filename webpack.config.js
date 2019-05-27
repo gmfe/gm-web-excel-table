@@ -11,13 +11,16 @@ const isLocalDev = process.env.NODE_ENV === 'dev'
 
 const config = {
   entry: {
-    main: ['./src/components/index.tsx'],
+    libEntry: ['./src/index.ts'],
     story: ['./src/story/index.tsx'],
+    main: ['./src/components/index.tsx'],
     refund_excel: ['./src/story/refund_excel/index.tsx'],
   },
   output: {
+    filename: '[name].js',
+    libraryTarget: 'commonjs2',
+    // library: 'myLibrary',
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].js'
   },
   devtool: 'inline-source-map',
   // devtool: 'source-map',
@@ -139,7 +142,7 @@ const config = {
 }
 
 if (!isLocalDev) {
-  config.plugins.push(new HardSourceWebpackPlugin())
+  // config.plugins.push(new HardSourceWebpackPlugin())
   // [NOTICE] this dllplugin cannot work with dev-server
   config.plugins.push(
     new webpack.DllPlugin({
