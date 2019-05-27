@@ -11,7 +11,7 @@
     "build-prod": "cross-env NODE_ENV=production webpack -p --mode production",
     "cpupdate": "cp -R ./lib ./dist ../gm_static_station/node_modules/gm-web-excel-table",
     "bup": "npm run build-prod && npm run compile && npm run cpupdate",
-    "tsc-compile": "tsc && npm run tsc-d",
+    "tsc-compile": "tsc -p .",
     "compile": "kunsam-tools run compile",
     "watch-dev": "kunsam-tools run watch-compile-with-lib"
   },

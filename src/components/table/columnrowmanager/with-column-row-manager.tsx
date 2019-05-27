@@ -3,7 +3,7 @@ import * as React from 'react'
 
 import { CellInfo } from 'react-table';
 import { _GM_TABLE_SCROLL_CELL_PREFIX_ } from '../constants';
-import { IWeekSize, WithColumnRowManagerConfig, IWeekSizeRange } from './interface';
+import { WithColumnRowManagerConfig } from './interface';
 import { IColumnManager, ConfigColumnProps, GMExtendedColumnProps } from './interface';
 
 
@@ -56,9 +56,6 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
       // }
 
       render() {
-        const {
-          data,
-        } = this.props;
         return (
           <Target
             {...this.props}

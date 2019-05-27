@@ -42,20 +42,20 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
     }>  {
 
       // 编辑状态表
-      private _editingMap: Map<string, boolean>;
+      public _editingMap: Map<string, boolean>;
 
       // 位置查询表
-      private _cellIdQueryPositionMap: Map<string, CellUniquePositionLinkedList>;
+      public _cellIdQueryPositionMap: Map<string, CellUniquePositionLinkedList>;
 
       // 位置查询id表
-      private _cellPositionQueryIdMap: Map<string, CellUniqueObject>;
+      public _cellPositionQueryIdMap: Map<string, CellUniqueObject>;
 
       // 一些数据缓存
-      private _firstCell?: CellUniqueObject;
-      private _lastCell?: CellUniqueObject;
-      private _editingCell?: CellUniqueObject;
-      private _cacheEditableCellMarixUpdateIndex?: any;
-      private _scrollerInfo: IScrollerInfo = {
+      public _firstCell?: CellUniqueObject;
+      public _lastCell?: CellUniqueObject;
+      public _editingCell?: CellUniqueObject;
+      public _cacheEditableCellMarixUpdateIndex?: any;
+      public _scrollerInfo: IScrollerInfo = {
         row: { start: 0, end: 0 },
         col: { start: 0, end: 0 },
       }
@@ -98,7 +98,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
       __logCell = (cell: CellUniqueObject, text: string) => {
         const position = this.getCellPosition(cell);
         if (position) {
-          // console.log(`[tablerController-log] ${position.row}行${position.col}列 ${text}`);
+          console.log(`[tablerController-log] ${position.row}行${position.col}列 ${text}`);
         }
       }
 
@@ -295,7 +295,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         this._editingCell = obj;
         this._editingMap.set(itemId, true);
         this.setState({ editingToggle: !this.state.editingToggle }, () => { callback() });
-        this.__logCell(obj, isUniqueEdit ? '进入唯一编辑状态' : '进入编辑状态');
+        // this.__logCell(obj, isUniqueEdit ? '进入唯一编辑状态' : '进入编辑状态');
       }
 
       cancelEdit = (obj: CellUniqueObject) => {

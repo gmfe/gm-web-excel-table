@@ -4,7 +4,7 @@ import { GMTableExcelSearchArgs } from '../constants';
 import { DataManagerEvents } from '../datamanager/interface';
 import { RowcolIndextoSelectedState } from '../utils/datamap';
 
-import TrieSearch  from '../../../third-js/triesearch';
+// import TrieSearch  from '../../../third-js/triesearch';
 // https://www.npmjs.com/package/trie-search
 // 可能也不使用trie-tree 因为只能从开始搜索
 
@@ -20,7 +20,13 @@ import TrieSearch  from '../../../third-js/triesearch';
 export function WithTableDataSearch(Target: React.ComponentClass<any, any>) {
 
   return (props: GMTableExcelSearchArgs) => {
-    const { enable, SearchRenderer, searchKeys, indexKey, maxSearchResultLength = 10 } = props;
+    const {
+      enable,
+      // indexKey,
+      searchKeys,
+      SearchRenderer,
+      maxSearchResultLength = 10,
+    } = props;
 
     if (!enable) {
       return class extends React.Component<any, any> {
@@ -50,7 +56,7 @@ export function WithTableDataSearch(Target: React.ComponentClass<any, any>) {
         // console.log(TrieSearch, indexKey, 'TrieSearch')
       }
 
-      onDataChanged = (...args: any) => {
+      onDataChanged = () => {
         // console.log(args, 'onDataChanged')
         if (this._fuseSearch) {
           (this._fuseSearch as any).list = this.getDealWithData()

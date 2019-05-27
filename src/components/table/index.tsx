@@ -41,11 +41,10 @@ export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExce
 
   render() {
     const {
+      dataConfig,
+      searchConfig,
       controllerConfig,
       columnsConfig: { getColumns },
-      searchConfig,
-      dataConfig,
-      dataConfig: { defaultData, initData, fetchData }
     } = this.props;
 
     const DeliveryComponent = enhanceWithFlows(GMTableComponent, [
