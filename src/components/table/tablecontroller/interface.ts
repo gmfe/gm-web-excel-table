@@ -66,7 +66,8 @@ export interface TableControllerInterface {
     isEditing: (obj: CellUniqueObject) => boolean;
     isCellOnFirstRow: (obj: CellUniqueObject) => boolean;
     isCellOnLastRow: (obj: CellUniqueObject) => boolean;
-    getCellPosition: (obj:CellUniqueObject) => CellUniquePositionLinkedList | undefined
+    getCellPosition: (obj:CellUniqueObject) => CellUniquePositionLinkedList | undefined;
+    getCellData: (rowIndex: number, columnKey: string) => any;
   };
 
   move: {
@@ -74,7 +75,12 @@ export interface TableControllerInterface {
     moveToPreviousEditableCell: MoveEditingCellFunction;
     moveToNextRowEditableCell: MoveEditingCellFunction;
     moveToPreviousRowEditableCell: MoveEditingCellFunction;
+  },
+
+  register: {
+    registerColumnAccessorMap: (columnKey: string, accessor: (row: number) => any) => void;
   }
+
 }
 
 export interface TableControllerKeyboardHanlder {

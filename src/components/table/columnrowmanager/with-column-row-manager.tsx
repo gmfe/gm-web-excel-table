@@ -83,12 +83,28 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
 export function withUniqueEditableColumnsProps(data: GMExtendedColumnProps[]): GMExtendedColumnProps[] {
   return data.map((d, dataIndex) => {
     const OldCellRender = d.Cell;
+
+    const cellContainerStyle: any = {
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
+    }
+    if (d.center) cellContainerStyle.justifyContent = 'center';
+
     d.Cell = (cell: CellInfo, column: any) => {
+
+      if (d.registerAccessor) {
+        const { original: { tableController } } = cell;
+        tableController.register.registerColumnAccessorMap(d.key, () => d.registerAccessor && d.registerAccessor(cell));
+        // console.log(cell,d.key, accessor, 'registerAccessorregisterAccessor')
+      }
+
       return (
         <div
           className="gm-web-table-cell-container"
           id={`${_GM_TABLE_SCROLL_CELL_PREFIX_}${d.key}${cell.original.rowKey}`}
-          style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center' }}
+          style={cellContainerStyle}
         >
           <div className="gm-web-table-cell">
             {OldCellRender ? (OldCellRender instanceof Function ? OldCellRender(cell, column) : OldCellRender) : cell.value}
@@ -103,7 +119,7 @@ export function withUniqueEditableColumnsProps(data: GMExtendedColumnProps[]): G
       return (
         <div
           className="gm-web-table-header-cell-inner"
-          style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center' }}
+          style={cellContainerStyle}
         >
           {OldHeaderRender ? (OldHeaderRender instanceof Function ? OldHeaderRender(cell, column) : OldHeaderRender) : cell.value}
         </div>

@@ -1,26 +1,24 @@
 
 
 import * as React from 'react';
-import { Data_IRefundExcel } from './interface';
-
 import SearchSelect from './components/cells/search-select';
 import EditableInputNumber from './components/cells/editable-input-number';
+import { CellInfo } from 'react-table';
+import Big from 'big.js'
 
 
-import ActionSvg from '../../static/icon/action.svg'
-import MinusSquareSvg from '../../static/icon/minus-square-default.svg';
-import MinusSquareClickedSvg from '../../static/icon/minus-square-clicked.svg'
-import PlusSquareSvg from '../../static/icon/plus-square-default.svg'
-import PlusSquareClickedSvg from '../../static/icon/plus-square-clicked.svg'
-
+import HoverIcon from '../../components/hover-icon/hover-icon';
+import { SvgFun } from 'gm-svg'
+import SvgShanchumorenHuaban from 'gm-svg/src/ShanchumorenHuaban'
+import SvgTianjiamorenHuaban from 'gm-svg/src/TianjiamorenHuaban'
 
 import {
   IGetColumnsFunc,
   WithKeyboardHandler,
   GMExtendedColumnProps,
 } from '../../components';
-import HoverIcon from '../../components/hover-icon/hover-icon';
-import { CellInfo } from 'react-table';
+
+
 
 
 export enum GM_REFUND_TABLE_COLUMNS_KEYS {
@@ -40,19 +38,17 @@ const KeyBoardSearchSelect = WithKeyboardHandler(SearchSelect);
 const KeyBoardEditableInputNumber = WithKeyboardHandler(EditableInputNumber);
 
 
-// 用于计算百分比占比的宽度列表
-// const WIDTH_LIST = [
-//   42,
-//   78, // 74
-//   194,
-//   66,
-//   148,
-//   163,
-//   55,
-//   149,
-//   107,
-// ];
-// const TOTAL_WIDTH = WIDTH_LIST.reduce((a, b) => a + b, 0) / 100;
+
+export interface GMOrderListDataStructure {
+  label: string;
+  children: {
+    name: string
+    value: string
+    std_unit: string
+    category: string
+    unit_price?: number
+  }[]
+}
 
 
 export const configOrderTable1Columns: IGetColumnsFunc = (componentProps) => {
@@ -93,7 +89,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps) => {
       //   return a.index - b.index;
       // },
       minWidth: 15,
-      Cell: ({ viewIndex, original }: CellInfo) => {
+      Cell: ({ viewIndex }: CellInfo) => {
         return viewIndex;
       }
     },
@@ -103,31 +99,31 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps) => {
     {
       key: 'action',
       fixed: 'left',
-      Header: () => {
-        return <div style={{ width: 14, display: 'inline-block', margin: 'auto' }} dangerouslySetInnerHTML={{ __html: ActionSvg }} />
-      },
+      center: true,
       minWidth: 61,
       maxWidth: 82,
+      Header: () => <SvgFun className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-action-header-svg`} />,
       Cell: ({ viewIndex }: CellInfo) => {
         return (
           [
             <HoverIcon
+              key="delete"
               onClick={() => {
                 componentProps.dataManager.onAdd([undefined], viewIndex + 1);
               }}
-              key="plus"
+
               style={{ marginRight: 18 }}
-              Placeholder={() => <div style={{ width: 18, display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: PlusSquareSvg }} />}
-              Hover={() => <div style={{ width: 18, display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: PlusSquareClickedSvg }} />}
+              Placeholder={() => <SvgShanchumorenHuaban className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-delete-svg`} />}
+              Hover={() => <SvgShanchumorenHuaban className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-delete-clicked-svg`} />}
             />,
 
             <HoverIcon
+              key="add"
               onClick={() => {
                 componentProps.dataManager.onDelete(viewIndex);
               }}
-              key="minus"
-              Placeholder={() => <div style={{ width: 18, display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: MinusSquareSvg }} />}
-              Hover={() => <div style={{ width: 18, display: 'inline-block' }} dangerouslySetInnerHTML={{ __html: MinusSquareClickedSvg }} />}
+              Placeholder={() => <SvgTianjiamorenHuaban className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-add-svg`} />}
+              Hover={() => <SvgTianjiamorenHuaban className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-add-clicked-svg`} />}
             />,
           ]
         )
@@ -159,6 +155,13 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps) => {
             value={value}
             editing={isEditing}
             onSearch={onSearchOrderName}
+            mapSearchDataToSelect={(data: GMOrderListDataStructure[][]) => {
+              let rowData = data[viewIndex] || [];
+              return rowData.map((d: GMOrderListDataStructure) => ({
+                label: d.label,
+                children: d.children.map(c => ({ value: c.value, text: c.name }))
+              }))
+            }}
             tableController={original.tableController}
             onSelect={(value: string) => {
               componentProps.dataManager.onUpdate({ orderName: value }, viewIndex);
@@ -183,6 +186,8 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps) => {
       Header: '退货数',
       key: GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderNumber,
       accessor: 'returnOrderNumber',
+      registerAccessor: ((cell: CellInfo) => cell.value),
+
       minWidth: 120,
       editable: true,
       uniqueEditable: true,
@@ -198,6 +203,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps) => {
       Header: '退货单价',
       key: GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderPerPrice,
       accessor: 'returnOrderPerPrice',
+      registerAccessor: ((cell: CellInfo) => cell.value),
       editable: true,
       uniqueEditable: true,
       minWidth: 126,
@@ -222,11 +228,15 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps) => {
       minWidth: 105,
       key: GM_REFUND_TABLE_COLUMNS_KEYS.returnTotalPrice,
       accessor: 'returnTotalPrice',
-
-      // TODO 关联列值
-      // Cell: ({ value, original, viewIndex }: CellInfo, column: any) => {
-
-      // }
+      Cell: ({ original: { tableController }, viewIndex }: CellInfo, column: any) => {
+        const returnOrderNumber = tableController.query.getCellData(viewIndex, GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderNumber);
+        const returnOrderPerPrice = tableController.query.getCellData(viewIndex, GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderPerPrice);
+        let value: any = 0
+        if (returnOrderNumber && returnOrderPerPrice) {
+          value = Big(returnOrderNumber).mul(Big(returnOrderPerPrice)).toFixed(2);
+        }
+        return value;
+      }
     },
 
     // 操作人

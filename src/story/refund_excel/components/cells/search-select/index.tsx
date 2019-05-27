@@ -3,12 +3,16 @@
 import './index.less'
 import { MoreSelect } from 'react-gm'
 import debounce from 'lodash/debounce';
-import React, { Component, useMemo } from 'react';
+import React, { Component } from 'react';
 import { WithInputFocus, WithInputFocusProviderProps } from '../with-input-focus';
 import { MoveEditType, TableControllerUtil, WithKeyboardHandlerProviderProps, CellUniqueObject } from '../../../../../components'
 
 
 
+export interface GMMoreSelectData {
+  label: string,
+  children: { value: string, text: string }[]
+}
 
 // 商品搜索选择
 export class SearchSelect extends Component<{
@@ -17,11 +21,12 @@ export class SearchSelect extends Component<{
   onSelect: (value: any) => void;
   onSearch: (value: string) => Promise<any>;
   handleKeyUp: (e: React.KeyboardEvent, value?: string | number) => void;
+
+  mapSearchDataToSelect: (data: any) => GMMoreSelectData[];
 } & WithKeyboardHandlerProviderProps & WithInputFocusProviderProps
   , any> {
 
   private _popRef: any;
-  private _inputRef?: any;
   private _lastFetchId: number = 0;
 
   static defaultProps = {
@@ -32,7 +37,7 @@ export class SearchSelect extends Component<{
     super(props);
     this.state = {
       data: [],
-      fetching: false,
+      // fetching: false,
       value: props.value || undefined,
       showMoreSelectPopWindow: false,
       selected: { text: '', value: null },
@@ -54,28 +59,31 @@ export class SearchSelect extends Component<{
     });
   }
 
-  focusInput = () => {
-    if (this._inputRef) {
-      this._inputRef.focus();
-    }
-  }
 
   handleSearch = async (value: string) => {
-    this._lastFetchId += 1;
-    const fetchId = this._lastFetchId;
-    this.setState({ data: [], fetching: true });
-    return this.props.onSearch(value).then((searchResult: any) => {
-      if (fetchId !== this._lastFetchId) {
-        return;
-      }
+
+
+    return new Promise(res => {
+      this._lastFetchId += 1;
+      const fetchId = this._lastFetchId;
       this.setState({
-        data: searchResult,
-        fetching: false,
+        data: [],
+        // fetching: true
       });
-    }).catch(() => {
-      this.setState({ fetching: false })
-      // some error handler
+      return this.props.onSearch(value).then((searchResult: any) => {
+        res()
+        if (fetchId !== this._lastFetchId) {
+          return;
+        }
+        this.setState({
+          data: this.props.mapSearchDataToSelect(searchResult),
+          // fetching: false,
+        });
+      })
     })
+
+
+
   }
 
   /**
@@ -107,7 +115,7 @@ export class SearchSelect extends Component<{
       <div
         className="gm-search-select-container"
         style={{ width: '100%', height: '100%' }}
-        onClick={(e: React.MouseEvent) => {
+        onClick={() => {
           if (this._popRef) {
             this._popRef.show();
           }
@@ -116,10 +124,10 @@ export class SearchSelect extends Component<{
         <MoreSelect
           data={data}
           isGroupList
+          // loading={fetching}
           popoverType={'click'}
           onSearch={this.handleSearch}
           selected={this.state.selected}
-
           popRef={(pop: any) => { this._popRef = pop }}
           onSelect={(selected: any) => {
             onSelect(selected.text)

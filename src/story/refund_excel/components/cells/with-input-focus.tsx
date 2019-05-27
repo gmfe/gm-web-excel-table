@@ -18,10 +18,10 @@ export function WithInputFocus(Target: React.ComponentClass<any, any>) {
     editing: boolean,
     tableController: TableControllerInterface
   } & WithKeyboardHandlerProviderProps, any> {
-    private _inputRef?: any;
-    private _focused: boolean = false;
-    private _cancelEditFunction?: Function;
-    private _editFunction?: Function;
+    public _inputRef?: any;
+    public _focused: boolean = false;
+    public _cancelEditFunction?: Function;
+    public _editFunction?: Function;
 
     startEdit = () => {
 

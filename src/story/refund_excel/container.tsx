@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { configOrderTable1Columns } from './config';
-import { Data_IRefundExcel } from './interface';
 import {
   MoveEditType,
   // SearchRenderProps,
@@ -18,18 +17,6 @@ import './style/index.less';
 //   'chargerPerson',
 // ]
 
-// const MOCK_DATA: Data_IRefundExcel[] = [
-//   {
-//     orderName: '',
-//     category: '分类分类1',
-//     returnOrderNumber: 55,
-//     returnOrderPerPrice: 100,
-//     fillPriceDiff: 2, // 补差价
-//     returnTotalPrice: 5500, // 退货金额	
-//     returnBatchNumber: 10, // 退货批次
-//     chargerPerson: 'miaomiao' // '操作人'
-//   }
-// ]
 
 const DEFAULT_DATA = {
   orderName: '',

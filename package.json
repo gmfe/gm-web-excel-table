@@ -25,6 +25,7 @@
     "@babel/preset-env": "^7.4.4",
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-stage-0": "^7.0.0",
+    "@types/big.js": "^4.0.5",
     "@types/classnames": "^2.2.7",
     "@types/events": "^3.0.0",
     "@types/hoist-non-react-statics": "^3.3.1",
@@ -44,7 +45,6 @@
     "mini-css-extract-plugin": "^0.6.0",
     "prop-types": "^15.7.2",
     "react-gm": "^8.2.0-beta1",
-    "svg-inline-loader": "^0.8.0",
     "ts-loader": "^5.3.3",
     "typescript": "^3.4.3",
     "url-loader": "^1.1.2",
@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "@types/node": "^11.13.7",
+    "big.js": "^5.2.2",
     "classnames": "^2.2.6",
     "cross-env": "^5.2.0",
     "events": "^3.0.0",

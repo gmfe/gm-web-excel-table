@@ -18,8 +18,8 @@ const config = {
   },
   output: {
     filename: '[name].js',
-    libraryTarget: 'commonjs2',
-    // library: 'myLibrary',
+    libraryTarget: 'var',
+    library: 'RefundExcelTable',
     path: path.resolve(__dirname, 'dist'),
   },
   devtool: 'inline-source-map',
@@ -51,7 +51,7 @@ const config = {
         },
         // exclude: /node_modules/,
         exclude: [
-          /node_modules\/(?!(react-gm|gm-util)\/).*/,
+          /node_modules\/(?!(react-gm|gm-util|gm-svg)\/).*/,
           path.join(__dirname, 'src/third-js')
         ],
 
@@ -79,19 +79,14 @@ const config = {
         ]
       },
       {
-        test: /\.png$/,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              mimetype: 'image/png'
-            }
+        test: /\.(jpe?g|png|gif|svg)$/,
+        use: [{
+          loader: 'url-loader',
+          options: {
+            limit: 1024,
+            name: 'img/[name].[hash:8].[ext]'
           }
-        ]
-      },
-      {
-        test: /\.svg$/,
-        loader: 'svg-inline-loader'
+        }]
       },
       {
         test: /(fontawesome-webfont|glyphicons-halflings-regular|iconfont)\.(woff|woff2|ttf|eot|svg)($|\?)/,

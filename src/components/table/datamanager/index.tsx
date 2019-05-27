@@ -46,7 +46,6 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
         }
       }
 
-
       addEventListener = (eventKeys: DataManagerEvents, listener: Function) => {
         // 简单版实现，具体需要注意一些特殊情况
         // https://dev.to/em4nl/function-identity-in-javascript-or-how-to-remove-event-listeners-properly-1ll3

@@ -50,6 +50,9 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
       // 位置查询id表
       public _cellPositionQueryIdMap: Map<string, CellUniqueObject>;
 
+      // 列数据查询函数表
+      public _columnAccessorMap: Map<string, (row: number) => any>;
+
       // 一些数据缓存
       public _firstCell?: CellUniqueObject;
       public _lastCell?: CellUniqueObject;
@@ -70,12 +73,16 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
             isCellOnFirstRow: this.isCellOnFirstRow,
             isCellOnLastRow: this.isCellOnLastRow,
             getCellPosition: this.getCellPosition.bind(this),
+            getCellData: this.getCellData.bind(this)
           },
           move: {
             moveToNextEditableCell: this.moveToNextEditableCell,
             moveToPreviousEditableCell: this.moveToPreviousEditableCell,
             moveToNextRowEditableCell: this.moveToNextRowEditableCell,
             moveToPreviousRowEditableCell: this.moveToPreviousRowEditableCell,
+          },
+          register: {
+            registerColumnAccessorMap: this.registerColumnAccessorMap.bind(this)
           }
         }
       }
@@ -113,6 +120,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         this._editingMap = new Map();
         this._cellIdQueryPositionMap = new Map();
         this._cellPositionQueryIdMap = new Map();
+        this._columnAccessorMap = new Map();
       }
 
       componentDidMount() {
@@ -160,6 +168,28 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
       public getCellPosition(cell: CellUniqueObject): CellUniquePositionLinkedList | undefined {
         return this._cellIdQueryPositionMap.get(this.CellUniqueObject2Id(cell));
       }
+
+
+      public registerColumnAccessorMap (columnKey: string, accessor: (row: number) => any) {
+        this._columnAccessorMap.set(columnKey, accessor);
+      }
+
+      public getCellData(rowIndex: number, columnKey: string): any {
+        const valid = rowIndex >= 0 && rowIndex <= this.props.data.length - 1;
+        const columnAccessor = this._columnAccessorMap.get(columnKey);
+
+        if (!columnAccessor) {
+          console.warn('未注册 accessor, 请将 column registerAccessor字段设置为 true ');
+          return;
+        }
+
+        console.log(rowIndex, columnKey, columnAccessor(rowIndex), 'getCellData')
+
+        if (valid && columnAccessor) {
+          return columnAccessor(rowIndex);
+        }
+      }
+
       /**
        * 坐标查询单元格
        *
@@ -507,6 +537,9 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
       }
 
       render() {
+
+        console.log(this.props, '’renderrender')
+
         return (
           <Target
             tableController={this.tableController}

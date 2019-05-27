@@ -16,7 +16,7 @@ export class EditableInputNumber extends Component<{
   handleKeyUp: (e: React.KeyboardEvent, value?: string | number) => void;
 } & WithKeyboardHandlerProviderProps & WithInputFocusProviderProps, any> {
 
-  private _inputRef: any;
+  public _inputRef: any;
 
   // onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   //   this.props.onChange(parseInt(e.target.value, 10));
@@ -66,7 +66,7 @@ export class EditableInputNumber extends Component<{
           onInputKeyUp={(e: React.KeyboardEvent) => {
             handleKeyUp(e, value);
           }}
-          onInputFocus={(e: any) => {
+          onInputFocus={() => {
             onEditStart();
           }}
         />
