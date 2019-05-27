@@ -1,51 +1,73 @@
 
 
 import React, { Component } from 'react'
-import 'antd/lib/input/style/index.css'
 import './index.less'
-import { Input } from 'antd';
+import cx from 'classnames';
+import { InputNumber } from 'react-gm'
 import { WithKeyboardHandlerProviderProps } from '../../../../../components'
-import { WithInputFocus } from '../with-input-focus';
+import { WithInputFocus, WithInputFocusProviderProps } from '../with-input-focus';
+
 
 export class EditableInputNumber extends Component<{
-  value: number;
   editing?: boolean;
-  onEdit: (value?: number) => void;
-  getInputRef: (c: any) => void;
+  className?: string;
+  value: number | string;
+  onChange: (value?: number | string) => void;
   handleKeyUp: (e: React.KeyboardEvent, value?: string | number) => void;
-} & WithKeyboardHandlerProviderProps, any> {
+} & WithKeyboardHandlerProviderProps & WithInputFocusProviderProps, any> {
 
-  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.props.onEdit(parseInt(e.target.value, 10));
+  private _inputRef: any;
+
+  // onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   this.props.onChange(parseInt(e.target.value, 10));
+  // }
+
+  onChange = (value: any) => {
+    this.props.onChange(value);
   }
 
+  componentDidMount() {
+    this.props.withInputFous.cancelEdit(() => {
+      if (this._inputRef) {
+        this._inputRef.blur();
+      }
+    });
+    this.props.withInputFous.edit(() => {
+      if (this._inputRef) {
+        this._inputRef.focus();
+      }
+    });
+  }
 
   render() {
 
     const {
       value,
-      editing,
-      getInputRef,
+      // editing,
+      // getInputRef,
+      className,
       handleKeyUp,
+      onEditStart
     } = this.props;
 
     // if (!editing) {
-    //   return <div className="gm-editable-input-number">{value}</div>
+    //   return <div className="gm-excel-editable-input-number">{value}</div>
     // }
 
     return (
-      <div className="gm-editable-input-number">
-        <Input
-          ref={getInputRef}
+      <div className={cx("gm-excel-editable-input-number", {
+        [`gm-excel-editable-input-number-${className}`]: className !== undefined,
+      })}>
+        <InputNumber
           value={value}
+          precision={2}
+          getInputRef={(c: any) => { this._inputRef = c }}
           onChange={this.onChange}
-          onKeyUp={(e: React.KeyboardEvent) => {
+          onInputKeyUp={(e: React.KeyboardEvent) => {
             handleKeyUp(e, value);
           }}
-          onKeyDown={(e: React.KeyboardEvent) => {
-            if (e.key === 'Tab') {
-              e.preventDefault();
-            }
+          onInputFocus={(e: any) => {
+            onEditStart();
           }}
         />
       </div>

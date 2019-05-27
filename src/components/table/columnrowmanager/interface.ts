@@ -1,23 +1,34 @@
-import { ColumnProps } from 'antd/lib/table';
+import { IDataManagerProvideProps } from './../datamanager/interface';
+import { GMTableExcelStaticConfig } from './../constants/interface';
+import { Column } from 'react-table';
 import { IDataManager } from '../datamanager/interface';
 
-export interface GMExtendedColumnProps<T> extends ColumnProps<T>{
+
+export interface GMExtendedColumnProps extends Column {
+  key: string;
+  fixed?: string;
+
   static?: any;
   _indexNumber?: number;
-  minWidth?: number;
-  maxWidth?: number;
-  cellWidth?: string | number;
   uniqueEditable?: boolean; // 用于高阶函数快速获得唯一编辑态
   editable?: boolean;       // 用于计算可编辑矩阵，光标移动时有效目标等，可编辑单元格必须指定
 }
 
+
+export interface WithColumnRowManagerProvideProps {
+  columns: GMExtendedColumnProps[];
+  columnRowManager: IColumnManager;
+  onTableLoad: (dom: HTMLElement) => void;
+}
+
+
 export type onResizeColumn = (nextSize: IWeekSize, callback?: (size: IWeekSize) => void) => boolean;
 
 export interface IColumnManager {
-  onResizeRow: Function,
-  onResizeColumn: (index: number) => onResizeColumn;
-  onResizeColumnStart: (index: number) => () => void;
-  findCellDom: (row: number, col: number) => HTMLElement | undefined;
+  // onResizeRow: Function,
+  // onResizeColumn: (index: number) => onResizeColumn;
+  // onResizeColumnStart: (index: number) => () => void;
+  // findCellDom: (row: number, col: number) => HTMLElement | undefined;
 }
 
 export interface ConfigColumnProps<T> {
@@ -41,7 +52,7 @@ export interface IWeekSizeRange{
   }
 }
 
-export type IGetColumnsFunc = (props: ConfigColumnProps<any>, columnRowManager: IColumnManager) => GMExtendedColumnProps<any>[];
+export type IGetColumnsFunc = (props: GMTableExcelStaticConfig & IDataManagerProvideProps<any>, columnRowManager: IColumnManager) => GMExtendedColumnProps[];
 
 export interface WithColumnRowManagerConfig {
   getColumns: IGetColumnsFunc 

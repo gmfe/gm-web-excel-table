@@ -1,20 +1,19 @@
-import { TableRef } from './index';
-import { ColumnProps } from 'antd/lib/table'
 import { AppBase } from 'kunsam-app-model';
-import { IDataManager } from '../../datamanager/interface';
 import { IColumnManager } from '../../columnrowmanager/interface';
+import { IDataManagerProvideProps } from './../../datamanager/interface';
 import { TableControllerInterface } from '../../tablecontroller/interface';
 
-export interface GMExcelTableProps<T> {
-  data: T[];
+
+import { TableRef } from './index';
+import { Column } from 'react-table';
+
+export interface GMTableComponentProps<T> extends IDataManagerProvideProps<T> {
   app: AppBase;
   className?: string;
   containerStyle?: Object;
-  columns: ColumnProps<T>[];
-  dataManager: IDataManager<T>;
+  columns: Column[];
   columnRowManager: IColumnManager;
   tableController: TableControllerInterface;
-
   tableRef?: (ref: TableRef) => void;
   onTableLoad?: (container: HTMLElement) => void;
 }

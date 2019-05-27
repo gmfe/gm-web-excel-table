@@ -1,34 +1,28 @@
 
 
-import 'antd/lib/select/style/index.css'
-import 'antd/lib/spin/style/index.css'
 import './index.less'
-import { Select, Spin, Input } from 'antd';
-import React, { Component } from 'react';
+import { MoreSelect } from 'react-gm'
 import debounce from 'lodash/debounce';
-import { MoveEditType, TableControllerUtil, WithKeyboardHandlerProviderProps } from '../../../../../components'
-import { WithInputFocus } from '../with-input-focus';
+import React, { Component, useMemo } from 'react';
+import { WithInputFocus, WithInputFocusProviderProps } from '../with-input-focus';
+import { MoveEditType, TableControllerUtil, WithKeyboardHandlerProviderProps, CellUniqueObject } from '../../../../../components'
 
-const Option = Select.Option;
 
-
-interface SearchSelectData {
-  value: string;
-  text: string;
-}
 
 
 // 商品搜索选择
 export class SearchSelect extends Component<{
   value?: string;
-  getInputRef: (c: any) => void;
+  cell: CellUniqueObject;
   onSelect: (value: any) => void;
+  onSearch: (value: string) => Promise<any>;
   handleKeyUp: (e: React.KeyboardEvent, value?: string | number) => void;
-} & WithKeyboardHandlerProviderProps, any> {
+} & WithKeyboardHandlerProviderProps & WithInputFocusProviderProps
+  , any> {
 
-  private _selectRef: any;
-  private _lastFetchId: number = 0;
+  private _popRef: any;
   private _inputRef?: any;
+  private _lastFetchId: number = 0;
 
   static defaultProps = {
     onSelect: () => { }
@@ -36,19 +30,28 @@ export class SearchSelect extends Component<{
 
   constructor(props: any) {
     super(props);
-    this._lastFetchId = 0;
-    this.fetchUser = debounce(this.fetchUser, 800);
     this.state = {
       data: [],
       fetching: false,
       value: props.value || undefined,
+      showMoreSelectPopWindow: false,
+      selected: { text: '', value: null },
     }
+    this._lastFetchId = 0;
+    this.handleSearch = debounce(this.handleSearch, 800);
   }
 
   componentDidMount() {
-    // fetchData
-    // this.focusInput();
-    // TODO 控制器需要focus
+    this.props.withInputFous.cancelEdit(() => {
+      if (this._popRef) {
+        this._popRef.close();
+      }
+    });
+    this.props.withInputFous.edit(() => {
+      if (this._popRef) {
+        this._popRef.show();
+      }
+    });
   }
 
   focusInput = () => {
@@ -57,103 +60,82 @@ export class SearchSelect extends Component<{
     }
   }
 
-  fetchUser = (value: string) => {
-    console.log(value, 'fetchUserfetchUserfetchUserfetchUser')
+  handleSearch = async (value: string) => {
     this._lastFetchId += 1;
     const fetchId = this._lastFetchId;
     this.setState({ data: [], fetching: true });
-    fetch('https://randomuser.me/api/?results=5')
-      .then(response => response.json())
-      .then(body => {
-        if (fetchId !== this._lastFetchId) {
-          // for fetch callback order
-          return;
-        }
-        const data = body.results.map((user: any) => ({
-          text: `${user.name.first} ${user.name.last}`,
-          value: `${user.name.first} ${user.name.last}`,
-        }));
-        this.setState({ data, fetching: false }, () => {
-          // console.log(this._selectRef, 'this._selectRef')
-          // if (this._selectRef) {
-          //   this._selectRef.rcSelect.inputRef.focus();
-          // }
-        });
+    return this.props.onSearch(value).then((searchResult: any) => {
+      if (fetchId !== this._lastFetchId) {
+        return;
+      }
+      this.setState({
+        data: searchResult,
+        fetching: false,
       });
+    }).catch(() => {
+      this.setState({ fetching: false })
+      // some error handler
+    })
   }
 
-  handleChange = (value: string) => {
-    console.log(value, 'handleChangehandleChange')
-    this.setState({
-      value,
-      data: [],
-      fetching: false,
-    });
-  }
-
+  /**
+   * 处理 MoreSelect 输入框 KeyDown 事件
+   *
+   * @memberof SearchSelect
+   */
   handleInputKeyDown = (e: React.KeyboardEvent) => {
     switch (e.key) {
       case 'Tab': {
-        e.preventDefault();
+        if (this._popRef) {
+          this._popRef.close();
+        }
         break;
       }
       case 'Enter': {
-        console.log('onKeyUponKeyUp EnterEnter')
         this.props.moveToNextEditableCell(MoveEditType.enter);
-        TableControllerUtil.lockAKeyup = true; // 要不然会多触发一次keyUp
+        TableControllerUtil.lockAKeyup = true;
         break;
       }
     }
   }
 
   render() {
-    const { fetching, data } = this.state;
-    const { onSelect, value, handleKeyUp, getInputRef, onInputFocus } = this.props;
+    const { data } = this.state;
+    const { onSelect, value, handleKeyUp, onEditStart } = this.props;
 
     return (
       <div
-        style={{ position: 'relative' }}
         className="gm-search-select-container"
-        onClick={(e: React.MouseEvent) => { e.stopPropagation(); }}
+        style={{ width: '100%', height: '100%' }}
+        onClick={(e: React.MouseEvent) => {
+          if (this._popRef) {
+            this._popRef.show();
+          }
+        }}
       >
-        <Input
-          value={value}
-          type="text"
-          className="gm-search-select-input"
-          onChange={(e: any) => {
-            onSelect(e.target.value);
-            this.fetchUser(e.target.value);
+        <MoreSelect
+          data={data}
+          isGroupList
+          popoverType={'click'}
+          onSearch={this.handleSearch}
+          selected={this.state.selected}
+
+          popRef={(pop: any) => { this._popRef = pop }}
+          onSelect={(selected: any) => {
+            onSelect(selected.text)
+            this.setState({ selected })
           }}
-          onKeyUp={(e: React.KeyboardEvent) => {
+          onInputFocus={() => { onEditStart(); }}
+          onInputKeyDown={this.handleInputKeyDown}
+          onInputKeyUp={(e: React.KeyboardEvent) => {
             if (data.length) {
               return;
             }
             handleKeyUp(e, value)
           }}
-          onKeyDown={this.handleInputKeyDown}
-          onFocus={onInputFocus}
-          ref={getInputRef}
-        />
-        <Select
-          // autoFocus
-          showSearch
-          open={data.length > 0 || fetching}
-          value={value}
-          showArrow={false}
-          filterOption={false}
-          // onSearch={this.fetchUser}
-          className="gm-search-select"
-          onChange={this.handleChange}
-          // defaultActiveFirstOption={false}
-          onSelect={(value: any) => { onSelect(value); }}
-          onInputKeyDown={this.handleInputKeyDown}
-          notFoundContent={fetching ? <Spin size="small" /> : null}
-          // ref={(c: any) => { if (c) { this._selectRef = c; }}}s
         >
-          {data.map((d: SearchSelectData) => (
-            <Option key={d.value}>{d.text}</Option>
-          ))}
-        </Select>
+        </MoreSelect>
+
       </div>
     )
   }

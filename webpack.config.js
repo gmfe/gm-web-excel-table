@@ -1,15 +1,19 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+
 const isLocalDev = process.env.NODE_ENV === 'dev'
+
 
 const config = {
   entry: {
     main: ['./src/components/index.tsx'],
-    story: ['./src/story/index.tsx']
+    story: ['./src/story/index.tsx'],
+    refund_excel: ['./src/story/refund_excel/index.tsx'],
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -28,8 +32,26 @@ const config = {
     rules: [
       {
         test: /\.(js|jsx)$/,
-        use: 'babel-loader',
-        exclude: /node_modules/
+        use: {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+            presets: [
+              '@babel/preset-react',
+              '@babel/preset-env',
+            ],
+            plugins: [
+              "@babel/plugin-proposal-function-bind",
+              "@babel/plugin-proposal-class-properties"
+            ]
+          }
+        },
+        // exclude: /node_modules/,
+        exclude: [
+          /node_modules\/(?!(react-gm|gm-util)\/).*/,
+          path.join(__dirname, 'src/third-js')
+        ],
+
       },
       {
         test: /\.(ts|tsx)?$/,
@@ -68,6 +90,16 @@ const config = {
         test: /\.svg$/,
         loader: 'svg-inline-loader'
       },
+      {
+        test: /(fontawesome-webfont|glyphicons-halflings-regular|iconfont)\.(woff|woff2|ttf|eot|svg)($|\?)/,
+        use: [{
+          loader: 'url-loader',
+          options: {
+            limit: 1024,
+            name: 'font/[name].[hash:8].[ext]'
+          }
+        }]
+      }
     ]
   },
   resolve: {
@@ -90,17 +122,7 @@ const config = {
       appMountId: 'app',
       template: require('html-webpack-template'),
     }),
-    // [NOTICE] this dllplugin cannot work with dev-server
-    // new webpack.DllPlugin({
-    //   context: __dirname,
-    // 	name: "[name]_[hash]",
-    // 	path: path.join(__dirname, "dist/dll", "[name]-manifest.json"),
-    // }),
-    // new webpack.optimize.UglifyJsPlugin({
-    //   minimize: true,
-    //   sourceMap: true,
-    //   include: /\.min\.js$/,
-    // })
+
   ],
   optimization: {
     runtimeChunk: 'single',
@@ -114,6 +136,18 @@ const config = {
       }
     }
   }
+}
+
+if (!isLocalDev) {
+  config.plugins.push(new HardSourceWebpackPlugin())
+  // [NOTICE] this dllplugin cannot work with dev-server
+  config.plugins.push(
+    new webpack.DllPlugin({
+      context: __dirname,
+      name: "[name]_[hash]",
+      path: path.join(__dirname, "dist/dll", "[name]-manifest.json"),
+    }),
+  )
 }
 
 module.exports = config;

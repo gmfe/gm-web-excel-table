@@ -1,47 +1,97 @@
 
 import * as React from 'react';
+import { TableControllerInterface, WithKeyboardHandlerProviderProps } from '../../../../components';
+
+
+export interface WithInputFocusProviderProps{
+  getInputRef: (c: any) => void;
+  withInputFous: {
+    cancelEdit: (fc: Function) => void,
+    edit: (fc: Function) => void,
+  },
+}
 
 export function WithInputFocus(Target: React.ComponentClass<any, any>) {
 
   return class extends React.Component<{
     [key: string]: any,
-    editing: boolean
-  }, any> {
+    editing: boolean,
+    tableController: TableControllerInterface
+  } & WithKeyboardHandlerProviderProps, any> {
     private _inputRef?: any;
     private _focused: boolean = false;
+    private _cancelEditFunction?: Function;
+    private _editFunction?: Function;
 
-    componentDidMount() {
-      if (this.props.editing) {
+    startEdit = () => {
+
+      // const position = this.props.tableController.query.getCellPosition(this.props.cell);
+      // console.log(`[control-log] 当前${position && position.row}行${position && position.col}列 开始 编辑`)
+      this._focused = true;
+      if (this._editFunction) {
+        this._editFunction();
+      } else {
         if (this._inputRef) {
           this._inputRef.focus();
-          this._focused = true;
-        }
-      }
-    }
-    
-
-    render() {
-
-      const { editing } = this.props;
-      
-      if (!editing) {
-        this._focused = false;
-        if (this._inputRef) {
-          this._inputRef.blur();
-        }
-      } else {
-        if (!this._focused) {
-          if (this._inputRef) {
-            this._inputRef.focus();
-            this._focused = true;
-            if (this._inputRef.value) {
-              this._inputRef.selectionStart = this._inputRef.selectionEnd = this._inputRef.value.length;
-            }
+          if (this._inputRef.value) {
+            this._inputRef.selectionStart = this._inputRef.selectionEnd = this._inputRef.value.length;
           }
         }
       }
+    }
+
+    endEdit = () => {
+      // const position = this.props.tableController.query.getCellPosition(this.props.cell);
+      // console.log(`[control-log] 当前${position && position.row}行${position && position.col}列 取消 编辑`)
+      const { onEditEnd } = this.props;
+      this._focused = false;
+      if (this._cancelEditFunction) {
+        this._cancelEditFunction();
+      } else {
+        if (this._inputRef) {
+          this._inputRef.blur();
+        }
+      }
+      onEditEnd();
+    }
+
+    componentDidMount() {
+      if (this.props.editing) {
+        this.startEdit();
+      }
+    }
+
+    componentWillUnmount() {
+      this.endEdit();
+    }
+
+    componentDidUpdate() {
+      const { editing } = this.props;
+      if (!editing) {
+        if (this._focused) {
+          this.endEdit();
+        }
+      } else {
+        if (!this._focused) {
+          this.startEdit();
+        }
+      }
+    }
+
+
+    render() {
       return (
-        <Target getInputRef={(c: any) => { this._inputRef = c; }} {...this.props} />
+        <Target
+          withInputFous={{
+            cancelEdit: (func: Function) => {
+              this._cancelEditFunction = func;
+            },
+            edit: (func: Function) => {
+              this._editFunction = func;
+            }
+          }}
+          getInputRef={(c: any) => { this._inputRef = c; }} {...this.props}
+        />
       )
     }
 

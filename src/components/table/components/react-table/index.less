@@ -1,0 +1,72 @@
+@import '../../style/function.less';
+@import '../../style/theme.less';
+@import '../../style/selector.less';
+
+
+// 通用
+@{table-any-head-cell-selector},
+@{table-any-body-cell-selector} {
+  white-space: unset;
+  word-break : break-all;
+  // position: relative; // 这个不能开，要不固定列的位置就错了
+}
+
+.table-cell-container {
+  padding: 12px 0;
+  .dynamic-screen-cell-padding();
+}
+
+// Header-cell
+@{table-any-head-cell-selector} {
+  text-align      : left;
+  min-height      : 40px;
+  background-color: @GME-title-background-color;
+  padding         : 0;
+  &>div {
+    .table-cell-container();
+    position: relative;
+    height: 100%;
+  }
+}
+
+@{table-any-body-cell-selector} {
+  .table-cell-container();
+
+  &>div.gm-web-table-cell {
+    position     : relative;
+    // text-align: center;
+    // margin    : auto 0;
+  }
+}
+
+
+@{table-any-body-cell-selector} {
+  line-height: 1.1;
+}
+
+// 字体
+@{table-any-head-cell-selector} {
+  font-size  : @GME-content-font-size;
+  font-family: @GME-title-font-family;
+  color      : @GME-text-color;
+}
+
+@{table-any-body-cell-selector} {
+  font-size  : @GME-content-font-size;
+  font-family: @GME-content-nondigit-text-font-family;
+}
+
+
+.rt-th.rthfc-th-fixed-left-last,
+.rthfc .rt-th.rthfc-th-fixed-left-last,
+.rthfc .rt-td.rthfc-td-fixed-left-last {
+  border-color        : rgba(0,0,0,0.05);
+  // padding-top   : 0px !important;
+  // padding-bottom: 0px !important;
+  // box-shadow    : 4px 0px 4px 0px rgba(0, 0, 0, 0.15);
+
+  // &>.gm-web-table-cell-container {
+  //   padding-top   : 12px;
+  //   padding-bottom: 12px;
+  // }
+}

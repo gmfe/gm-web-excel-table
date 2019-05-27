@@ -57,6 +57,7 @@ export type MoveEditingCellFunction = (type: MoveEditType, cell: CellUniqueObjec
 
 export interface TableControllerInterface {
   edit: (obj: CellUniqueObject) => void;
+  onEditStart: (obj: CellUniqueObject) => void;
   cancelEdit: (obj: CellUniqueObject) => void
   // select: () => void;
   // selectedCells: number;
@@ -65,6 +66,7 @@ export interface TableControllerInterface {
     isEditing: (obj: CellUniqueObject) => boolean;
     isCellOnFirstRow: (obj: CellUniqueObject) => boolean;
     isCellOnLastRow: (obj: CellUniqueObject) => boolean;
+    getCellPosition: (obj:CellUniqueObject) => CellUniquePositionLinkedList | undefined
   };
 
   move: {

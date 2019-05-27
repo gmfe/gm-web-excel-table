@@ -1,50 +1,60 @@
 
 
-// import "antd/dist/antd.css";
-
-
 import * as React from 'react';
 import { configOrderTable1Columns } from './config';
 import { Data_IRefundExcel } from './interface';
-import { GMTableExcelStaticConfigWrapper, SearchRenderProps, MoveEditType } from '../../components';
+import {
+  MoveEditType,
+  // SearchRenderProps,
+  GMTableExcelStaticConfigWrapper,
+} from '../../components';
 
+import 'react-gm/src/index.less'
 import './style/index.less';
 
-// import times from 'lodash/times'
 
-const searchKeys = [
-  'orderName',
-  'chargerPerson',
-]
-const MOCK_DATA: Data_IRefundExcel[] = [
-  {
-    orderName: '',
-    category: '分类分类1',
-    returnOrderNumber: 55,
-    returnOrderPerPrice: 100,
-    fillPriceDiff: 2, // 补差价
-    returnTotalPrice: 5500, // 退货金额	
-    returnBatchNumber: 10, // 退货批次
-    chargerPerson: 'miaomiao' // '操作人'
-  }
-]
+// const searchKeys = [
+//   'orderName',
+//   'chargerPerson',
+// ]
 
-const mockFetchData = new Promise((res, rej) => {
-  setTimeout(() => {
-    res(new Array(10).fill(MOCK_DATA[0]))
-  })
-})
+// const MOCK_DATA: Data_IRefundExcel[] = [
+//   {
+//     orderName: '',
+//     category: '分类分类1',
+//     returnOrderNumber: 55,
+//     returnOrderPerPrice: 100,
+//     fillPriceDiff: 2, // 补差价
+//     returnTotalPrice: 5500, // 退货金额	
+//     returnBatchNumber: 10, // 退货批次
+//     chargerPerson: 'miaomiao' // '操作人'
+//   }
+// ]
 
+const DEFAULT_DATA = {
+  orderName: '',
+  category: '',
+  returnOrderNumber: 0,
+  returnOrderPerPrice: 0,
+  fillPriceDiff: 0, // 补差价
+  returnTotalPrice: 0, // 退货金额	
+  returnBatchNumber: 0, // 退货批次
+  chargerPerson: '' // '操作人'
+}
 
+/**
+ * 退货表格实例
+ *
+ * @export
+ * @class TabelExcelContainer
+ * @extends {React.PureComponent<any, any>}
+ */
 export default class TabelExcelContainer extends React.PureComponent<any, any> {
-
-
   render() {
-    return (
+   return (
       <GMTableExcelStaticConfigWrapper
         // app={APP} // 多个表格实例的时候可以在共同容器中使用独立实例
         // tableRef={(c: TableRef) => this._tableRef = c}
-
         tableKey='refund-excel'
 
         controllerConfig={{
@@ -66,21 +76,21 @@ export default class TabelExcelContainer extends React.PureComponent<any, any> {
         }}
 
         tableConfig={{
-          bordered: true,
-          scroll: { x: 'max-content' },
-          // scroll: { x: 8000 },
+          // defaultPageSize: 1000,
+          showPagination: false,
+          resizable: false,
+          style: { height: 400 },
+          sortable: false,
         }}
 
         containerStyle={{
-          height: 400,
-          overflowY: 'scroll',
           border: '1px solid #ccc',
         }}
 
         searchConfig={{
           enable: false,
-          indexKey: 'number',
-          searchKeys: searchKeys,
+          indexKey: 'key',
+          searchKeys: [],
           // SearchRenderer: SearchRenderer
         }}
 
@@ -99,18 +109,10 @@ export default class TabelExcelContainer extends React.PureComponent<any, any> {
             returnBatchNumber: 0, // 退货批次
             chargerPerson: '' // '操作人'
           },
-          initData: new Array(15).fill(MOCK_DATA[0]),
-          fetchData: Promise.resolve(),
+          initData: new Array(5).fill(DEFAULT_DATA)
         }}
 
-      // 这里应该还有一些事件订阅
-
-      // onCellChanged
-      // onScrollToBottom
-
-      // fetchData: Promise.resolve()
-      // onResizeColumn={this.onResizeColumn}
-      // onResizeColumnStart={columnRowManager.onResizeColumnStart}
+        custom={{...this.props}}
       />
 
     )
@@ -118,19 +120,18 @@ export default class TabelExcelContainer extends React.PureComponent<any, any> {
 }
 
 
+// 可暴露在外的全表格定位搜索组件，暂未开放
 
-export class SearchRenderer extends React.Component<SearchRenderProps<Data_IRefundExcel>> {
-  render() {
-    const { searchResults, searchValue, onSearch, onSelect, onReset } = this.props;
-    console.log(searchResults, searchValue, 'searchResults')
-    return (
-      <div>
-        <input value={searchValue} onChange={e => onSearch(e.target.value)} />
-        {searchResults.map((s: any) => <p onClick={() => {
-          // onSelect(s.rowIndex, s.colIndex);
-          // onReset();
-        }}>{s.value}</p>)}
-      </div>
-    )
-  }
-}
+// export class SearchRenderer extends React.Component<SearchRenderProps<Data_IRefundExcel>> {
+//   render() {
+//     const { searchResults, searchValue, onSearch, onSelect, onReset } = this.props;
+//     console.log(searchResults, searchValue, 'searchResults')
+//     return (
+//       <div>
+//         <input value={searchValue} onChange={e => onSearch(e.target.value)} />
+//         {searchResults.map((s: any) => <p onClick={() => {
+//         }}>{s.value}</p>)}
+//       </div>
+//     )
+//   }
+// }

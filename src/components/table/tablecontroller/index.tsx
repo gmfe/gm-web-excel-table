@@ -13,7 +13,6 @@ import {
 
 import isEqual from 'lodash/isEqual'
 import { IDataManager } from '../datamanager/interface';
-import { KeyboardEventContext, AppBase } from 'kunsam-app-model';
 import { GMExtendedColumnProps } from '../columnrowmanager/interface';
 import { _GM_TABLE_SCROLL_Y_CONTAINER_, _GM_TABLE_SCROLL_CELL_PREFIX_ } from '../constants';
 
@@ -22,7 +21,7 @@ export * from './with-keyboard-handler';
 export * from './tabelcontroller-util';
 
 /**
- * tableConroller注入函数
+ * 单元格控制器 tableConroller 高阶注入函数
  *
  * @export
  * @param {React.ComponentClass<any, any>} Target
@@ -36,7 +35,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
       data: any[]
       tableKey: string
       dataManager: IDataManager<any>
-      columns: GMExtendedColumnProps<any>[]
+      columns: GMExtendedColumnProps[]
     }, {
       [key: string]: any,
       editingToggle: boolean,
@@ -65,10 +64,12 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         return {
           edit: this.edit.bind(this),
           cancelEdit: this.cancelEdit,
+          onEditStart: this.edit.bind(this),
           query: {
             isEditing: (obj: CellUniqueObject) => { return this._editingMap.has(this.CellUniqueObject2Id(obj)) },
             isCellOnFirstRow: this.isCellOnFirstRow,
             isCellOnLastRow: this.isCellOnLastRow,
+            getCellPosition: this.getCellPosition.bind(this),
           },
           move: {
             moveToNextEditableCell: this.moveToNextEditableCell,
@@ -76,6 +77,28 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
             moveToNextRowEditableCell: this.moveToNextRowEditableCell,
             moveToPreviousRowEditableCell: this.moveToPreviousRowEditableCell,
           }
+        }
+      }
+      /**
+       * 定义滚动容器对象
+       *
+       * @returns
+       */
+      getScroller() {
+        let xScroller: HTMLElement | null = null;
+        if (document) {
+          xScroller = document.querySelector(`#${_GM_TABLE_SCROLL_Y_CONTAINER_}${this.props.tableKey} .ReactTable .rt-table`);
+        }
+        return {
+          xScroller,
+          yScroller: xScroller //document.getElementById(`${_GM_TABLE_SCROLL_Y_CONTAINER_}${this.props.tableKey}`)
+        }
+      }
+
+      __logCell = (cell: CellUniqueObject, text: string) => {
+        const position = this.getCellPosition(cell);
+        if (position) {
+          // console.log(`[tablerController-log] ${position.row}行${position.col}列 ${text}`);
         }
       }
 
@@ -90,22 +113,71 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         this._editingMap = new Map();
         this._cellIdQueryPositionMap = new Map();
         this._cellPositionQueryIdMap = new Map();
-
-        // 注册按键移动事件
-        // 注册快捷键
       }
 
+      componentDidMount() {
+        // 注册快捷键
+        window.document.addEventListener('keydown', this.handlePressTab);
+        // 更新矩阵数据
+        this.updateTableCellMatrix();
+        this._cacheEditableCellMarixUpdateIndex = this.editableCellMarixUpdateIndex(this.props.columns, this.props.data);
+      }
+
+      handlePressTab = (e: KeyboardEvent) => {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          const cell = this._editingCell || this.getCellByPosition(0, 0);
+          if (cell) {
+            this.moveToNextEditableCell(MoveEditType.tab, cell);
+          }
+        }
+      }
+
+      componentWillUnmount() {
+        window.document.removeEventListener('keydown', this.handlePressTab);
+      }
+
+      componentDidUpdate() {
+        // 其它表格激活后 卸载此事件钩子
+        const { columns, data } = this.props;
+        const editableCellMarixUpdateIndex = this.editableCellMarixUpdateIndex(columns, data);
+        if (!isEqual(this._cacheEditableCellMarixUpdateIndex, editableCellMarixUpdateIndex)) {
+          this._cacheEditableCellMarixUpdateIndex = editableCellMarixUpdateIndex;
+          this.updateTableCellMatrix();
+        }
+      }
+
+      // id函数
       public CellUniqueObject2Id(obj: CellUniqueObject) { return `${obj.columnKey}-${obj.rowKey}` }
       public PositionId(pos: CellUniquePosition) { return `${pos.col}-${pos.row}` }
 
-      public getCell(nextCol: number, nextRow: number): CellUniqueObject | undefined {
+      /**
+       * 查询单元格坐标
+       *
+       * @param {CellUniqueObject} cell
+       * @returns {(CellUniquePositionLinkedList | undefined)}
+       */
+      public getCellPosition(cell: CellUniqueObject): CellUniquePositionLinkedList | undefined {
+        return this._cellIdQueryPositionMap.get(this.CellUniqueObject2Id(cell));
+      }
+      /**
+       * 坐标查询单元格
+       *
+       * @param {number} nextCol
+       * @param {number} nextRow
+       * @returns {(CellUniqueObject | undefined)}
+       */
+      public getCellByPosition(nextCol: number, nextRow: number): CellUniqueObject | undefined {
         const nextCell = this._cellPositionQueryIdMap.get(this.PositionId({
           col: nextCol,
           row: nextRow,
         }));
         return nextCell;
       }
-
+      /**
+       * 查询单元格是否在第一列
+       *
+       */
       isCellOnFirstRow = (cell: CellUniqueObject) => {
         const position = this._cellIdQueryPositionMap.get(this.CellUniqueObject2Id(cell));
         if (position) {
@@ -113,7 +185,10 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         }
         return false
       }
-
+      /**
+       * 查询单元格是否在最后一列
+       *
+       */
       isCellOnLastRow = (cell: CellUniqueObject) => {
         const position = this._cellIdQueryPositionMap.get(this.CellUniqueObject2Id(cell));
         if (position) {
@@ -125,46 +200,20 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
       /**
        * 可编辑单元格映射对象，用于作为是否更新可编辑态矩阵的索引
        *
-       * @param {GMExtendedColumnProps<any>[]} columns
+       * @param {GMExtendedColumnProps[]} columns
        * @param {any[]} data
        * @returns
        */
-      public editableCellMarixUpdateIndex(columns: GMExtendedColumnProps<any>[], data: any[]) {
-        let ed_columns: GMExtendedColumnProps<any>[] = [];
+      public editableCellMarixUpdateIndex(columns: GMExtendedColumnProps[], data: any[]) {
+        let ed_columns: GMExtendedColumnProps[] = [];
         columns.forEach((c, index) => {
-          if (c.editable) ed_columns.push({ key: `${c.key}-${index}` });
+          if (c.editable) {
+            ed_columns.push({ key: `${c.key}-${index}` });
+          }
         });
         return {
           columns: ed_columns,
           data: data.map((d, index) => ({ key: `${d.rowKey}-${index}` }))
-        }
-      }
-
-      componentDidMount() {
-        const app: AppBase = this.props.app;
-        const editingCell = this._editingCell;
-        app.eventManager().keyboardEvents().listenKeyDown((context: KeyboardEventContext) => {
-          console.log(context, 'listenKeyDown context')
-          if (context.args) {
-            if (context.args.keyCode === 'Tab') {
-              const cell = this._editingCell || this.getCell(0, 0);
-              if (cell) {
-                this.moveToNextEditableCell(MoveEditType.tab, cell);
-              }
-            }
-          }
-        });
-        this.updateTableCellMatrix();
-      }
-
-
-      componentDidUpdate() {
-        // 其它表格激活后 卸载此事件钩子
-        const { columns, data } = this.props;
-        const editableCellMarixUpdateIndex = this.editableCellMarixUpdateIndex(columns, data);
-        if (!isEqual(this._cacheEditableCellMarixUpdateIndex, editableCellMarixUpdateIndex)) {
-          this._cacheEditableCellMarixUpdateIndex = editableCellMarixUpdateIndex;
-          this.updateTableCellMatrix();
         }
       }
 
@@ -221,13 +270,23 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
             this._lastCell = cell;
           });
         });
-
-        console.log('表格行列数据更新!');
+        // console.log('表格行列数据更新!', this._cellIdQueryPositionMap);
       }
+
+      // onEditStart (obj: CellUniqueObject, isUniqueEdit: boolean = true) {
+      //   // 初始化
+      //   this.__logCell(obj, 'onEditStart');
+      //   if (isUniqueEdit) {
+      //     this._editingMap.clear();
+      //   }
+      //   const itemId = this.CellUniqueObject2Id(obj);
+      //   this._editingCell = obj;
+      //   this._editingMap.set(itemId, true);
+      // }
 
       edit(obj: CellUniqueObject, isUniqueEdit: boolean = true, callback: Function = () => { }) {
         const itemId = this.CellUniqueObject2Id(obj);
-        if (this._editingMap.get(itemId)) {
+        if (this._editingMap.has(itemId)) {
           return;
         }
         if (isUniqueEdit) {
@@ -236,24 +295,20 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         this._editingCell = obj;
         this._editingMap.set(itemId, true);
         this.setState({ editingToggle: !this.state.editingToggle }, () => { callback() });
+        this.__logCell(obj, isUniqueEdit ? '进入唯一编辑状态' : '进入编辑状态');
       }
 
       cancelEdit = (obj: CellUniqueObject) => {
+        // this.__logCell(obj, '取消编辑状态');
         const itemId = this.CellUniqueObject2Id(obj);
-        this._editingMap.delete(itemId);
-        this.setState({ editingToggle: !this.state.editingToggle });
+        if (this._editingMap.has(itemId)) {
+          this._editingMap.delete(itemId);
+          this._editingCell = undefined;
+          this.setState({ editingToggle: !this.state.editingToggle });
+        }
       }
 
-      getScroller() {
-        let xScroller: HTMLElement | null = null;
-        if (document) {
-          xScroller = document.querySelector(`#${_GM_TABLE_SCROLL_Y_CONTAINER_}${this.props.tableKey} .ant-table-content .ant-table-scroll .ant-table-body`);
-        }
-        return {
-          xScroller,
-          yScroller: document.getElementById(`${_GM_TABLE_SCROLL_Y_CONTAINER_}${this.props.tableKey}`)
-        }
-      }
+
       /**
        * 滚动到单元格
        *
@@ -275,18 +330,18 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
             scroller.xScroller.scrollTo(leftReduceWidth, scroller.yScroller && scroller.yScroller.scrollTop || 0);
           }
           if (scrollY) {
-            let topReduceWidth = 0;
+            let topReduceHeight = 0;
             for (let i = this._scrollerInfo.row.start; i <= position.row; i++) {
               const row = this.props.data[i];
               const cell = document.getElementById(`${_GM_TABLE_SCROLL_CELL_PREFIX_}${obj.columnKey}${row.rowKey}`);
-              console.log(cell && cell.parentElement, i , 'cell Rowroworw')
               if (cell && cell.parentElement) {
-                topReduceWidth += cell.parentElement.clientHeight;
+                topReduceHeight += cell.parentElement.clientHeight;
               }
             }
+            // console.log(topsReduceHeight, scroller.yScroller, scroller.yScroller && scroller.yScroller.scrollTop, position, 'topReduceWidth 1111')
             // 目前看Y会自动滚动
             if (scroller.yScroller) {
-              scroller.yScroller.scrollTo(scroller.xScroller && scroller.xScroller.scrollLeft || 0, topReduceWidth + 50);
+              scroller.yScroller.scrollTo(scroller.xScroller && scroller.xScroller.scrollLeft || 0, topReduceHeight - 50 < 0 ? 0 : topReduceHeight - 50 );
             }
           }
           if (position.row === 0) {
@@ -320,9 +375,10 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
             });
           }
         } else {
-          const nextCell = this.getCell(nextCol, nextRow);
+          const nextCell = this.getCellByPosition(nextCol, nextRow);
           if (nextCell) {
-            this.edit(nextCell, true, () => this.scroll2Cell(nextCell));
+            this.scroll2Cell(nextCell);
+            this.edit(nextCell);
           }
         }
       };
@@ -336,29 +392,25 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         const currentEditingCellkey = this.CellUniqueObject2Id(cell);
         const currentPositionOfCell = this._cellIdQueryPositionMap.get(currentEditingCellkey);
         if (!currentPositionOfCell) return;
-
         const rowMax = this.props.data.length;
-        let nextCol = currentPositionOfCell.col;
         let nextRow = currentPositionOfCell.row + 1;
-
         if (nextRow >= rowMax) {
           // 向下增加五行
           if (config.allowDownAddRow) {
             this.props.dataManager.onAdd(new Array(5).fill(undefined), rowMax, () => {
-              const cell = this._cellPositionQueryIdMap.get(this.PositionId({ col: nextCol, row: rowMax }));
+              const cell = this._cellPositionQueryIdMap.get(this.PositionId({ col: currentPositionOfCell.col, row: rowMax }));
               if (cell) {
                 this.edit(cell, true, () => this.scroll2Cell(cell, true));
               }
             });
           }
         } else {
-          const nextCell = this.getCell(nextCol, nextRow);
+          const nextCell = this.getCellByPosition(currentPositionOfCell.col, nextRow);
           if (nextCell) {
-            this.edit(nextCell, true, () => this.scroll2Cell(nextCell));
+            this.scroll2Cell(nextCell);
+            this.edit(nextCell);
           }
-
         }
-
       };
 
       /**
@@ -382,8 +434,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
             }
           }
         } else {
-          const nextCell = this.getCell(nextCol, nextRow);
-          // console.log(nextCell, 'moveToPreviousEditableCell nextCell')
+          const nextCell = this.getCellByPosition(nextCol, nextRow);
           if (nextCell) {
             if (currentPositionOfCell.row === nextRow + 1) {
               if (config.allowColumnLeftBackRow) {
@@ -391,7 +442,9 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
               }
             }
             if (currentPositionOfCell.row === nextRow) {
-              this.edit(nextCell, true, () => this.scroll2Cell(nextCell));
+              // 要先滚动，这样弹出的下拉框才会位置正确
+              this.scroll2Cell(nextCell)
+              this.edit(nextCell, true);
             }
           }
         }
@@ -410,7 +463,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         const rowMax = this.props.data.length;
         let nextCol = currentPositionOfCell.nextCol;
         let nextRow = currentPositionOfCell.nextRow;
-        console.log(type, config, 'moveToNextEditableCell config')
+        // console.log(type, config, 'moveToNextEditableCell config')
         if (!(nextCol !== undefined && nextRow !== undefined)) {
           // 某一个不存在，最后一个可编辑单元格
           if (config.allowDownAddRow) {
@@ -419,30 +472,34 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
               if (this._lastCell) {
                 const position = this._cellIdQueryPositionMap.get(this.CellUniqueObject2Id(this._lastCell));
                 if (position) {
-                  const lastRowFisrtCell = this.getCell(0, position.row);
-                  lastRowFisrtCell && this.edit(lastRowFisrtCell);
+                  const lastRowFisrtCell = this.getCellByPosition(0, position.row);
+                  lastRowFisrtCell && this.edit(lastRowFisrtCell, true, () => this.scroll2Cell(lastRowFisrtCell));
                 }
               }
             });
           } else {
             if (config.allowBottom2Up) {
               if (this._firstCell) {
-                this.edit(this._firstCell, true, () => this.scroll2Cell(this._firstCell!));
+                // 回滚至第一行
+                this.scroll2Cell(this._firstCell)
+                this.edit(this._firstCell);
               }
             }
           }
         } else {
-          const nextCell = this.getCell(nextCol, nextRow);
-          console.log(currentPositionOfCell, nextCell, 'moveToNextEditableCell  currentPositionOfCell nextCell')
+          const nextCell = this.getCellByPosition(nextCol, nextRow);
+          // console.log(currentPositionOfCell, nextCell, 'moveToNextEditableCell  currentPositionOfCell nextCell')
           if (nextCell) {
             if (currentPositionOfCell.row === nextRow - 1) {
               // 右方换行
               if (config.allowColumnRightBreakRow) {
-                this.edit(nextCell, true, () => this.scroll2Cell(nextCell));
+                this.scroll2Cell(nextCell);
+                this.edit(nextCell);
               }
             }
             if (currentPositionOfCell.row === nextRow) {
-              this.edit(nextCell, true, () => this.scroll2Cell(nextCell));
+              this.scroll2Cell(nextCell);
+              this.edit(nextCell);
             }
           }
         }
@@ -451,14 +508,10 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
 
       render() {
         return (
-          <div onBlur={() => {
-            // this.setState({ selected: null })
-          }}>
-            <Target
-              tableController={this.tableController}
-              {...this.props}
-            />
-          </div>
+          <Target
+            tableController={this.tableController}
+            {...this.props}
+          />
         )
       }
 

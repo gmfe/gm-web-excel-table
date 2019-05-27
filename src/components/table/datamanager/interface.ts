@@ -17,3 +17,9 @@ export interface IDataManager<T> {
   addEventListener: (eventKeys: DataManagerEvents, listener: Function) => void;
   removeEventListener: (eventKeys: DataManagerEvents, listener: Function) => void;
 }
+
+export interface IDataManagerProvideProps<T> {
+  data: any[];
+  dataLoading: boolean;
+  dataManager: IDataManager<T>;
+}
