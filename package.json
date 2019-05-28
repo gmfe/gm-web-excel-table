@@ -1,6 +1,6 @@
 {
   "name": "gm-web-excel-table",
-  "version": "1.0.36",
+  "version": "1.0.37",
   "description": "",
   "main": "lib/src/index.js",
   "scripts": {
