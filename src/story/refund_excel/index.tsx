@@ -1,17 +1,13 @@
 
 
 import React, { Component } from 'react'
-import { LayoutRoot } from 'react-gm'
+
 import TabelExcelWrapper from './container';
-import { GMOrderListDataStructure } from './config';
+
+import { LayoutRoot } from 'react-gm'
 
 
-
-
-export default class RefundExcelTable extends Component<{
-  rootStyle?: object;
-  onSearchOrderName: (value:string) => Promise<GMOrderListDataStructure[][]>
-}, any> {
+export default class RefundExcelTable extends Component<any, any> {
 
   static defaultProps = {
     rootStyle: {}
@@ -19,13 +15,33 @@ export default class RefundExcelTable extends Component<{
 
 
   render() {
-    const { rootStyle, onSearchOrderName } = this.props;
+    const {
+      data,
+      loading,
+      onAddRow,
+      rootStyle,
+      onDeleteRow,
+      hasLayoutRoot,
+      onSearchOrderName,
+      onOrderNameChange,
+      onReturnTotalPriceChange,
+      onReturnOrderNumberChange,
+      onReturnOrderPerPriceChange,
+    } = this.props;
     return (
       <div style={rootStyle}>
         <TabelExcelWrapper
+          data={data}
+          loading={loading}
+          onAddRow={onAddRow}
+          onDeleteRow={onDeleteRow}
           onSearchOrderName={onSearchOrderName}
+          onOrderNameChange={onOrderNameChange}
+          onReturnTotalPriceChange={onReturnTotalPriceChange}
+          onReturnOrderNumberChange={onReturnOrderNumberChange}
+          onReturnOrderPerPriceChange={onReturnOrderPerPriceChange}
         />
-        <LayoutRoot />
+        { hasLayoutRoot ? <LayoutRoot /> : null }
       </div>
     )
   }

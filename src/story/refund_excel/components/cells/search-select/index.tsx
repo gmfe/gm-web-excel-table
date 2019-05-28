@@ -21,7 +21,6 @@ export class SearchSelect extends Component<{
   onSelect: (value: any) => void;
   onSearch: (value: string) => Promise<any>;
   handleKeyUp: (e: React.KeyboardEvent, value?: string | number) => void;
-
   mapSearchDataToSelect: (data: any) => GMMoreSelectData[];
 } & WithKeyboardHandlerProviderProps & WithInputFocusProviderProps
   , any> {
@@ -61,8 +60,6 @@ export class SearchSelect extends Component<{
 
 
   handleSearch = async (value: string) => {
-
-
     return new Promise(res => {
       this._lastFetchId += 1;
       const fetchId = this._lastFetchId;
@@ -81,9 +78,6 @@ export class SearchSelect extends Component<{
         });
       })
     })
-
-
-
   }
 
   /**
@@ -108,14 +102,14 @@ export class SearchSelect extends Component<{
   }
 
   render() {
-    const { data } = this.state;
+    const { data, selected } = this.state;
     const { onSelect, value, handleKeyUp, onEditStart } = this.props;
 
     return (
       <div
         className="gm-search-select-container"
         style={{ width: '100%', height: '100%' }}
-        onClick={() => {
+        onClick={(e) => {
           if (this._popRef) {
             this._popRef.show();
           }
@@ -124,13 +118,13 @@ export class SearchSelect extends Component<{
         <MoreSelect
           data={data}
           isGroupList
-          // loading={fetching}
           popoverType={'click'}
           onSearch={this.handleSearch}
-          selected={this.state.selected}
           popRef={(pop: any) => { this._popRef = pop }}
+          popoverClassName="gm-refund-table--more-select-popover"
+          selected={selected && selected.value ? selected : undefined}
           onSelect={(selected: any) => {
-            onSelect(selected.text)
+            onSelect(selected)
             this.setState({ selected })
           }}
           onInputFocus={() => { onEditStart(); }}

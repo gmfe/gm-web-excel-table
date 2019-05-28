@@ -1,17 +1,18 @@
 
 
+
+import Big from 'big.js'
 import * as React from 'react';
+import { CellInfo } from 'react-table';
 import SearchSelect from './components/cells/search-select';
 import EditableInputNumber from './components/cells/editable-input-number';
-import { CellInfo } from 'react-table';
-import Big from 'big.js'
 
-
-import HoverIcon from '../../components/hover-icon/hover-icon';
 import { SvgFun } from 'gm-svg'
+import HoverIcon from '../../components/hover-icon/hover-icon';
 import SvgShanchumorenHuaban from 'gm-svg/src/ShanchumorenHuaban'
 import SvgTianjiamorenHuaban from 'gm-svg/src/TianjiamorenHuaban'
 
+import { GMOrderListDataStructure } from './interface';
 import {
   IGetColumnsFunc,
   WithKeyboardHandler,
@@ -29,8 +30,7 @@ export enum GM_REFUND_TABLE_COLUMNS_KEYS {
   returnOrderPerPrice = 'returnOrderPerPrice', // 退货单价
   fillPriceDiff = 'fillPriceDiff', // 补差
   returnTotalPrice = 'returnTotalPrice', // 退货金额
-  returnBatchNumber = 'returnBatchNumber', // 退货批次
-  chargerPerson = 'chargerPerson', // 退货批次
+  chargerPerson = 'chargerPerson',
 }
 
 
@@ -38,22 +38,16 @@ const KeyBoardSearchSelect = WithKeyboardHandler(SearchSelect);
 const KeyBoardEditableInputNumber = WithKeyboardHandler(EditableInputNumber);
 
 
-
-export interface GMOrderListDataStructure {
-  label: string;
-  children: {
-    name: string
-    value: string
-    std_unit: string
-    category: string
-    unit_price?: number
-  }[]
-}
-
-
+/**
+ * 业务实例 配置商品退货表格
+ *
+ * @param {*} componentProps
+ * @returns
+ */
 export const configOrderTable1Columns: IGetColumnsFunc = (componentProps) => {
 
-  // 序号 | 商品名 | 商品分类 | 退货数 | 退货单价 | 补差 | 退货金额 | 退货批次 | 	操作人
+  // 序号 | 商品名 | 商品分类 | 退货数 | 退货单价 | 补差 | 退货金额 | 	操作人
+
 
   const RenderKeyBoardEditableInputNumber = (key: string, dataIndex: string, className?: string) => ({ original, value, viewIndex }: CellInfo) => {
     const cell = { columnKey: key, rowKey: original.rowKey };
@@ -68,7 +62,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps) => {
         tableController={original.tableController}
         onChange={(value?: number) => {
           if (value) {
-            componentProps.dataManager.onUpdate({ [dataIndex]: value }, viewIndex);
+            componentProps.dataManager.onUpdate({ [dataIndex]: value }, viewIndex, key);
           }
         }}
       />
@@ -83,14 +77,9 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps) => {
       key: GM_REFUND_TABLE_COLUMNS_KEYS.number,
       fixed: 'left',
       Header: '序号',
-      // sortDirections: ['descend', 'ascend'],
-      // defaultSortOrder: 'ascend',
-      // sorter: (a: DataWithController_IRefundExcel, b: DataWithController_IRefundExcel) => {
-      //   return a.index - b.index;
-      // },
       minWidth: 15,
       Cell: ({ viewIndex }: CellInfo) => {
-        return viewIndex;
+        return viewIndex + 1;
       }
     },
 
@@ -108,22 +97,17 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps) => {
           [
             <HoverIcon
               key="delete"
-              onClick={() => {
-                componentProps.dataManager.onAdd([undefined], viewIndex + 1);
-              }}
-
               style={{ marginRight: 18 }}
-              Placeholder={() => <SvgShanchumorenHuaban className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-delete-svg`} />}
-              Hover={() => <SvgShanchumorenHuaban className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-delete-clicked-svg`} />}
+              onClick={() => { componentProps.dataManager.onAdd([undefined], viewIndex + 1); }}
+              Placeholder={() => <SvgTianjiamorenHuaban className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-add-svg`} />}
+              Hover={() => <SvgTianjiamorenHuaban className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-add-clicked-svg`} />}
             />,
 
             <HoverIcon
               key="add"
-              onClick={() => {
-                componentProps.dataManager.onDelete(viewIndex);
-              }}
-              Placeholder={() => <SvgTianjiamorenHuaban className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-add-svg`} />}
-              Hover={() => <SvgTianjiamorenHuaban className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-add-clicked-svg`} />}
+              onClick={() => { componentProps.dataManager.onDelete(viewIndex); }}
+              Placeholder={() => <SvgShanchumorenHuaban className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-delete-svg`} />}
+              Hover={() => <SvgShanchumorenHuaban className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-delete-clicked-svg`} />}
             />,
           ]
         )
@@ -149,22 +133,29 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps) => {
         const isEditing = original.tableController.query.isEditing(cellObj);
         // this is an ensure props by refund-table;
         const { onSearchOrderName } = componentProps.custom;
+        const dataValueMap = new Map()
         return (
           <KeyBoardSearchSelect
             cell={cellObj}
             value={value}
             editing={isEditing}
-            onSearch={onSearchOrderName}
+            tableController={original.tableController}
+            onSearch={(value: string) => onSearchOrderName(value, viewIndex)}
             mapSearchDataToSelect={(data: GMOrderListDataStructure[][]) => {
               let rowData = data[viewIndex] || [];
               return rowData.map((d: GMOrderListDataStructure) => ({
                 label: d.label,
-                children: d.children.map(c => ({ value: c.value, text: c.name }))
+                children: d.children.map(c => {
+                  dataValueMap.set(c.value, c);
+                  return { value: c.value, text: c.name }
+                })
               }))
             }}
-            tableController={original.tableController}
-            onSelect={(value: string) => {
-              componentProps.dataManager.onUpdate({ orderName: value }, viewIndex);
+            onSelect={(data: { value: string, text: string }) => {
+              if (data) {
+                const selectedData = dataValueMap.get(data.value);
+                componentProps.dataManager.onUpdate(selectedData, viewIndex, GM_REFUND_TABLE_COLUMNS_KEYS.orderName);
+              }
             }}
           />
         )
@@ -193,7 +184,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps) => {
       uniqueEditable: true,
       Cell: RenderKeyBoardEditableInputNumber(
         GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderNumber,
-        'returnOrderNumber',
+        'quantity',
         'returnOrderNumber'
       ),
     },
@@ -209,7 +200,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps) => {
       minWidth: 126,
       Cell: RenderKeyBoardEditableInputNumber(
         GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderPerPrice,
-        'returnOrderPerPrice',
+        'unit_price',
         'returnOrderPerPrice'
       ),
     },
@@ -228,7 +219,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps) => {
       minWidth: 105,
       key: GM_REFUND_TABLE_COLUMNS_KEYS.returnTotalPrice,
       accessor: 'returnTotalPrice',
-      Cell: ({ original: { tableController }, viewIndex }: CellInfo, column: any) => {
+      Cell: ({ original: { tableController }, viewIndex }: CellInfo) => {
         const returnOrderNumber = tableController.query.getCellData(viewIndex, GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderNumber);
         const returnOrderPerPrice = tableController.query.getCellData(viewIndex, GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderPerPrice);
         let value: any = 0

@@ -22,6 +22,21 @@
   min-height      : 40px;
   background-color: @GME-title-background-color;
   padding         : 0;
+  // 写成这样发生了错误
+  // &>div {
+  //   .table-cell-container();
+  //   height: 100%;
+  // }
+}
+
+.ReactTable .rt-thead .rt-th{
+  &>div {
+    .table-cell-container();
+    position: relative;
+    height: 100%;
+  }
+}
+.ReactTable .rt-thead .rt-td{
   &>div {
     .table-cell-container();
     position: relative;
@@ -29,13 +44,11 @@
   }
 }
 
+
 @{table-any-body-cell-selector} {
   .table-cell-container();
-
   &>div.gm-web-table-cell {
     position     : relative;
-    // text-align: center;
-    // margin    : auto 0;
   }
 }
 
@@ -61,12 +74,4 @@
 .rthfc .rt-th.rthfc-th-fixed-left-last,
 .rthfc .rt-td.rthfc-td-fixed-left-last {
   border-color        : rgba(0,0,0,0.05);
-  // padding-top   : 0px !important;
-  // padding-bottom: 0px !important;
-  // box-shadow    : 4px 0px 4px 0px rgba(0, 0, 0, 0.15);
-
-  // &>.gm-web-table-cell-container {
-  //   padding-top   : 12px;
-  //   padding-bottom: 12px;
-  // }
 }

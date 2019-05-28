@@ -58,6 +58,7 @@ export class EditableInputNumber extends Component<{
       <div className={cx("gm-excel-editable-input-number", {
         [`gm-excel-editable-input-number-${className}`]: className !== undefined,
       })}>
+        {/* InputNumberV2 cannot get mouse selection */}
         <InputNumber
           value={value}
           precision={2}

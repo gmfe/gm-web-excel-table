@@ -24,7 +24,6 @@ export function WithInputFocus(Target: React.ComponentClass<any, any>) {
     public _editFunction?: Function;
 
     startEdit = () => {
-
       // const position = this.props.tableController.query.getCellPosition(this.props.cell);
       // console.log(`[control-log] 当前${position && position.row}行${position && position.col}列 开始 编辑`)
       this._focused = true;

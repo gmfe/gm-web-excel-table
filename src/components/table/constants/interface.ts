@@ -16,9 +16,21 @@ export interface CellSelectedState {
 
 
 export interface GMConfigData<T> {
-  initData: T[]
+
+
   defaultData: T
   fetchData?: Promise<T>
+
+  initData?: T[]
+  controlled?: boolean // 受控状态
+  getProps?: () => any
+  getData?: () => T[] // 受控状态下必须传值
+  getOriginTableData?: () => any[] // 获得原始数据列表数据
+  onDataChange?: (...args: any[]) => void
+  // // 通知dataManager更新数据，避免全部高阶函数重新生成
+  dataManagerRef?: (obj: {
+    updateData: () => void
+  }) => void
 }
 
 
@@ -42,7 +54,6 @@ export interface GMTableExcelSearchArgs {
 // 配置表格
 export interface GMTableExcelStaticConfig {
   app?: ClientAppModel;
-  custom: any;
   tableKey: string;
 
   containerStyle?: Object

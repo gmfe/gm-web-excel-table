@@ -54,7 +54,7 @@ export interface IWeekSizeRange{
   }
 }
 
-export type IGetColumnsFunc = (props: GMTableExcelStaticConfig & IDataManagerProvideProps<any>, columnRowManager: IColumnManager) => GMExtendedColumnProps[];
+export type IGetColumnsFunc = (props: any, columnRowManager: IColumnManager) => GMExtendedColumnProps[];
 
 export interface WithColumnRowManagerConfig {
   getColumns: IGetColumnsFunc 

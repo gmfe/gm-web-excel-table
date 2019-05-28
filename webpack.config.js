@@ -1,29 +1,20 @@
 const path = require('path');
-const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-const isLocalDev = process.env.NODE_ENV === 'dev'
 
+// ---------------------- WEBPACK 仅用于本地调试 ----------------------
 
 const config = {
   entry: {
-    libEntry: ['./src/index.ts'],
     story: ['./src/story/index.tsx'],
-    main: ['./src/components/index.tsx'],
-    refund_excel: ['./src/story/refund_excel/index.tsx'],
   },
   output: {
     filename: '[name].js',
-    libraryTarget: 'var',
-    library: 'RefundExcelTable',
     path: path.resolve(__dirname, 'dist'),
   },
   devtool: 'inline-source-map',
-  // devtool: 'source-map',
   devServer: {
     hot: true,
     port: 9002,
@@ -109,7 +100,6 @@ const config = {
     ]
   },
   plugins: [
-    // new HardSourceWebpackPlugin(), // https://github.com/mzgoddard/hard-source-webpack-plugin#hot-reloading-is-not-working
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[name].css',
@@ -134,18 +124,6 @@ const config = {
       }
     }
   }
-}
-
-if (!isLocalDev) {
-  // config.plugins.push(new HardSourceWebpackPlugin())
-  // [NOTICE] this dllplugin cannot work with dev-server
-  config.plugins.push(
-    new webpack.DllPlugin({
-      context: __dirname,
-      name: "[name]_[hash]",
-      path: path.join(__dirname, "dist/dll", "[name]-manifest.json"),
-    }),
-  )
 }
 
 module.exports = config;
