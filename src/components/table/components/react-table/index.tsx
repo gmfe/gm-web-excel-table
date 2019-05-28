@@ -58,15 +58,15 @@ export class GMTableComponent extends React.Component<GMTableComponentProps<any>
 
   render() {
     const {
-      tableKey,
+      data,
       columns,
+      tableKey,
       className,
-      containerStyle,
       tableConfig,
       dataLoading,
-      data,
+      containerStyle,
     } = this.props
-    // console.log(this.props, 'GMTableComponent')
+
     const dataWithProps = this.tableDataWithProps();
     return (
       <div

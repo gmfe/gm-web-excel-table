@@ -18,13 +18,12 @@ export function WithInputFocus(Target: React.ComponentClass<any, any>) {
     editing: boolean,
     tableController: TableControllerInterface
   } & WithKeyboardHandlerProviderProps, any> {
-    private _inputRef?: any;
-    private _focused: boolean = false;
-    private _cancelEditFunction?: Function;
-    private _editFunction?: Function;
+    public _inputRef?: any;
+    public _focused: boolean = false;
+    public _cancelEditFunction?: Function;
+    public _editFunction?: Function;
 
     startEdit = () => {
-
       // const position = this.props.tableController.query.getCellPosition(this.props.cell);
       // console.log(`[control-log] 当前${position && position.row}行${position && position.col}列 开始 编辑`)
       this._focused = true;

@@ -1,24 +1,47 @@
 
 
 import React, { Component } from 'react'
+
 import TabelExcelWrapper from './container';
+
 import { LayoutRoot } from 'react-gm'
 
-export default class RefundExcelTable extends Component<{
-  rootStyle?: object;
-  onSearchOrderName: (value:string) => Promise<any>
-}, any> {
+
+export default class RefundExcelTable extends Component<any, any> {
 
   static defaultProps = {
     rootStyle: {}
   }
 
+
   render() {
-    const { rootStyle, onSearchOrderName } = this.props;
+    const {
+      data,
+      loading,
+      onAddRow,
+      rootStyle,
+      onDeleteRow,
+      hasLayoutRoot,
+      onSearchOrderName,
+      onOrderNameChange,
+      onReturnTotalPriceChange,
+      onReturnOrderNumberChange,
+      onReturnOrderPerPriceChange,
+    } = this.props;
     return (
       <div style={rootStyle}>
-        <TabelExcelWrapper onSearchOrderName={onSearchOrderName} />
-        <LayoutRoot />
+        <TabelExcelWrapper
+          data={data}
+          loading={loading}
+          onAddRow={onAddRow}
+          onDeleteRow={onDeleteRow}
+          onSearchOrderName={onSearchOrderName}
+          onOrderNameChange={onOrderNameChange}
+          onReturnTotalPriceChange={onReturnTotalPriceChange}
+          onReturnOrderNumberChange={onReturnOrderNumberChange}
+          onReturnOrderPerPriceChange={onReturnOrderPerPriceChange}
+        />
+        { hasLayoutRoot ? <LayoutRoot /> : null }
       </div>
     )
   }
