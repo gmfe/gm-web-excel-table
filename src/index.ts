@@ -1,3 +1,4 @@
 
 export * from './components'
-export * from './story/refund_excel'
+
+export { default as RefundExcelTable } from './story/refund_excel'
