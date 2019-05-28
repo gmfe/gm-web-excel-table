@@ -50,6 +50,9 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
       // 位置查询id表
       public _cellPositionQueryIdMap: Map<string, CellUniqueObject>;
 
+      // 列数据查询函数表
+      public _columnAccessorMap: Map<string, (row: number) => any>;
+
       // 一些数据缓存
       public _firstCell?: CellUniqueObject;
       public _lastCell?: CellUniqueObject;
@@ -66,16 +69,22 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
           cancelEdit: this.cancelEdit,
           onEditStart: this.edit.bind(this),
           query: {
-            isEditing: (obj: CellUniqueObject) => { return this._editingMap.has(this.CellUniqueObject2Id(obj)) },
+            isEditing: (obj: CellUniqueObject) => {
+              return this._editingMap.has(this.CellUniqueObject2Id(obj))
+            },
             isCellOnFirstRow: this.isCellOnFirstRow,
             isCellOnLastRow: this.isCellOnLastRow,
             getCellPosition: this.getCellPosition.bind(this),
+            getCellData: this.getCellData.bind(this)
           },
           move: {
             moveToNextEditableCell: this.moveToNextEditableCell,
             moveToPreviousEditableCell: this.moveToPreviousEditableCell,
             moveToNextRowEditableCell: this.moveToNextRowEditableCell,
             moveToPreviousRowEditableCell: this.moveToPreviousRowEditableCell,
+          },
+          register: {
+            registerColumnAccessorMap: this.registerColumnAccessorMap.bind(this)
           }
         }
       }
@@ -104,6 +113,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
 
       constructor(props: any) {
         super(props);
+
         this.state = {
           tableActive: true, // 由这层控制，以满足多编辑竞争的需求
           selected: null,
@@ -113,6 +123,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         this._editingMap = new Map();
         this._cellIdQueryPositionMap = new Map();
         this._cellPositionQueryIdMap = new Map();
+        this._columnAccessorMap = new Map();
       }
 
       componentDidMount() {
@@ -160,6 +171,26 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
       public getCellPosition(cell: CellUniqueObject): CellUniquePositionLinkedList | undefined {
         return this._cellIdQueryPositionMap.get(this.CellUniqueObject2Id(cell));
       }
+
+
+      public registerColumnAccessorMap(columnKey: string, accessor: (row: number) => any) {
+        this._columnAccessorMap.set(columnKey, accessor);
+      }
+
+      public getCellData(rowIndex: number, columnKey: string): any {
+        const valid = rowIndex >= 0 && rowIndex <= this.props.data.length - 1;
+        const columnAccessor = this._columnAccessorMap.get(columnKey);
+
+        if (!columnAccessor) {
+          console.warn('未注册 accessor, 请将 column registerAccessor字段设置为 true ');
+          return;
+        }
+
+        if (valid && columnAccessor) {
+          return columnAccessor(rowIndex);
+        }
+      }
+
       /**
        * 坐标查询单元格
        *
@@ -273,16 +304,6 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         // console.log('表格行列数据更新!', this._cellIdQueryPositionMap);
       }
 
-      // onEditStart (obj: CellUniqueObject, isUniqueEdit: boolean = true) {
-      //   // 初始化
-      //   this.__logCell(obj, 'onEditStart');
-      //   if (isUniqueEdit) {
-      //     this._editingMap.clear();
-      //   }
-      //   const itemId = this.CellUniqueObject2Id(obj);
-      //   this._editingCell = obj;
-      //   this._editingMap.set(itemId, true);
-      // }
 
       edit(obj: CellUniqueObject, isUniqueEdit: boolean = true, callback: Function = () => { }) {
         const itemId = this.CellUniqueObject2Id(obj);
@@ -341,7 +362,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
             // console.log(topsReduceHeight, scroller.yScroller, scroller.yScroller && scroller.yScroller.scrollTop, position, 'topReduceWidth 1111')
             // 目前看Y会自动滚动
             if (scroller.yScroller) {
-              scroller.yScroller.scrollTo(scroller.xScroller && scroller.xScroller.scrollLeft || 0, topReduceHeight - 50 < 0 ? 0 : topReduceHeight - 50 );
+              scroller.yScroller.scrollTo(scroller.xScroller && scroller.xScroller.scrollLeft || 0, topReduceHeight - 50 < 0 ? 0 : topReduceHeight - 50);
             }
           }
           if (position.row === 0) {
@@ -368,6 +389,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         if (nextRow < 0) {
           // 向上增加一行
           if (config.allowUpAddRow) {
+            // CUSTOM FIELD
             this.props.dataManager.onAdd([undefined], 0, () => {
               if (this._firstCell) {
                 this.edit(this._firstCell, true, () => this.scroll2Cell(this._firstCell!, true));
@@ -397,6 +419,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         if (nextRow >= rowMax) {
           // 向下增加五行
           if (config.allowDownAddRow) {
+            // CUSTOM FIELD
             this.props.dataManager.onAdd(new Array(5).fill(undefined), rowMax, () => {
               const cell = this._cellPositionQueryIdMap.get(this.PositionId({ col: currentPositionOfCell.col, row: rowMax }));
               if (cell) {
@@ -425,7 +448,6 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         if (!currentPositionOfCell) return;
         let nextCol = currentPositionOfCell.previousCol;
         let nextRow = currentPositionOfCell.previousRow;
-        // console.log(currentPositionOfCell, config, type, 'moveToPreviousEditableCell')
         if (!(nextCol !== undefined && nextRow !== undefined)) {
           // 第一个可编辑单元格
           if (config.allowUp2Bottom) {
@@ -467,7 +489,8 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         if (!(nextCol !== undefined && nextRow !== undefined)) {
           // 某一个不存在，最后一个可编辑单元格
           if (config.allowDownAddRow) {
-            // 向下增加五行
+            // 向下增加五行 
+            // CUSTOM FIELD
             this.props.dataManager.onAdd(new Array(5).fill(undefined), rowMax, () => {
               if (this._lastCell) {
                 const position = this._cellIdQueryPositionMap.get(this.CellUniqueObject2Id(this._lastCell));

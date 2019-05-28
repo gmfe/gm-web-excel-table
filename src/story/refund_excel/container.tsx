@@ -1,8 +1,7 @@
 
 
 import * as React from 'react';
-import { configOrderTable1Columns } from './config';
-import { Data_IRefundExcel } from './interface';
+import { configOrderTable1Columns, GM_REFUND_TABLE_COLUMNS_KEYS } from './config';
 import {
   MoveEditType,
   // SearchRenderProps,
@@ -11,50 +10,117 @@ import {
 
 import 'react-gm/src/index.less'
 import './style/index.less';
+import { IDataManagerChangeType } from '../../components/table/datamanager/interface';
+import { RefundExcelTable_AllData, RefundExcelTable_Details, Data_IRefundExcel, RefundExcelTable_Props } from './interface';
+
 
 
 // const searchKeys = [
 //   'orderName',
 //   'chargerPerson',
 // ]
+// const DEFAULT_DATA = {
+//   orderName: '',
+//   category: '',
+//   returnOrderNumber: 0,
+//   returnOrderPerPrice: 0,
+//   fillPriceDiff: 0, // 补差价
+//   returnTotalPrice: 0, // 退货金额	
+//   chargerPerson: '' // '操作人'
+// }
 
-// const MOCK_DATA: Data_IRefundExcel[] = [
-//   {
-//     orderName: '',
-//     category: '分类分类1',
-//     returnOrderNumber: 55,
-//     returnOrderPerPrice: 100,
-//     fillPriceDiff: 2, // 补差价
-//     returnTotalPrice: 5500, // 退货金额	
-//     returnBatchNumber: 10, // 退货批次
-//     chargerPerson: 'miaomiao' // '操作人'
-//   }
-// ]
 
-const DEFAULT_DATA = {
-  orderName: '',
-  category: '',
-  returnOrderNumber: 0,
-  returnOrderPerPrice: 0,
-  fillPriceDiff: 0, // 补差价
-  returnTotalPrice: 0, // 退货金额	
-  returnBatchNumber: 0, // 退货批次
-  chargerPerson: '' // '操作人'
-}
+
 
 /**
- * 退货表格实例
+ * 商品退货表格配置 | 列配置请查看 ./config
  *
  * @export
  * @class TabelExcelContainer
  * @extends {React.PureComponent<any, any>}
  */
-export default class TabelExcelContainer extends React.PureComponent<any, any> {
+export default class TabelExcelContainer extends React.PureComponent<RefundExcelTable_Props, any> {
+
+  private _dataManagerRef: any;
+
+  componentDidUpdate() {
+    // render层属于静态配置，动态传值将不会更新，使用 updateData 做纯数据相关更新
+    if (this._dataManagerRef) {
+      this._dataManagerRef.updateData();
+    }
+  }
+
+  /**
+   * 业务结构映射为开发结构
+   *
+   * @memberof TabelExcelContainer
+   */
+  dataMap2TableData = (data: RefundExcelTable_AllData): Data_IRefundExcel[] => {
+    const toNumber = (value: string) => value === undefined ? 0 : parseFloat(value);
+    return data.details.map((d: RefundExcelTable_Details, dindex: number) => ({
+      rowKey: `refund-table-row-${dindex}`,
+      orderName: d.name || '',
+      category: d.category || '',
+      chargerPerson: data.creator,
+      returnTotalPrice: toNumber(d.money),
+      returnOrderNumber: toNumber(d.quantity),
+      fillPriceDiff: toNumber(d.different_price),
+      returnOrderPerPrice: toNumber(d.unit_price),
+    }));
+  }
+
+  /**
+   * 开发逻辑转发给业务逻辑
+   *
+   * @memberof TabelExcelContainer
+   */
+  handleDataChange = (type: IDataManagerChangeType, args: any) => {
+    // console.log(type, args, 'handleDataChange')
+    switch (type) {
+      case IDataManagerChangeType.addRow: {
+        this.props.onAddRow(args.add as any[], args.rowIndex);
+        break;
+      }
+      case IDataManagerChangeType.deleteRow: {
+        this.props.onDeleteRow(args.rowIndex);
+        break;
+      }
+      case IDataManagerChangeType.updateCell: {
+        switch (args.columnKey) {
+          case GM_REFUND_TABLE_COLUMNS_KEYS.orderName: {
+            this.props.onOrderNameChange(args.item, args.rowIndex);
+            break;
+          }
+          case GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderNumber: {
+            this.props.onReturnOrderNumberChange(args.item.quantity, args.rowIndex);
+            break;
+          }
+          case GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderPerPrice: {
+            this.props.onReturnOrderPerPriceChange(args.item.unit_price, args.rowIndex);
+            break;
+          }
+          case GM_REFUND_TABLE_COLUMNS_KEYS.returnTotalPrice: {
+            this.props.onReturnOrderNumberChange(args.item.money, args.rowIndex);
+            break;
+          }
+        }
+        break;
+      }
+    }
+  }
+
+
+
+
+
+
   render() {
-   return (
+
+
+    return (
       <GMTableExcelStaticConfigWrapper
         // app={APP} // 多个表格实例的时候可以在共同容器中使用独立实例
-        // tableRef={(c: TableRef) => this._tableRef = c}
+
         tableKey='refund-excel'
 
         controllerConfig={{
@@ -76,15 +142,10 @@ export default class TabelExcelContainer extends React.PureComponent<any, any> {
         }}
 
         tableConfig={{
-          // defaultPageSize: 1000,
-          showPagination: false,
-          resizable: false,
-          style: { height: 400 },
           sortable: false,
-        }}
-
-        containerStyle={{
-          border: '1px solid #ccc',
+          resizable: false,
+          showPagination: false,
+          style: { height: 400 },
         }}
 
         searchConfig={{
@@ -100,19 +161,32 @@ export default class TabelExcelContainer extends React.PureComponent<any, any> {
 
         dataConfig={{
           defaultData: {
-            orderName: '',
-            category: '',
-            returnOrderNumber: 0,
-            returnOrderPerPrice: 0,
-            fillPriceDiff: 0, // 补差价
-            returnTotalPrice: 0, // 退货金额	
-            returnBatchNumber: 0, // 退货批次
-            chargerPerson: '' // '操作人'
+            name: '',
+            std_unit: '',
+            category: '', // 分类
+            money: '0',  // 退货金额	
+            quantity: '0', // 退货数量
+            unit_price: '0', // 退货单价
+            different_price: '0',  // 补差价
+            isDefaultData: true,
           },
-          initData: new Array(5).fill(DEFAULT_DATA)
+          controlled: true,
+          data: this.props.data,
+          onDataChange: this.handleDataChange,
+          getData: () => {
+            // 必须指定rowKey用于表格定位
+            return this.dataMap2TableData(this.props.data)
+          },
+          getOriginTableData: () => {
+            return this.props.data.details;
+          },
+          getProps: () => this.props, 
+          dataManagerRef: (c: any) => { this._dataManagerRef = c; }
         }}
 
-        custom={{...this.props}}
+        custom={{
+          onSearchOrderName: this.props.onSearchOrderName,
+        }}
       />
 
     )

@@ -1,10 +1,10 @@
 
-import * as React from 'react'
-import { GMConfigData } from '../constants/interface';
-import { DataManagerEvents, IDataManager } from './interface';
-import { TableTransactionUtil } from '../transactions/transactionutil';
 import uniqid from 'uniqid';
-
+import * as React from 'react'
+import cloneDeep from 'lodash/cloneDeep'
+import { GMConfigData } from '../constants/interface';
+import { TableTransactionUtil } from '../transactions/transactionutil';
+import { DataManagerEvents, IDataManager, IDataManagerChangeType } from './interface';
 
 
 
@@ -19,7 +19,17 @@ type IData = any;
  */
 export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>) {
 
-  return ({ initData, defaultData, fetchData }: GMConfigData<IData>) => {
+  return ({
+    getProps,
+    initData = [],
+    getData,
+    fetchData,
+    controlled,
+    defaultData,
+    onDataChange,
+    getOriginTableData,
+    dataManagerRef,
+  }: GMConfigData<IData>) => {
     return class extends React.Component<any, any> {
 
       public _addedListeners: Function[]
@@ -29,23 +39,51 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
       constructor(props: any) {
         super(props);
         this.state = {
-          data: this.withRowKey(initData),
+          updateToggle: false,
           dataLoading: false,
+          data: controlled ? [] : this.withRowKey(initData),
         };
         this._addedListeners = [];
         this._removedListeners = [];
         this._changedListeners = [];
       }
 
+      public dataManager(): IDataManager<any> {
+        return {
+          onAdd: this.handleAdd,
+          onDelete: this.handleDelete,
+          onUpdate: this.handleUpdate,
+          addEventListener: this.addEventListener,
+          getData: () => { return this.state.data },
+          removeEventListener: this.removeEventListener,
+        }
+      }
+
+      public withRowKey(data: IData[]) {
+        return data.map((d, index) => ({ ...d, rowKey: d.rowKey || uniqid(), index }));
+      }
+
       componentWillMount() {
         if (fetchData) {
           this.setState({ dataLoading: true });
           fetchData.then((d: any[]) => {
-            this.setState({ data: this.withRowKey(d), dataLoading: false })
+            this.setState({
+              data: this.withRowKey(d),
+              dataLoading: false
+            })
           })
         }
       }
 
+      componentDidMount() {
+        if (dataManagerRef) {
+          dataManagerRef({
+            updateData: () => {
+              this.setState({ updateToggle: !this.state.updateToggle });
+            }
+          })
+        }
+      }
 
       addEventListener = (eventKeys: DataManagerEvents, listener: Function) => {
         // 简单版实现，具体需要注意一些特殊情况
@@ -92,78 +130,111 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
       }
 
       handleAdd = (item: (IData | undefined)[], rowIndex?: number, callback?: () => void) => {
-        // TODO 可以加一个字段校验，与当前的 item keys 需要匹配
-        let data = this.state.data;
-        const addCandiateList: IData[] = item.map(d => d === undefined ? defaultData : d);
+        let data = this.getData();
+        // NOTICE need to check
+        const addCandiateList: IData[] = item.map(d => d === undefined ? cloneDeep(defaultData) : d);
         addCandiateList.forEach((addCandiate: IData, index: number) => {
           if (rowIndex !== undefined && rowIndex >= 0 && rowIndex <= data.length) {
             data.splice(rowIndex + index, 0, addCandiate);
           } else {
             data = data.concat(addCandiateList);
           }
+          // addCandiate.dirty = true;
         });
         this._addedListeners.forEach(listener => {
           listener(addCandiateList, rowIndex);
         });
-        this.setState({ data: this.withRowKey(data) }, () => {
-          if (callback) callback();
-        });
+
+        if (controlled) {
+          if (onDataChange) {
+            onDataChange(
+              IDataManagerChangeType.addRow,
+              { add: addCandiateList, rowIndex },
+            );
+          }
+        } else {
+          this.setState({
+            data: this.withRowKey(data)
+          }, () => {
+            if (callback) callback();
+          });
+        }
 
       }
 
       handleDelete = (index: number) => {
-        const data = this.state.data;
+        const data = this.getData();
         this._removedListeners.forEach(listener => {
           listener(data[index], index);
         });
         data.splice(index, 1);
-        this.setState({ data: this.withRowKey(data) });
+        if (controlled) {
+          if (onDataChange) {
+            // TODO 支持多项删除
+            onDataChange(IDataManagerChangeType.deleteRow, { rowIndex: [index] });
+          }
+        } else {
+          this.setState({ data: this.withRowKey(data) });
+        }
       }
 
-      handleUpdate = (newItem: Object, rowIndex: number) => {
-        // can do sequence
-        const newData = [...this.state.data];
-        const oldItem = newData[rowIndex];
+
+      handleUpdate = (newItem: Object, rowIndex: number, columnKey: string) => {
+        // can do sequence with editing key
+        const originData = controlled ? (getOriginTableData && getOriginTableData() || []) : this.state.data;
+        const oldItem = originData[rowIndex];
         const app = this.props.app;
         const groupTransaction = TableTransactionUtil.createGroupTransaction(app);
+
+        // TODO 删行曾行均可加入 Transaction
         TableTransactionUtil.createEditCellTransaction(
           app,
           oldItem,
           { ...oldItem, ...newItem },
           (commitedItem: any) => {
-            newData.splice(rowIndex, 1, commitedItem);
-            this.setState({ data: this.withRowKey(newData) }, () => {
-              //  TODO 这个应该传进去 undo redo 的时候可以释放更新
-              this._changedListeners.forEach(listener => {
-                listener(commitedItem, rowIndex);
+            if (controlled) {
+              if (onDataChange) {
+                onDataChange(
+                  IDataManagerChangeType.updateCell,
+                  { item: commitedItem, rowIndex, columnKey }
+                );
+                this._changedListeners.forEach(listener => {
+                  listener(commitedItem, rowIndex);
+                });
+              }
+            } else {
+              originData.splice(rowIndex, 1, commitedItem);
+              this.setState({ data: this.withRowKey(originData) }, () => {
+                //  TODO 这个应该传进去 undo redo 的时候可以释放更新
+                this._changedListeners.forEach(listener => {
+                  listener(commitedItem, rowIndex);
+                });
               });
-            });
+            }
           }, groupTransaction);
         app.transactionManager().commit(groupTransaction);
       }
 
-      public dataManager(): IDataManager<any> {
-        return {
-          onAdd: this.handleAdd,
-          onDelete: this.handleDelete,
-          onUpdate: this.handleUpdate,
-          addEventListener: this.addEventListener,
-          getData: () => { return this.state.data },
-          removeEventListener: this.removeEventListener,
-          setData: (data: any[]) => { this.setState({ data: this.withRowKey(data) }) },
+      getData = () => {
+        let data = [];
+        if (controlled && getData) {
+          data = getData();
+        } else {
+          data = this.state.data;
         }
-      }
-
-      public withRowKey(data: IData[]) {
-        return data.map((d, index) => ({ ...d, rowKey: d.rowKey || uniqid(), index }));
+        return data;
       }
 
       render() {
+        const successData = this.getData();
+        const props = getProps && getProps();
+        const loading = props && props.loading;
+        const dataLoading = loading !==undefined ? loading : this.state.dataLoading;
         return (
           <WrappedComponent
             {...this.props}
-            data={this.state.data}
-            dataLoading={this.state.dataLoading}
+            data={successData}
+            dataLoading={dataLoading}
             dataManager={this.dataManager()}
           />
         )

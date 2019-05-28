@@ -11,9 +11,13 @@ import { WithColumnRowManager } from './columnrowmanager/with-column-row-manager
 // 表格原材料 react-table | react-datasheet | rc-table 均可
 
 import { GMTableComponent } from './components/react-table';
+import { RefundExcelTableCustomProps } from '../../story/refund_excel/interface';
+
+
+type GMTableExcelStaticConfigWrapperProps = GMTableExcelStaticConfig & { custom: RefundExcelTableCustomProps }
 
 // 装配出厂
-export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExcelStaticConfig, any> {
+export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExcelStaticConfigWrapperProps, any> {
 
   static defaultProps = {
     tableConfig: {
@@ -23,7 +27,7 @@ export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExce
 
   private _app: ClientAppModel;
 
-  constructor(props: GMTableExcelStaticConfig) {
+  constructor(props: GMTableExcelStaticConfigWrapperProps) {
     super(props);
     if (!props.app) {
       this._app = new ClientAppModel();

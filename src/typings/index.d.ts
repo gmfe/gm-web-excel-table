@@ -6,6 +6,7 @@ declare module 'uniqid';
 
 declare module 'react-gm';
 declare module 'gm-svg';
+declare module 'gm-svg/*';
 
 
 declare module 'react-table-hoc-fixed-columns';

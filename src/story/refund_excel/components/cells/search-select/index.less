@@ -1,23 +1,45 @@
-
 @import '../../../style/input.less';
 @import '../../../../../components/table/style/theme.less';
 @import '../../../../../components/table/style/function.less';
 
 
-.gm-search-select-container {
-  .gm-more-select-selected {
-    padding: 0;
-    .gme-common-input();
-    width: 168px;
-    .gm-more-select-selected-item{
-      width: 100%;
-      &>div.gm-flex-column{
-        display: inline-block;
-        .gme-common-input-text-style();
-        height: @GME-common-input-height;
-        line-height: @GME-common-input-height;
+
+.gm-web-table-cell-container {
+  &>div.gm-web-table-cell {
+    &>.gm-search-select-container {
+      
+      .gm-more-select-selected {
+        padding: 0;
+        .gme-common-input();
+        width: 168px;
+        .gm-more-select-selected-item {
+          width: 100%;
+          &>div.gm-flex-column {
+            display: inline-block;
+            .gme-common-input-text-style();
+            height     : @GME-common-input-height;
+            line-height: @GME-common-input-height;
+          }
+        }
+      }
+
+      .gm-more-select{
+        .gm-more-select-clear-btn{
+          padding: 0;
+          right: 7px;
+        }
+      }
+
+    }
+  }
+}
+
+.gm-refund-table--more-select-popover{
+  .gm-list {
+    .gm-list-item {
+      &.will-active {
+        background-color: @GME-list-group-hover-bgColor;
       }
     }
   }
-
 }
