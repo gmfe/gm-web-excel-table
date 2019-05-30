@@ -28,6 +28,7 @@ export enum MoveEditType {
 export interface WithTableControllerConfig {
   // tableKey: string
   // columns: any[],
+  noneInputClickValidList?: string[] // 非input点击有效列表 用于控制样式
   moveEdit: {
     // 允许多个移动逻辑
     [MoveEditType.arrow]?: TableControllerMoveEditAllowConfig
@@ -82,6 +83,12 @@ export interface TableControllerInterface {
   }
 
 }
+
+export interface TableControllerProvideProps {
+  onEditing: boolean;
+  tableController: TableControllerInterface;
+}
+
 
 export interface TableControllerKeyboardHanlder {
   onKeyUp_ArrowRight: () => void;

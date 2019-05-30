@@ -34,12 +34,12 @@ const MOCK_ALLDATA: RefundExcelTable_AllData = {
 
 const defaultData = {
   name: '',
-  money: '0',
+  money: '',
   std_unit: '',
   category: '',
-  quantity: '0',
-  different_price: '0',
-  unit_price: '0',
+  quantity: '',
+  different_price: '',
+  unit_price: '',
 }
 
 export default class RenderComp extends React.Component<any, {
@@ -63,11 +63,11 @@ export default class RenderComp extends React.Component<any, {
         loading: false,
         data: {
           ...this.state.data,
-          details: new Array(5).fill(cloneDeep(defaultData))
+          details: new Array(5).fill(null).map(a => cloneDeep(defaultData))
         }
       })
 
-    }, 3000)
+    }, 500)
   }
   
 
@@ -147,9 +147,13 @@ export default class RenderComp extends React.Component<any, {
     });
   }
 
-  onAddRow = () => {
+  onAddRow = (data: any, index: number) => {
     const details = this.state.data.details;
-    details.push(cloneDeep(defaultData));
+    if (index !== undefined) {
+      details.splice(index, 0, cloneDeep(defaultData))
+    } else {
+      details.push(cloneDeep(defaultData));
+    }
     this.setState({
       data: {
         ...this.state.data,

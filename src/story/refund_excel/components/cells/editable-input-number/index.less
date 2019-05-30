@@ -1,12 +1,28 @@
 @import '../../../style/input.less';
+@import '../../../../../components/table/style/theme.less';
+
+
+.gm-excel-table-input-dynamic-style();
 
 .gm-excel-editable-input-number {
-  input{
-    border: 0;
+  input {
+    border       : 0;
     border-radius: 0;
-    box-shadow: none;
+    box-shadow   : none;
     .gme-common-input();
     .gme-common-input-text-style();
     width: 100px;
+  }
+}
+
+.gm-excel-editable-input-number.-editing {
+  input {
+    border-color: @GME-input-focus-color  !important;
+  }
+}
+
+.gm-excel-editable-input-number.-finished {
+  input {
+    border-color: @GME-input-wrote-color;
   }
 }

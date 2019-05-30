@@ -3,12 +3,16 @@
 @import '../../style/selector.less';
 
 
-// 通用
+// 业务通用
 @{table-any-head-cell-selector},
 @{table-any-body-cell-selector} {
   white-space: unset;
   word-break : break-all;
-  // position: relative; // 这个不能开，要不固定列的位置就错了
+
+  // react-table cell flex 由 column.minWidth决定，改写此值变为等比缩放
+  flex: 1 0 auto !important;
+  // 移除 border
+  border-right: none;
 }
 
 .table-cell-container {
@@ -43,6 +47,28 @@
     height: 100%;
   }
 }
+
+// hover
+.gm-excel-table:not(.-onEditing) {
+  .ReactTable.-highlight .rt-tbody .rt-tr:not(.-padRow):hover{
+    background: transparent;
+  }
+  .rthfc.-highlight .rt-tr:hover .rt-td{
+    background-color: rgba(242,243,249, 0.5);
+  }
+}
+// remove fix header
+.gm-excel-table{
+  .ReactTable{
+    .rt-table{
+      .rt-thead{
+        position: relative;
+        box-shadow: none;
+      }
+    }
+  }
+}
+
 
 
 @{table-any-body-cell-selector} {

@@ -3,29 +3,41 @@
 
 @GME-common-input-height: 32px;
 
-.gme-common-input-text-style{
-  color: @GME-text-color;
-  overflow: hidden;
-  white-space: nowrap;
+.gme-common-input-text-style {
+  color        : @GME-text-color;
+  overflow     : hidden;
+  white-space  : nowrap;
   text-overflow: ellipsis;
-  font-size: @GME-content-font-size;
-  font-family: @GME-content-nondigit-text-font-family;
+  font-size    : @GME-content-font-size;
+  font-family  : @GME-content-nondigit-text-font-family;
 }
 
-.gme-common-input{
-  outline: none;
-  border-width: 1px;
-  border-style: solid;
-  padding-left: 8px;
+.input-dynamic-style{
+  input {
+    &:hover {
+      border-color: @GME-input-focus-color;
+    }
+    &:focus {
+      border-color: @GME-input-wrote-color;
+    }
+  }
+}
+
+.gm-excel-table-input-dynamic-style {
+  .gm-excel-table:not(.-onEditing) {
+    .input-dynamic-style();
+  }
+}
+
+
+.gme-common-input {
+  outline      : none;
+  border-width : 1px;
+  border-style : solid;
+  padding-left : 8px;
   padding-right: 8px;
-  height: @GME-common-input-height;
-  line-height: @GME-common-input-height;
-  border-color: @GME-input-writing-color;
+  height       : @GME-common-input-height;
+  line-height  : @GME-common-input-height;
+  border-color : @GME-input-writing-color;
   border-radius: @GME-common-input-height / 4;
-  &:hover{
-    border-color: @GME-input-focus-color;
-  }
-  &:focus{
-    border-color: @GME-input-wrote-color;
-  }
 }

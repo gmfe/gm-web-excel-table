@@ -11,7 +11,8 @@ import {
   TableControllerMoveEditAllowConfig,
 } from './interface';
 
-import isEqual from 'lodash/isEqual'
+import cx from 'classnames';
+import isEqual from 'lodash/isEqual';
 import { IDataManager } from '../datamanager/interface';
 import { GMExtendedColumnProps } from '../columnrowmanager/interface';
 import { _GM_TABLE_SCROLL_Y_CONTAINER_, _GM_TABLE_SCROLL_CELL_PREFIX_ } from '../constants';
@@ -29,7 +30,16 @@ export * from './tabelcontroller-util';
  */
 export function WithTableController(Target: React.ComponentClass<any, any>) {
 
+
+
   return (TABLE_CONFIG: WithTableControllerConfig) => {
+
+    const noneInputClickValidListSet = new Set();
+    if (TABLE_CONFIG.noneInputClickValidList) {
+      TABLE_CONFIG.noneInputClickValidList.forEach(s => {
+        noneInputClickValidListSet.add(s);
+      });
+    }
     return class extends React.Component<{
       [key: string]: any
       data: any[]
@@ -39,10 +49,12 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
     }, {
       [key: string]: any,
       editingToggle: boolean,
+      editingBlurToggle: boolean,
     }>  {
 
       // 编辑状态表
       public _editingMap: Map<string, boolean>;
+      // public _isEditingBlurDirty: boolean = false;
 
       // 位置查询表
       public _cellIdQueryPositionMap: Map<string, CellUniquePositionLinkedList>;
@@ -118,6 +130,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
           tableActive: true, // 由这层控制，以满足多编辑竞争的需求
           selected: null,
           editingToggle: false,
+          editingBlurToggle: false,
           focusing: undefined // [ 0, 0 ]
         };
         this._editingMap = new Map();
@@ -129,6 +142,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
       componentDidMount() {
         // 注册快捷键
         window.document.addEventListener('keydown', this.handlePressTab);
+        window.document.addEventListener('click', this.handleDocumentClick);
         // 更新矩阵数据
         this.updateTableCellMatrix();
         this._cacheEditableCellMarixUpdateIndex = this.editableCellMarixUpdateIndex(this.props.columns, this.props.data);
@@ -143,9 +157,33 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
           }
         }
       }
+      /**
+       * 当点击非有效输入对象后，取消编辑状态 (hover等样式解除封锁)
+       *
+       */
+      handleDocumentClick = (e: any) => {
+        const target: HTMLElement | undefined = e.target
+        if (target) {
+          if (target.tagName !== 'INPUT') {
+            let hasNoneInputClickValidClass = false;
+            target.classList.forEach(value => {
+              if (hasNoneInputClickValidClass) return;
+              if (noneInputClickValidListSet.has(value)) {
+                hasNoneInputClickValidClass = true;
+              }
+            })
+            if (!hasNoneInputClickValidClass) {
+              if (this._editingCell) {
+                this.cancelEdit(this._editingCell);
+              }
+            }
+          }
+        }
+      }
 
       componentWillUnmount() {
         window.document.removeEventListener('keydown', this.handlePressTab);
+        window.document.removeEventListener('click', this.handleDocumentClick);
       }
 
       componentDidUpdate() {
@@ -533,8 +571,10 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         return (
           <Target
             tableController={this.tableController}
+            onEditing={this._editingMap.size > 0}
             {...this.props}
           />
+
         )
       }
 

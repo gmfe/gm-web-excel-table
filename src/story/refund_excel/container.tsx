@@ -56,7 +56,7 @@ export default class TabelExcelContainer extends React.PureComponent<RefundExcel
    * @memberof TabelExcelContainer
    */
   dataMap2TableData = (data: RefundExcelTable_AllData): Data_IRefundExcel[] => {
-    const toNumber = (value: string) => value === undefined ? 0 : parseFloat(value);
+    const toNumber = (value: string) => value // (value === undefined || value === '') ? 0 : parseFloat(value);
     return data.details.map((d: RefundExcelTable_Details, dindex: number) => ({
       rowKey: `refund-table-row-${dindex}`,
       orderName: d.name || '',
@@ -75,7 +75,7 @@ export default class TabelExcelContainer extends React.PureComponent<RefundExcel
    * @memberof TabelExcelContainer
    */
   handleDataChange = (type: IDataManagerChangeType, args: any) => {
-    // console.log(type, args, 'handleDataChange')
+    // console.log(type, args, this.props.data, 'handleDataChange')
     switch (type) {
       case IDataManagerChangeType.addRow: {
         this.props.onAddRow(args.add as any[], args.rowIndex);
@@ -115,8 +115,7 @@ export default class TabelExcelContainer extends React.PureComponent<RefundExcel
 
 
   render() {
-
-
+    // console.log(this.props, 'container container')
     return (
       <GMTableExcelStaticConfigWrapper
         // app={APP} // 多个表格实例的时候可以在共同容器中使用独立实例
@@ -124,6 +123,10 @@ export default class TabelExcelContainer extends React.PureComponent<RefundExcel
         tableKey='refund-excel'
 
         controllerConfig={{
+          noneInputClickValidList: [
+            'cell-orderName',
+            'gm-more-select-selected',
+          ],
           moveEdit: {
             [MoveEditType.arrow]: {
               allowUpAddRow: true, // 允许向上增行
@@ -164,10 +167,10 @@ export default class TabelExcelContainer extends React.PureComponent<RefundExcel
             name: '',
             std_unit: '',
             category: '', // 分类
-            money: '0',  // 退货金额	
-            quantity: '0', // 退货数量
-            unit_price: '0', // 退货单价
-            different_price: '0',  // 补差价
+            money: '',  // 退货金额	
+            quantity: '', // 退货数量
+            unit_price: '', // 退货单价
+            different_price: '',  // 补差价
             isDefaultData: true,
           },
           controlled: true,

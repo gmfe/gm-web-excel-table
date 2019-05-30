@@ -9,11 +9,11 @@ import { TableControllerInterface } from '../../components/table/tablecontroller
 export interface Data_IRefundExcel {
   category: string,
   orderName: string,
-  returnOrderNumber: number,
-  returnOrderPerPrice: number,
-  fillPriceDiff: number, // 补差价
-  chargerPerson: string // '操作人'
-  returnTotalPrice: number, // 退货金额	
+  returnOrderNumber: string,  // number
+  returnOrderPerPrice: string, // number
+  fillPriceDiff: string, // 补差价
+  chargerPerson: string // '操作人' // number
+  returnTotalPrice: string, // 退货金额	 // number
 }
 
 /**

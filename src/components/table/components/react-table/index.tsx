@@ -8,7 +8,8 @@ import classnames from 'classnames'
 import { GMTableComponentProps } from './interface'
 import ReactTable, { TableProps } from "react-table";
 import withFixedColumns from "react-table-hoc-fixed-columns";
-import { GMTableExcelStaticConfig, _GM_TABLE_SCROLL_Y_CONTAINER_ } from "../../constants";
+import { _GM_TABLE_SCROLL_Y_CONTAINER_ } from "../../constants";
+
 
 const ReactTableFixedColumns = withFixedColumns(ReactTable) as React.ComponentClass<Partial<TableProps<any, any>>, any>;
 
@@ -27,7 +28,9 @@ export class TableRef {
     return this.component.props;
   }
   addBlank = () => {
-    this.props.dataManager.onAdd([this.props.dataConfig.defaultData]);
+    this.props.dataManager.onAdd([
+      this.props.dataConfig.defaultData
+    ]);
   }
   add = (item: any, rowIndex?: number) => {
     this.props.dataManager.onAdd([item], rowIndex);
@@ -35,13 +38,15 @@ export class TableRef {
 }
 
 
-export class GMTableComponent extends React.Component<GMTableComponentProps<any> & GMTableExcelStaticConfig, any> {
+
+
+export class GMTableComponent extends React.Component<GMTableComponentProps,any> {
 
   static defaultProps = {
     containerStyle: {}
   }
 
-  constructor(props: GMTableComponentProps<any> & GMTableExcelStaticConfig) {
+  constructor(props: GMTableComponentProps) {
     super(props);
   }
 
@@ -62,6 +67,7 @@ export class GMTableComponent extends React.Component<GMTableComponentProps<any>
       columns,
       tableKey,
       className,
+      onEditing,
       tableConfig,
       dataLoading,
       containerStyle,
@@ -72,7 +78,9 @@ export class GMTableComponent extends React.Component<GMTableComponentProps<any>
       <div
         style={containerStyle}
         id={`${_GM_TABLE_SCROLL_Y_CONTAINER_}${tableKey}`}
-        className={classnames("gm-excel-table", className)}
+        className={classnames("gm-excel-table", className, {
+          '-onEditing': onEditing,
+        })}
       >
         <ReactTableFixedColumns
           {...tableConfig}
@@ -80,8 +88,8 @@ export class GMTableComponent extends React.Component<GMTableComponentProps<any>
           loading={dataLoading}
           data={dataWithProps} // The data prop should be immutable and only change when you want to update the table
           columns={columns}
-          className="-highlight"
-          // resolveData `resolveData` runs when the `data` prop changes!
+          className={classnames({ '-highlight': !onEditing })}
+        // resolveData `resolveData` runs when the `data` prop changes!
         />
       </div>
     )
