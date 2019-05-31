@@ -11,7 +11,7 @@ import {
 import 'react-gm/src/index.less'
 import './style/index.less';
 import { IDataManagerChangeType } from '../../components/table/datamanager/interface';
-import { RefundExcelTable_AllData, RefundExcelTable_Details, Data_IRefundExcel, RefundExcelTable_Props } from './interface';
+import { RefundExcelTable_AllData, RefundExcelTable_Detail, Data_IRefundExcel, RefundExcelTable_Props } from './interface';
 
 
 
@@ -55,18 +55,56 @@ export default class TabelExcelContainer extends React.PureComponent<RefundExcel
    *
    * @memberof TabelExcelContainer
    */
-  dataMap2TableData = (data: RefundExcelTable_AllData): Data_IRefundExcel[] => {
-    const toNumber = (value: string) => value // (value === undefined || value === '') ? 0 : parseFloat(value);
-    return data.details.map((d: RefundExcelTable_Details, dindex: number) => ({
+  static dataMap2TableData = (data: RefundExcelTable_AllData): Data_IRefundExcel[] => {
+    return data.details.map((d: RefundExcelTable_Detail, dindex: number) =>
+      TabelExcelContainer.stationDetailMap2TableDetail(d, dindex, data.creator)
+    );
+  }
+  /**
+   * station detial 字段映射为开发字段
+   *
+   * @static
+   * @memberof TabelExcelContainer
+   */
+  static stationDetailMap2TableDetail = (d: RefundExcelTable_Detail, dindex: number, creator: string): Data_IRefundExcel => {
+    return {
+      id: d.id,
+      remain: d.remain,
+      hasEdit: d.hasEdit,
+      std_unit: d.std_unit,
+      selected_sum: d.selected_sum,
+
       rowKey: `refund-table-row-${dindex}`,
       orderName: d.name || '',
       category: d.category || '',
-      chargerPerson: data.creator,
-      returnTotalPrice: toNumber(d.money),
-      returnOrderNumber: toNumber(d.quantity),
-      fillPriceDiff: toNumber(d.different_price),
-      returnOrderPerPrice: toNumber(d.unit_price),
-    }));
+      chargerPerson: creator,
+      returnBatchNumner: d.batch_number,
+      returnTotalPrice: d.money,
+      returnOrderNumber: d.quantity,
+      fillPriceDiff: d.different_price,
+      returnOrderPerPrice: d.unit_price,
+    }
+  }
+  /**
+   * table detail 字段映射为 station detail 字段
+   *
+   * @static
+   * @memberof TabelExcelContainer
+   */
+  static tableDetailMap2StationDetail = (detailOrigin: Data_IRefundExcel): RefundExcelTable_Detail => {
+    return {
+      id: detailOrigin.id,
+      name: detailOrigin.orderName,
+      hasEdit: detailOrigin.hasEdit,
+      category: detailOrigin.category,
+      std_unit: detailOrigin.std_unit,
+      money: detailOrigin.returnTotalPrice,
+      selected_sum: detailOrigin.selected_sum,
+      quantity: detailOrigin.returnOrderNumber,
+      different_price: detailOrigin.fillPriceDiff,
+      batch_number: detailOrigin.returnBatchNumner,
+      unit_price: detailOrigin.returnOrderPerPrice,
+    }
   }
 
   /**
@@ -78,11 +116,11 @@ export default class TabelExcelContainer extends React.PureComponent<RefundExcel
     // console.log(type, args, this.props.data, 'handleDataChange')
     switch (type) {
       case IDataManagerChangeType.addRow: {
-        this.props.onAddRow(args.add as any[], args.rowIndex);
+        this.props.onAddRow(args.add as any[], args.rowIndex, args.callback);
         break;
       }
       case IDataManagerChangeType.deleteRow: {
-        this.props.onDeleteRow(args.rowIndex);
+        this.props.onDeleteRow(args.rowIndex, args.callback);
         break;
       }
       case IDataManagerChangeType.updateCell: {
@@ -100,7 +138,7 @@ export default class TabelExcelContainer extends React.PureComponent<RefundExcel
             break;
           }
           case GM_REFUND_TABLE_COLUMNS_KEYS.returnTotalPrice: {
-            this.props.onReturnOrderNumberChange(args.item.money, args.rowIndex);
+            this.props.onReturnTotalPriceChange(args.item.money, args.rowIndex);
             break;
           }
         }
@@ -109,10 +147,9 @@ export default class TabelExcelContainer extends React.PureComponent<RefundExcel
     }
   }
 
-
-
-
-
+  handleBatchClick = (detailOrigin: Data_IRefundExcel, index: number) => {
+    this.props.onClickSelectBatch(TabelExcelContainer.tableDetailMap2StationDetail(detailOrigin), index);
+  }
 
   render() {
 
@@ -133,6 +170,7 @@ export default class TabelExcelContainer extends React.PureComponent<RefundExcel
             [MoveEditType.arrow]: {
               allowUpAddRow: true, // 允许向上增行
               allowDownAddRow: true, // 允许向下增行
+              allowRightArrowDownAddRow: false, // 允许向下增行
               allowColumnRightBreakRow: true,
               allowColumnLeftBackRow: true,
             },
@@ -162,6 +200,7 @@ export default class TabelExcelContainer extends React.PureComponent<RefundExcel
 
         columnsConfig={{
           getColumns: configOrderTable1Columns,
+          columnContext: this.props.columnContext
         }}
 
         dataConfig={{
@@ -180,17 +219,18 @@ export default class TabelExcelContainer extends React.PureComponent<RefundExcel
           onDataChange: this.handleDataChange,
           getData: () => {
             // 必须指定rowKey用于表格定位
-            return this.dataMap2TableData(this.props.data)
+            return TabelExcelContainer.dataMap2TableData(this.props.data)
           },
           getOriginTableData: () => {
             return this.props.data.details;
           },
-          getProps: () => this.props, 
+          getProps: () => this.props,
           dataManagerRef: (c: any) => { this._dataManagerRef = c; }
         }}
 
         custom={{
           onSearchOrderName: this.props.onSearchOrderName,
+          onClickSelectBatch: this.handleBatchClick,
         }}
       />
 

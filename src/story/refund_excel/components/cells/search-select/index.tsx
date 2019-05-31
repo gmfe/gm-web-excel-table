@@ -42,7 +42,7 @@ export class SearchSelect extends Component<{
       selected: { text: '', value: null },
     }
     this._lastFetchId = 0;
-    this.handleSearch = debounce(this.handleSearch, 800);
+    this.handleSearch = debounce(this.handleSearch, 500);
   }
 
   componentDidMount() {
@@ -68,13 +68,14 @@ export class SearchSelect extends Component<{
         // fetching: true
       });
       return this.props.onSearch(value).then((searchResult: any) => {
-        res()
         if (fetchId !== this._lastFetchId) {
           return;
         }
         this.setState({
           data: this.props.mapSearchDataToSelect(searchResult),
           // fetching: false,
+        }, () => {
+          res()
         });
       })
     })
@@ -104,7 +105,6 @@ export class SearchSelect extends Component<{
   render() {
     const { data, selected } = this.state;
     const { onSelect, value, handleKeyUp, onEditStart } = this.props;
-
     return (
       <div
         className="gm-search-select-container"

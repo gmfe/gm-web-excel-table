@@ -76,9 +76,11 @@ export default class RenderComp extends React.Component<any, {
       })
     }, 3000)
   }
-  
+
 
   fetchOrderName = (value: string, index: number) => {
+
+    // 测试版本上进第一列显示下来数据
     return new Promise<GMOrderListDataStructure[][]>(res => {
 
 
@@ -88,9 +90,9 @@ export default class RenderComp extends React.Component<any, {
             label: Math.random().toFixed(3),
             children: [{
               std_unit: "件",
-              value: "D4207755" + Math.random().toFixed(3),
               category: "调味酱汁类（液态）",
               unit_price: undefined,
+              value: "D4207755" + Math.random().toFixed(3),
               name: "海天草菇老抽 1.9L （件）" + Math.random().toFixed(3),
             }],
           }))
@@ -154,7 +156,7 @@ export default class RenderComp extends React.Component<any, {
     });
   }
 
-  onAddRow = (data: any, index: number) => {
+  onAddRow = (data: any, index: number, callback?: Function) => {
     const details = this.state.data.details;
     if (index !== undefined) {
       details.splice(index, 0, cloneDeep(defaultData))
@@ -166,11 +168,12 @@ export default class RenderComp extends React.Component<any, {
         ...this.state.data,
         details,
       }
+    }, () => {
+      if (callback) callback()
     });
   }
 
   onDeleteRow = (rowIndex: number) => {
-    console.log(rowIndex, 'onDeleteRowonDeleteRow')
     const details = this.state.data.details;
     details.splice(rowIndex, 1);
     this.setState({
@@ -181,6 +184,10 @@ export default class RenderComp extends React.Component<any, {
     });
   }
 
+  onClickSelectBatch = (detail: any, index: number) => {
+    console.log(detail, index, 'onClickSelectBatchonClickSelectBatch')
+  }
+
   render() {
     const { data, loading, authType } = this.state;
     return (
@@ -189,7 +196,7 @@ export default class RenderComp extends React.Component<any, {
           data={data}
           hasLayoutRoot
           loading={loading}
-          context={{ authType }}
+          columnContext={{ isShowReturnBatchNumber: authType === 2 }}
 
           rootStyle={{ padding: 40 }}
           onAddRow={this.onAddRow}
@@ -199,6 +206,7 @@ export default class RenderComp extends React.Component<any, {
           onReturnOrderNumberChange={this.onReturnOrderNumberChange}
           onReturnOrderPerPriceChange={this.onReturnOrderPerPriceChange}
           onReturnTotalPriceChange={this.onReturnTotalPriceChange}
+          onClickSelectBatch={this.onClickSelectBatch}
         />
       </div>
 

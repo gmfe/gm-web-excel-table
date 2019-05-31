@@ -129,7 +129,7 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
         }
       }
 
-      handleAdd = (item: (IData | undefined)[], rowIndex?: number, callback?: () => void) => {
+      handleAdd = (item: (IData | undefined)[], rowIndex?: number, callback?: Function) => {
         let data = this.getData();
         // NOTICE need to check
         const addCandiateList: IData[] = item.map(d => d === undefined ? cloneDeep(defaultData) : d);
@@ -149,7 +149,7 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
           if (onDataChange) {
             onDataChange(
               IDataManagerChangeType.addRow,
-              { add: addCandiateList, rowIndex },
+              { add: addCandiateList, rowIndex, callback },
             );
           }
         } else {
@@ -162,7 +162,7 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
 
       }
 
-      handleDelete = (index: number) => {
+      handleDelete = (index: number, callback?: Function) => {
         const data = this.getData();
         this._removedListeners.forEach(listener => {
           listener(data[index], index);
@@ -171,7 +171,7 @@ export function WithDataManager(WrappedComponent: React.ComponentClass<any, any>
         if (controlled) {
           if (onDataChange) {
             // TODO 支持多项删除
-            onDataChange(IDataManagerChangeType.deleteRow, { rowIndex: [index] });
+            onDataChange(IDataManagerChangeType.deleteRow, { rowIndex: [index], callback });
           }
         } else {
           this.setState({ data: this.withRowKey(data) });

@@ -1,10 +1,11 @@
 
 
 import React, { Component } from 'react'
-
 import TabelExcelWrapper from './container';
 
+import './i18next'
 import { LayoutRoot } from 'react-gm'
+
 
 
 export default class RefundExcelTable extends Component<any, any> {
@@ -18,13 +19,14 @@ export default class RefundExcelTable extends Component<any, any> {
     const {
       data,
       loading,
-      context,
       onAddRow,
       rootStyle,
       onDeleteRow,
       hasLayoutRoot,
+      columnContext,
       onSearchOrderName,
       onOrderNameChange,
+      onClickSelectBatch,
       onReturnTotalPriceChange,
       onReturnOrderNumberChange,
       onReturnOrderPerPriceChange,
@@ -33,12 +35,13 @@ export default class RefundExcelTable extends Component<any, any> {
       <div style={rootStyle}>
         <TabelExcelWrapper
           data={data}
-          context={context}
           loading={loading}
           onAddRow={onAddRow}
           onDeleteRow={onDeleteRow}
+          columnContext={columnContext}
           onSearchOrderName={onSearchOrderName}
           onOrderNameChange={onOrderNameChange}
+          onClickSelectBatch={onClickSelectBatch}
           onReturnTotalPriceChange={onReturnTotalPriceChange}
           onReturnOrderNumberChange={onReturnOrderNumberChange}
           onReturnOrderPerPriceChange={onReturnOrderPerPriceChange}

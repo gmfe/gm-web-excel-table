@@ -21,7 +21,7 @@ export interface WithKeyboardHandlerProviderProps {
  * @param {React.ComponentClass<any, any>} Target
  * @returns
  */
-export function WithKeyboardHandler(Target: React.ComponentClass<any, any>) {
+export function WithKeyboardHandler(Target: any) {
 
   return class extends React.Component<{
     [key: string]: any;
@@ -43,16 +43,16 @@ export function WithKeyboardHandler(Target: React.ComponentClass<any, any>) {
                 value: `${value}`,
                 handler: {
                   onKeyUp_ArrowUp: () => {
-                    tableController.move.moveToPreviousRowEditableCell(MoveEditType.arrow, cell);
+                    tableController.move.moveToPreviousRowEditableCell(MoveEditType.arrow, cell, { arrowKey: 'ArrowUp'});
                   },
                   onKeyUp_ArrowDown: () => {
-                    tableController.move.moveToNextRowEditableCell(MoveEditType.arrow, cell);
+                    tableController.move.moveToNextRowEditableCell(MoveEditType.arrow, cell, { arrowKey: 'ArrowDown' });
                   },
                   onKeyUp_ArrowLeft: () => {
-                    tableController.move.moveToPreviousEditableCell(MoveEditType.arrow, cell);
+                    tableController.move.moveToPreviousEditableCell(MoveEditType.arrow, cell, { arrowKey: 'ArrowLeft' });
                   },
                   onKeyUp_ArrowRight: () => {
-                    tableController.move.moveToNextEditableCell(MoveEditType.arrow, cell);
+                    tableController.move.moveToNextEditableCell(MoveEditType.arrow, cell, { arrowKey: 'ArrowRight' });
                   },
                   moveToNextEditableCell: (type: MoveEditType) => {
                     tableController.move.moveToNextEditableCell(type, cell);

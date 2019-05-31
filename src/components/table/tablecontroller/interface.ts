@@ -40,7 +40,6 @@ export interface WithTableControllerConfig {
 
 
 export interface TableControllerMoveEditAllowConfig {
-  
 
   allowUpAddRow?: boolean; // 允许向上增行
   allowDownAddRow?: boolean; // 允许向下增行
@@ -52,9 +51,11 @@ export interface TableControllerMoveEditAllowConfig {
   allowColumnRightBreakRow?: boolean; // 允许列最右换至下行
   allowColumnLeftBackRow?: boolean; // 允许列最左返回上行
 
+  allowRightArrowDownAddRow?: boolean;
+
 }
 
-export type MoveEditingCellFunction = (type: MoveEditType, cell: CellUniqueObject) => void;
+export type MoveEditingCellFunction = (type: MoveEditType, cell: CellUniqueObject, args?: any) => void;
 
 export interface TableControllerInterface {
   edit: (obj: CellUniqueObject) => void;

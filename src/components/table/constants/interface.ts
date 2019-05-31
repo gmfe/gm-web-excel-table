@@ -6,6 +6,7 @@ import { WithTableControllerConfig } from '../tablecontroller/interface';
 
 import { TableRef } from '../components/react-table';
 import { TableProps } from 'react-table'
+import { RefundExcelTableCustomProps } from '../../../story/refund_excel/interface';
 
 
 
@@ -55,14 +56,15 @@ export interface GMTableExcelSearchArgs {
 export interface GMTableExcelStaticConfig {
   app?: ClientAppModel;
   tableKey: string;
-
-  containerStyle?: Object
+  containerStyle?: Object;
   dataConfig: GMConfigData<any>;
   tableRef?: (tref: TableRef) => void;
-  searchConfig: GMTableExcelSearchArgs,
+  searchConfig: GMTableExcelSearchArgs;
   tableConfig: Partial<TableProps<any, any>>;
   controllerConfig: WithTableControllerConfig;
   columnsConfig: {
-    getColumns: IGetColumnsFunc
+    getColumns: IGetColumnsFunc;
+    columnContext?: any;
   }
+  custom: RefundExcelTableCustomProps
 }

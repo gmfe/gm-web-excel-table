@@ -1,6 +1,7 @@
 
 
 import * as React from 'react';
+import isEqual from 'lodash/isEqual'
 import { WithDataManager } from './datamanager';
 import { WithTableDataSearch } from './data-search';
 import { WithTableController } from './tablecontroller';
@@ -9,15 +10,11 @@ import { ClientAppModel, enhanceWithFlows } from 'kunsam-app-model';
 import { WithColumnRowManager } from './columnrowmanager/with-column-row-manager';
 
 // 表格原材料 react-table | react-datasheet | rc-table 均可
-
 import { GMTableComponent } from './components/react-table';
-import { RefundExcelTableCustomProps } from '../../story/refund_excel/interface';
 
-
-type GMTableExcelStaticConfigWrapperProps = GMTableExcelStaticConfig & { custom: RefundExcelTableCustomProps }
 
 // 装配出厂
-export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExcelStaticConfigWrapperProps, any> {
+export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExcelStaticConfig, any> {
 
   static defaultProps = {
     tableConfig: {
@@ -27,7 +24,7 @@ export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExce
 
   private _app: ClientAppModel;
 
-  constructor(props: GMTableExcelStaticConfigWrapperProps) {
+  constructor(props: GMTableExcelStaticConfig) {
     super(props);
     if (!props.app) {
       this._app = new ClientAppModel();
@@ -38,8 +35,18 @@ export class GMTableExcelStaticConfigWrapper extends React.Component<GMTableExce
   componentDidMount() {
     this._app.run();
   }
+  /**
+   * 禁止任何重交付，除非交付条件发生变化(列配置改变等)
+   *
+   * @param {GMTableExcelStaticConfig} nextProps
+   * @returns
+   * @memberof GMTableExcelStaticConfigWrapper
+   */
 
-  shouldComponentUpdate() {
+  shouldComponentUpdate(nextProps: GMTableExcelStaticConfig) {
+    if (!isEqual(nextProps.columnsConfig.columnContext, this.props.columnsConfig.columnContext)) {
+      return true
+    }
     return false;
   }
 

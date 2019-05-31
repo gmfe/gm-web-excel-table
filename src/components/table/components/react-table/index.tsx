@@ -84,7 +84,7 @@ export class GMTableComponent extends React.Component<GMTableComponentProps,any>
       >
         <ReactTableFixedColumns
           {...tableConfig}
-          pageSize={Math.max(data.length, 20)}
+          pageSize={Math.max(5, data.length)}
           loading={dataLoading}
           data={dataWithProps} // The data prop should be immutable and only change when you want to update the table
           columns={columns}

@@ -4,7 +4,7 @@ import * as React from 'react'
 import { CellInfo } from 'react-table';
 import { _GM_TABLE_SCROLL_CELL_PREFIX_ } from '../constants';
 import { WithColumnRowManagerConfig } from './interface';
-import { IColumnManager, ConfigColumnProps, GMExtendedColumnProps } from './interface';
+import { IColumnManager, ColumnRowManagerComponentProps, GMExtendedColumnProps } from './interface';
 
 
 /**
@@ -19,7 +19,7 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
 
   return (configOption: WithColumnRowManagerConfig) => {
 
-    return class extends React.Component<ConfigColumnProps<any>, any> {
+    return class extends React.Component<ColumnRowManagerComponentProps, any> {
       public _tableContainerDom?: HTMLElement;
       public _columnRowManager: IColumnManager;
 
@@ -97,7 +97,6 @@ export function withUniqueEditableColumnsProps(data: GMExtendedColumnProps[]): G
       if (d.registerAccessor) {
         const { original: { tableController } } = cell;
         tableController.register.registerColumnAccessorMap(d.key, () => d.registerAccessor && d.registerAccessor(cell));
-        // console.log(cell,d.key, accessor, 'registerAccessorregisterAccessor')
       }
 
       return (
