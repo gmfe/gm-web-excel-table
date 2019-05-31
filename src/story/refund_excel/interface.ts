@@ -106,7 +106,7 @@ export interface RefundExcelTable_Props extends RefundExcelTableCustomProps {
 
   loading?: boolean
   data: RefundExcelTable_AllData
-
+  context?: any;
 
   onOrderNameChange: (selectedData: any, rowIndex: number) => void
   onReturnOrderNumberChange: (value: string, rowIndex: number) => void

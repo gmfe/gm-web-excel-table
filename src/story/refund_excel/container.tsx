@@ -115,7 +115,9 @@ export default class TabelExcelContainer extends React.PureComponent<RefundExcel
 
 
   render() {
+
     // console.log(this.props, 'container container')
+
     return (
       <GMTableExcelStaticConfigWrapper
         // app={APP} // 多个表格实例的时候可以在共同容器中使用独立实例
@@ -148,7 +150,7 @@ export default class TabelExcelContainer extends React.PureComponent<RefundExcel
           sortable: false,
           resizable: false,
           showPagination: false,
-          style: { height: 400 },
+          // style: { height: 400 },
         }}
 
         searchConfig={{

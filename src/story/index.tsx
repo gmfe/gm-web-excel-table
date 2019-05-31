@@ -52,7 +52,8 @@ export default class RenderComp extends React.Component<any, {
     this.state = {
       data: MOCK_ALLDATA,
       change: 1,
-      loading: false
+      loading: false,
+      authType: 1
     }
   }
 
@@ -68,6 +69,12 @@ export default class RenderComp extends React.Component<any, {
       })
 
     }, 500)
+
+    setTimeout(() => {
+      this.setState({
+        authType: 2
+      })
+    }, 3000)
   }
   
 
@@ -163,6 +170,7 @@ export default class RenderComp extends React.Component<any, {
   }
 
   onDeleteRow = (rowIndex: number) => {
+    console.log(rowIndex, 'onDeleteRowonDeleteRow')
     const details = this.state.data.details;
     details.splice(rowIndex, 1);
     this.setState({
@@ -174,13 +182,15 @@ export default class RenderComp extends React.Component<any, {
   }
 
   render() {
-    const { data, loading } = this.state;
+    const { data, loading, authType } = this.state;
     return (
       <div >
         <RefundExcelTable
           data={data}
           hasLayoutRoot
           loading={loading}
+          context={{ authType }}
+
           rootStyle={{ padding: 40 }}
           onAddRow={this.onAddRow}
           onDeleteRow={this.onDeleteRow}
@@ -190,11 +200,6 @@ export default class RenderComp extends React.Component<any, {
           onReturnOrderPerPriceChange={this.onReturnOrderPerPriceChange}
           onReturnTotalPriceChange={this.onReturnTotalPriceChange}
         />
-        <div onClick={() => {
-          this.setState({
-            data: { ... this.state.data, delta_money: this.state.data.delta_money + 1 }
-          })
-        }}>测试</div>
       </div>
 
     )

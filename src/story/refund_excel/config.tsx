@@ -67,6 +67,8 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps) => {
     );
   }
 
+  console.log(componentProps, 'componentPropscomponentProps')
+
   const columns: GMExtendedColumnProps[] = [
 
     // https://lanhuapp.com/web/#/item/project/board/detail?pid=40b095a1-691b-41c9-8f29-b091413ee1f3&project_id=40b095a1-691b-41c9-8f29-b091413ee1f3&image_id=4c5a7608-b56b-461f-bc28-50c3581d0184

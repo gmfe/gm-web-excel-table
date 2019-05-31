@@ -18,6 +18,7 @@ export default class RefundExcelTable extends Component<any, any> {
     const {
       data,
       loading,
+      context,
       onAddRow,
       rootStyle,
       onDeleteRow,
@@ -32,6 +33,7 @@ export default class RefundExcelTable extends Component<any, any> {
       <div style={rootStyle}>
         <TabelExcelWrapper
           data={data}
+          context={context}
           loading={loading}
           onAddRow={onAddRow}
           onDeleteRow={onDeleteRow}

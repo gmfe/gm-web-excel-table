@@ -83,14 +83,14 @@ export class EditableInputNumber extends Component<{
               {value}
             </div>
           )
-            : null}
+            : <span />}
         >
           {/* InputNumberV2 cannot get mouse selection */}
           <InputNumber
-            value={value}
+            value={value || ''}
             precision={2}
-            getInputRef={(c: any) => { this._inputRef = c }}
             onChange={this.onChange}
+            getInputRef={(c: any) => { this._inputRef = c }}
             onInputKeyUp={(e: React.KeyboardEvent) => {
               handleKeyUp(e, value);
             }}

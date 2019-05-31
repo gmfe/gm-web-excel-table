@@ -458,7 +458,8 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
           // 向下增加五行
           if (config.allowDownAddRow) {
             // CUSTOM FIELD
-            this.props.dataManager.onAdd(new Array(5).fill(undefined), rowMax, () => {
+            const MORE_ADD_ROW_NUMBER = 1;
+            this.props.dataManager.onAdd(new Array(MORE_ADD_ROW_NUMBER).fill(undefined), rowMax, () => {
               const cell = this._cellPositionQueryIdMap.get(this.PositionId({ col: currentPositionOfCell.col, row: rowMax }));
               if (cell) {
                 this.edit(cell, true, () => this.scroll2Cell(cell, true));
@@ -529,7 +530,8 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
           if (config.allowDownAddRow) {
             // 向下增加五行 
             // CUSTOM FIELD
-            this.props.dataManager.onAdd(new Array(5).fill(undefined), rowMax, () => {
+            const MORE_ADD_ROW_NUMBER = 1;
+            this.props.dataManager.onAdd(new Array(MORE_ADD_ROW_NUMBER).fill(undefined), rowMax, () => {
               if (this._lastCell) {
                 const position = this._cellIdQueryPositionMap.get(this.CellUniqueObject2Id(this._lastCell));
                 if (position) {
