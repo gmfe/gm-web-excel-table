@@ -7,14 +7,15 @@
 .gm-web-table-cell-container {
   &>div.gm-web-table-cell {
     &>.gm-search-select-container {
-      
       .gm-more-select-selected {
-        padding: 0;
         .gme-common-input();
-        width: 168px;
-        background: transparent;
+        padding: 0;
+        width  : 168px;
+
+        // background: transparent; // NOTICE 忘了干什么的
         .gm-more-select-selected-item {
           width: 100%;
+
           &>div.gm-flex-column {
             display: inline-block;
             .gme-common-input-text-style();
@@ -24,10 +25,10 @@
         }
       }
 
-      .gm-more-select{
-        .gm-more-select-clear-btn{
+      .gm-more-select {
+        .gm-more-select-clear-btn {
           padding: 0;
-          right: 7px;
+          right  : 7px;
         }
       }
 
@@ -35,7 +36,7 @@
   }
 }
 
-.gm-refund-table--more-select-popover{
+.gm-refund-table--more-select-popover {
   .gm-list {
     .gm-list-item {
       &.will-active {
@@ -44,3 +45,24 @@
     }
   }
 }
+
+.cell-orderName{
+  .gm-web-table-cell{
+    width: 100%;
+    .gm-search-select-container {
+      .gm-more-select {
+        &>input {
+          .gme-common-input();
+          width: 100%;
+          overflow     : hidden;
+          white-space  : nowrap;
+          text-overflow: ellipsis;
+          min-width: 98px;
+          max-width: 168px;
+
+        }
+      }
+    }
+  }
+}
+

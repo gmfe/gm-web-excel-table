@@ -175,6 +175,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
                 hasNoneInputClickValidClass = true;
               }
             })
+            // BUG HIGHER
             if (!hasNoneInputClickValidClass) {
               if (this._editingCell) {
                 this.cancelEdit(this._editingCell);

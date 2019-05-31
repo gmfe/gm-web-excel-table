@@ -4,7 +4,7 @@ import { Column, CellInfo } from 'react-table';
 
 /**
  * 列数据结构
- *
+ * 
  * @export
  * @interface GMExtendedColumnProps
  * @extends {Column}

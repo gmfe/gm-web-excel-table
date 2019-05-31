@@ -99,12 +99,21 @@ export function withUniqueEditableColumnsProps(data: GMExtendedColumnProps[]): G
         tableController.register.registerColumnAccessorMap(d.key, () => d.registerAccessor && d.registerAccessor(cell));
       }
 
+
       return (
         <div
           className="gm-web-table-cell-container"
           id={`${_GM_TABLE_SCROLL_CELL_PREFIX_}${d.key}${cell.original.rowKey}`}
-          style={cellContainerStyle}
+          style={{ ...cellContainerStyle }}
         >
+          
+          {/* { ADD fix container for hover background
+            d.fixed ? (
+              <div className="gm-web-table-cell">
+              {OldCellRender ? (OldCellRender instanceof Function ? OldCellRender(cell, column) : OldCellRender) : cell.value}
+            </div>
+            )
+          } */}
           <div className="gm-web-table-cell">
             {OldCellRender ? (OldCellRender instanceof Function ? OldCellRender(cell, column) : OldCellRender) : cell.value}
           </div>
@@ -114,13 +123,13 @@ export function withUniqueEditableColumnsProps(data: GMExtendedColumnProps[]): G
     }
 
     const OldHeaderRender = d.Header;
-    d.Header = (cell: CellInfo, column: any) => {
+    d.Header = (props: any, _: any) => {
       return (
         <div
           className="gm-web-table-header-cell-inner"
-          style={cellContainerStyle}
+          style={{...cellContainerStyle }}
         >
-          {OldHeaderRender ? (OldHeaderRender instanceof Function ? OldHeaderRender(cell, column) : OldHeaderRender) : cell.value}
+          {OldHeaderRender ? (OldHeaderRender instanceof Function ? OldHeaderRender(props, _) : OldHeaderRender) : 'null'}
         </div>
       )
     }

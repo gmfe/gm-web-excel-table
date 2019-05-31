@@ -73,7 +73,6 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
   // Promise
   const i18next = componentProps.custom.i18next;
 
-
   const columns: GMExtendedColumnProps[] = [
 
     // https://lanhuapp.com/web/#/item/project/board/detail?pid=40b095a1-691b-41c9-8f29-b091413ee1f3&project_id=40b095a1-691b-41c9-8f29-b091413ee1f3&image_id=4c5a7608-b56b-461f-bc28-50c3581d0184
@@ -82,7 +81,8 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
       key: GM_REFUND_TABLE_COLUMNS_KEYS.number,
       fixed: 'left',
       Header: i18next.t('序号'),
-      minWidth: 21,
+      minWidth: 24,
+      maxWidth: 49,
       style: { borderRight: '1px solid rgba(0,0,0,0.02)' },
       Cell: ({ viewIndex }: CellInfo) => {
         return viewIndex + 1;
@@ -96,9 +96,9 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
 
       fixed: 'left',
       center: true,
-      minWidth: 80,
+      minWidth: 56,
       maxWidth: 82,
-      style: { borderRight: '1px solid rgba(0,0,0,0.05)', boxShadow: '1px 0px 8px -8px' },
+      style: { borderRight: '1px solid rgba(0,0,0,0.05)', },
       Header: () => <SvgFun className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-action-header-svg`} />,
       Cell: ({ viewIndex }: CellInfo) => {
         return (
@@ -134,7 +134,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
     // 商品名
     {
       key: GM_REFUND_TABLE_COLUMNS_KEYS.orderName,
-      minWidth: 180,
+      minWidth: 98,
       editable: true,
       sortable: false,
       uniqueEditable: true,
@@ -184,7 +184,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
     {
       key: GM_REFUND_TABLE_COLUMNS_KEYS.orderCategory,
 
-      minWidth: 32,
+      minWidth: 26,
       Header: i18next.t('商品分类'),
       sortable: false,
       accessor: 'category',
@@ -195,7 +195,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
       key: GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderNumber,
 
       Header: i18next.t('退货数'),
-      minWidth: 120,
+      minWidth: 100,
       editable: true,
       uniqueEditable: true,
       accessor: 'returnOrderNumber',
@@ -211,7 +211,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
     {
       key: GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderPerPrice,
 
-      minWidth: 126,
+      minWidth: 100,
       Header: i18next.t('退货单价'),
       editable: true,
       uniqueEditable: true,
@@ -229,7 +229,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
       key: GM_REFUND_TABLE_COLUMNS_KEYS.fillPriceDiff,
 
       Header: i18next.t('补差'),
-      minWidth: 22,
+      minWidth: 28,
       accessor: 'fillPriceDiff',
       Cell: (cell: CellInfo) => {
         return cell.value || '-';
@@ -241,7 +241,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
       key: GM_REFUND_TABLE_COLUMNS_KEYS.returnTotalPrice,
 
       Header: i18next.t('退货金额'),
-      minWidth: 120,
+      minWidth: 100,
       editable: true,
       uniqueEditable: true,
       accessor: 'returnTotalPrice',
@@ -279,7 +279,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
     {
       key: GM_REFUND_TABLE_COLUMNS_KEYS.chargerPerson,
       Header: i18next.t('操作人'),
-      minWidth: 35,
+      minWidth: 29,
       accessor: 'chargerPerson'
     },
 
@@ -290,7 +290,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
     columns.splice(6, 0, {
       key: GM_REFUND_TABLE_COLUMNS_KEYS.returnBatchNumber,
       Header: i18next.t('退货批次'),
-      minWidth: 22,
+      minWidth: 28,
       Cell: ({ original, viewIndex }: CellInfo) => {
 
         // 是否选择了批次
@@ -327,7 +327,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
         }
         const { onClickSelectBatch } = componentProps.custom;
         return (
-          <a href='javascript:;' onClick={() => {
+          <a href='javascript:;' className="-select-return-batch" onClick={() => {
             onClickSelectBatch(original, viewIndex)
           }}>{children}</a>
         )

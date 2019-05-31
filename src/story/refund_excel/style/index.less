@@ -1,6 +1,8 @@
 @import '../../../components/table/style/function.less';
 
 // NOTICE 忘记这个做什么 将会影响垂直居中
+
+// 这个是为了保证点击能够跳出的 FIX TODO
 // .cell-orderName {
 //   .gm-web-table-cell {
 //     width : 100%;
@@ -37,10 +39,23 @@
   }
 
   // TODO check
-  .gm-select-batch-anomaly{
+  .gm-select-batch-anomaly {
     :global .gm-trigger {
       display: inline-block;
     }
+  }
+
+  .gm-web-table-cell{
+    width: 100%;
+    white-space: unset;
+    word-break : break-all;
+    // overflow     : hidden;
+    // white-space  : nowrap;
+    // text-overflow: ellipsis;
+  }
+
+  .-select-return-batch{
+    text-decoration: none;
   }
 
 

@@ -165,6 +165,8 @@ export default class TabelExcelContainer extends React.PureComponent<RefundExcel
           noneInputClickValidList: [
             'cell-orderName',
             'gm-more-select-selected',
+            'gm-search-select-container',
+            'gm-flex-column', // NEED TO IMPROVE
           ],
           moveEdit: {
             [MoveEditType.arrow]: {
