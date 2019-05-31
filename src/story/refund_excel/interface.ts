@@ -110,6 +110,7 @@ export interface GMOrderListDataStructure {
 export interface RefundExcelTableCustomProps {
   onSearchOrderName: (value: string, rowIndex: number) => Promise<any>
   onClickSelectBatch: (detail: any, rowIndex: number) => void
+  i18next: any;
 }
 
 export interface RefundExcelTable_Props extends RefundExcelTableCustomProps {
@@ -117,6 +118,7 @@ export interface RefundExcelTable_Props extends RefundExcelTableCustomProps {
   loading?: boolean
   data: RefundExcelTable_AllData
   columnContext?: any; // 会影响列的配置
+  i18next: any;
 
   onOrderNameChange: (selectedData: any, rowIndex: number) => void
   onReturnOrderNumberChange: (value: string, rowIndex: number) => void

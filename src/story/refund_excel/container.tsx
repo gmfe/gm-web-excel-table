@@ -231,6 +231,7 @@ export default class TabelExcelContainer extends React.PureComponent<RefundExcel
         custom={{
           onSearchOrderName: this.props.onSearchOrderName,
           onClickSelectBatch: this.handleBatchClick,
+          i18next: this.props.i18next
         }}
       />
 

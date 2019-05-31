@@ -10,6 +10,8 @@ import cloneDeep from 'lodash/cloneDeep'
 
 var mountNode = document.getElementById("app");
 
+import { i18next } from 'gm-i18n';
+import './i18next'
 
 
 // ----------------- 这个文件用来本地调试 -----------------
@@ -197,7 +199,6 @@ export default class RenderComp extends React.Component<any, {
           hasLayoutRoot
           loading={loading}
           columnContext={{ isShowReturnBatchNumber: authType === 2 }}
-
           rootStyle={{ padding: 40 }}
           onAddRow={this.onAddRow}
           onDeleteRow={this.onDeleteRow}
@@ -207,6 +208,7 @@ export default class RenderComp extends React.Component<any, {
           onReturnOrderPerPriceChange={this.onReturnOrderPerPriceChange}
           onReturnTotalPriceChange={this.onReturnTotalPriceChange}
           onClickSelectBatch={this.onClickSelectBatch}
+          i18next={i18next}
         />
       </div>
 

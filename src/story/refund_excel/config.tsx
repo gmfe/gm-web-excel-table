@@ -8,7 +8,6 @@ import SearchSelect from './components/cells/search-select';
 import EditableInputNumber from './components/cells/editable-input-number';
 
 import { SvgFun } from 'gm-svg';
-import { i18next } from 'gm-i18n';
 import { ToolTip, Trigger } from 'react-gm';
 import SvgShanchumorenHuaban from 'gm-svg/src/ShanchumorenHuaban';
 import SvgTianjiamorenHuaban from 'gm-svg/src/TianjiamorenHuaban';
@@ -71,6 +70,9 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
   }
 
 
+  // Promise
+  const i18next = componentProps.custom.i18next;
+
 
   const columns: GMExtendedColumnProps[] = [
 
@@ -80,7 +82,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
       key: GM_REFUND_TABLE_COLUMNS_KEYS.number,
       fixed: 'left',
       Header: i18next.t('序号'),
-      minWidth: 15,
+      minWidth: 21,
       style: { borderRight: '1px solid rgba(0,0,0,0.02)' },
       Cell: ({ viewIndex }: CellInfo) => {
         return viewIndex + 1;
@@ -94,7 +96,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
 
       fixed: 'left',
       center: true,
-      minWidth: 61,
+      minWidth: 80,
       maxWidth: 82,
       style: { borderRight: '1px solid rgba(0,0,0,0.05)', boxShadow: '1px 0px 8px -8px' },
       Header: () => <SvgFun className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-action-header-svg`} />,
@@ -132,7 +134,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
     // 商品名
     {
       key: GM_REFUND_TABLE_COLUMNS_KEYS.orderName,
-      minWidth: 173,
+      minWidth: 180,
       editable: true,
       sortable: false,
       uniqueEditable: true,
@@ -239,7 +241,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
       key: GM_REFUND_TABLE_COLUMNS_KEYS.returnTotalPrice,
 
       Header: i18next.t('退货金额'),
-      minWidth: 105,
+      minWidth: 120,
       editable: true,
       uniqueEditable: true,
       accessor: 'returnTotalPrice',

@@ -1,7 +1,7 @@
 import { i18nextInit, getDefaultLng } from 'gm-i18n'
 import { setLocale } from 'react-gm/src/locales'
 import { setLocale as setUtilLocale } from 'gm-util'
-import locales from '../locales'
+import locales from './locales'
 
 const config = {
   debug: false,

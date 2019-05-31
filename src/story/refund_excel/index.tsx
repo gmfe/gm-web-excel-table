@@ -2,8 +2,6 @@
 
 import React, { Component } from 'react'
 import TabelExcelWrapper from './container';
-
-import './i18next'
 import { LayoutRoot } from 'react-gm'
 
 
@@ -19,6 +17,7 @@ export default class RefundExcelTable extends Component<any, any> {
     const {
       data,
       loading,
+      i18next,
       onAddRow,
       rootStyle,
       onDeleteRow,
@@ -35,6 +34,7 @@ export default class RefundExcelTable extends Component<any, any> {
       <div style={rootStyle}>
         <TabelExcelWrapper
           data={data}
+          i18next={i18next}
           loading={loading}
           onAddRow={onAddRow}
           onDeleteRow={onDeleteRow}
