@@ -72,6 +72,7 @@ export class EditableInputNumber extends Component<{
 
         <ToolTip
           top
+          showArrow={false}
           popup={isFinishedAndCollasped ? (
             <div
               style={{
