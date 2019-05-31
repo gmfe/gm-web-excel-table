@@ -37,10 +37,10 @@ export function WithKeyboardHandler(Target: any) {
           {...this.props}
           onEditStart={() => { tableController.onEditStart(cell); }}
           onEditEnd={() => { tableController.cancelEdit(cell); }}
-          handleKeyUp={(e: React.KeyboardEvent, value?: string | number) => {
+          handleKeyUp={(e: React.KeyboardEvent, value?: string) => {
             // e.preventDefault();
             TableControllerUtil.onInputKeyUp(e,{
-                value: `${value}`,
+                value: value && `${value}`,
                 handler: {
                   onKeyUp_ArrowUp: () => {
                     tableController.move.moveToPreviousRowEditableCell(MoveEditType.arrow, cell, { arrowKey: 'ArrowUp'});
