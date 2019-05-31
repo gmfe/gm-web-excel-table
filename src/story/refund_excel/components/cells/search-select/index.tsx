@@ -1,7 +1,7 @@
 
 
 import './index.less'
-import { MoreSelect } from 'react-gm'
+import { ToolTip, MoreSelect } from 'react-gm'
 import debounce from 'lodash/debounce';
 import React, { Component } from 'react';
 import { WithInputFocus, WithInputFocusProviderProps } from '../with-input-focus';
@@ -18,6 +18,7 @@ export interface GMMoreSelectData {
 export class SearchSelect extends Component<{
   value?: string;
   cell: CellUniqueObject;
+  editing: boolean;
   onSelect: (value: any) => void;
   onSearch: (value: string) => Promise<any>;
   handleKeyUp: (e: React.KeyboardEvent, value?: string | number) => void;
@@ -27,6 +28,7 @@ export class SearchSelect extends Component<{
 
   private _popRef: any;
   private _lastFetchId: number = 0;
+  private _containerRef: any;
 
   static defaultProps = {
     onSelect: () => { }
@@ -42,7 +44,7 @@ export class SearchSelect extends Component<{
       selected: { text: '', value: null },
     }
     this._lastFetchId = 0;
-    this.handleSearch = debounce(this.handleSearch, 800);
+    this.handleSearch = debounce(this.handleSearch, 500);
   }
 
   componentDidMount() {
@@ -68,13 +70,14 @@ export class SearchSelect extends Component<{
         // fetching: true
       });
       return this.props.onSearch(value).then((searchResult: any) => {
-        res()
         if (fetchId !== this._lastFetchId) {
           return;
         }
         this.setState({
           data: this.props.mapSearchDataToSelect(searchResult),
           // fetching: false,
+        }, () => {
+          res()
         });
       })
     })
@@ -103,42 +106,74 @@ export class SearchSelect extends Component<{
 
   render() {
     const { data, selected } = this.state;
-    const { onSelect, value, handleKeyUp, onEditStart } = this.props;
+    const { onSelect, value, editing, handleKeyUp, onEditStart } = this.props;
+
+    const isFinished = !editing && value && value.length > 0;
+
+    let isFinishedAndCollasped: boolean = false;
+
+    if (value && isFinished && this._containerRef) {
+      // TODO 并且要计算文字处于...状态
+      isFinishedAndCollasped = value.length > (this._containerRef.clientWidth / 12) + 3;
+    }
 
     return (
-      <div
-        className="gm-search-select-container"
-        style={{ width: '100%', height: '100%' }}
-        onClick={(e) => {
-          if (this._popRef) {
-            this._popRef.show();
-          }
-        }}
+      <ToolTip
+        top
+        showArrow={false}
+        popup={isFinishedAndCollasped ? (
+          <div
+            style={{
+              display: 'inline-block',
+              width: this._containerRef && this._containerRef.clientWidth,
+              wordBreak: 'break-all'
+            }}
+          >
+            {selected && selected.text}
+          </div>
+        )
+          : <span />}
       >
-        <MoreSelect
-          data={data}
-          isGroupList
-          popoverType={'click'}
-          onSearch={this.handleSearch}
-          popRef={(pop: any) => { this._popRef = pop }}
-          popoverClassName="gm-refund-table--more-select-popover"
-          selected={selected && selected.value ? selected : undefined}
-          onSelect={(selected: any) => {
-            onSelect(selected)
-            this.setState({ selected })
-          }}
-          onInputFocus={() => { onEditStart(); }}
-          onInputKeyDown={this.handleInputKeyDown}
-          onInputKeyUp={(e: React.KeyboardEvent) => {
-            if (data.length) {
-              return;
+        <div
+          className="gm-search-select-container"
+          style={{ width: '100%', height: '100%' }}
+          ref={(c: any) => { this._containerRef = c }}
+          onClick={() => {
+            if (this._popRef) {
+              this._popRef.show();
             }
-            handleKeyUp(e, value)
           }}
         >
-        </MoreSelect>
+          <MoreSelect
+            data={data}
+            isGroupList
+            popoverType={'click'}
+            onSearch={this.handleSearch}
+            popRef={(pop: any) => { this._popRef = pop }}
+            popoverClassName="gm-refund-table--more-select-popover"
+            selected={selected && selected.value ? selected : undefined}
+            onSelect={(selected: any) => {
+              onSelect(selected)
+              this.setState({ selected })
+            }}
+            onInputFocus={() => { onEditStart(); }}
+            onInputKeyDown={this.handleInputKeyDown}
+            onInputKeyUp={(e: React.KeyboardEvent) => {
+              if (data.length) {
+                return;
+              }
+              handleKeyUp(e, value)
+            }}
+          >
+            <input
+              disabled
+              onChange={() => { }}
+              value={selected && selected.text}
+            />
+          </MoreSelect>
 
-      </div>
+        </div>
+      </ToolTip>
     )
   }
 }

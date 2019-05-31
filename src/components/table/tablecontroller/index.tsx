@@ -75,6 +75,9 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         col: { start: 0, end: 0 },
       }
 
+      // 脏回调队列，因为Didupdate在setState回调之后，所以先加入队列
+      public _dirtyCallBackQueue: Function[] = [];
+
       public get tableController(): TableControllerInterface {
         return {
           edit: this.edit.bind(this),
@@ -172,6 +175,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
                 hasNoneInputClickValidClass = true;
               }
             })
+            // BUG HIGHER
             if (!hasNoneInputClickValidClass) {
               if (this._editingCell) {
                 this.cancelEdit(this._editingCell);
@@ -242,6 +246,24 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
           row: nextRow,
         }));
         return nextCell;
+      }
+      /**
+       * 获取某行首个可编辑列位置
+       *
+       * @param {number} row
+       * @returns
+       */
+      public getFisrtEditableColByRow(row: number) {
+        let minCol: number | undefined;
+        this._cellIdQueryPositionMap.forEach((position) => {
+          if (position.row === row) {
+            if (!minCol) minCol = position.col;
+            if (minCol >  position.col) {
+              minCol = position.col;
+            }
+          }
+        });
+        return minCol;
       }
       /**
        * 查询单元格是否在第一列
@@ -339,7 +361,15 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
             this._lastCell = cell;
           });
         });
-        // console.log('表格行列数据更新!', this._cellIdQueryPositionMap);
+        // console.log('表格行列数据更新!', this._cellPositionQueryIdMap, this._cellIdQueryPositionMap, this._dirtyCallBackQueue);
+        const nextQueue: Function[] = [];
+        this._dirtyCallBackQueue.forEach(callback => {
+          const isHandle = callback();
+          if (!isHandle) {
+            nextQueue.push(callback);
+          }
+        })
+        this._dirtyCallBackQueue = nextQueue;
       }
 
 
@@ -372,22 +402,28 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
        * 滚动到单元格
        *
        */
-      scroll2Cell = (obj: CellUniqueObject, scrollY: boolean = false) => {
+      scroll2Cell = (obj: CellUniqueObject, scrollY: boolean = true, scrollX: boolean = true) => {
         const position = this._cellIdQueryPositionMap.get(this.CellUniqueObject2Id(obj));
         // NOTICE 可能会是动态宽高，所以每次取
         if (position) {
-          let leftReduceWidth = 0;
-          for (let i = this._scrollerInfo.col.start; i < position.col; i++) {
-            const column = this.props.columns[i];
-            const cell = document.getElementById(`${_GM_TABLE_SCROLL_CELL_PREFIX_}${column.key}${obj.rowKey}`);
-            if (cell) {
-              leftReduceWidth += cell.clientWidth;
+  
+          const scroller = this.getScroller();
+
+          if (scrollX) {
+            let leftReduceWidth = 0;
+            for (let i = this._scrollerInfo.col.start; i < position.col; i++) {
+              const column = this.props.columns[i];
+              const cell = document.getElementById(`${_GM_TABLE_SCROLL_CELL_PREFIX_}${column.key}${obj.rowKey}`);
+              if (cell) {
+                leftReduceWidth += cell.clientWidth;
+              }
+            }
+
+            if (scroller.xScroller) {
+              scroller.xScroller.scrollTo(leftReduceWidth, scroller.yScroller && scroller.yScroller.scrollTop || 0);
             }
           }
-          const scroller = this.getScroller();
-          if (scroller.xScroller) {
-            scroller.xScroller.scrollTo(leftReduceWidth, scroller.yScroller && scroller.yScroller.scrollTop || 0);
-          }
+
           if (scrollY) {
             let topReduceHeight = 0;
             for (let i = this._scrollerInfo.row.start; i <= position.row; i++) {
@@ -397,12 +433,12 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
                 topReduceHeight += cell.parentElement.clientHeight;
               }
             }
-            // console.log(topsReduceHeight, scroller.yScroller, scroller.yScroller && scroller.yScroller.scrollTop, position, 'topReduceWidth 1111')
             // 目前看Y会自动滚动
             if (scroller.yScroller) {
               scroller.yScroller.scrollTo(scroller.xScroller && scroller.xScroller.scrollLeft || 0, topReduceHeight - 50 < 0 ? 0 : topReduceHeight - 50);
             }
           }
+
           if (position.row === 0) {
             if (scroller.yScroller) {
               scroller.yScroller.scrollTo(scroller.xScroller && scroller.xScroller.scrollLeft || 0, 0);
@@ -430,14 +466,14 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
             // CUSTOM FIELD
             this.props.dataManager.onAdd([undefined], 0, () => {
               if (this._firstCell) {
-                this.edit(this._firstCell, true, () => this.scroll2Cell(this._firstCell!, true));
+                this.edit(this._firstCell, true, () => this.scroll2Cell(this._firstCell!, true, false));
               }
             });
           }
         } else {
           const nextCell = this.getCellByPosition(nextCol, nextRow);
           if (nextCell) {
-            this.scroll2Cell(nextCell);
+            this.scroll2Cell(nextCell, false, false);
             this.edit(nextCell);
           }
         }
@@ -455,20 +491,26 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         const rowMax = this.props.data.length;
         let nextRow = currentPositionOfCell.row + 1;
         if (nextRow >= rowMax) {
-          // 向下增加五行
-          if (config.allowDownAddRow) {
+          // 向下增加行
+          let allowDownAddRow = config.allowDownAddRow;
+          if (allowDownAddRow) {
             // CUSTOM FIELD
-            this.props.dataManager.onAdd(new Array(5).fill(undefined), rowMax, () => {
-              const cell = this._cellPositionQueryIdMap.get(this.PositionId({ col: currentPositionOfCell.col, row: rowMax }));
-              if (cell) {
-                this.edit(cell, true, () => this.scroll2Cell(cell, true));
-              }
+            const MORE_ADD_ROW_NUMBER = 1;
+            this.props.dataManager.onAdd(new Array(MORE_ADD_ROW_NUMBER).fill(undefined), rowMax, () => {
+              this._dirtyCallBackQueue.push(() => {
+                const cell = this._cellPositionQueryIdMap.get(this.PositionId({ col: currentPositionOfCell.col, row: rowMax }));
+                if (cell) {
+                  this.edit(cell, true, () => this.scroll2Cell(cell, true, false));
+                  return true;
+                }
+                return false;
+              })
             });
           }
         } else {
           const nextCell = this.getCellByPosition(currentPositionOfCell.col, nextRow);
           if (nextCell) {
-            this.scroll2Cell(nextCell);
+            this.scroll2Cell(nextCell, false, false);
             this.edit(nextCell);
           }
         }
@@ -490,7 +532,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
           // 第一个可编辑单元格
           if (config.allowUp2Bottom) {
             if (this._lastCell) {
-              this.edit(this._lastCell, true, () => this.scroll2Cell(this._lastCell!));
+              this.edit(this._lastCell, true, () => this.scroll2Cell(this._lastCell!, false, true));
             }
           }
         } else {
@@ -498,12 +540,12 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
           if (nextCell) {
             if (currentPositionOfCell.row === nextRow + 1) {
               if (config.allowColumnLeftBackRow) {
-                this.edit(nextCell, true, () => this.scroll2Cell(nextCell));
+                this.edit(nextCell, true, () => this.scroll2Cell(nextCell, false, true));
               }
             }
             if (currentPositionOfCell.row === nextRow) {
               // 要先滚动，这样弹出的下拉框才会位置正确
-              this.scroll2Cell(nextCell)
+              this.scroll2Cell(nextCell, false, true)
               this.edit(nextCell, true);
             }
           }
@@ -514,7 +556,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
        * 移动至下一个可编辑单元格
        *
        */
-      moveToNextEditableCell = (type: MoveEditType, cell: CellUniqueObject) => {
+      moveToNextEditableCell = (type: MoveEditType, cell: CellUniqueObject, args?: any) => {
         const config: TableControllerMoveEditAllowConfig | undefined = TABLE_CONFIG.moveEdit[type];
         if (!config) return;
         const currentEditingCellkey = this.CellUniqueObject2Id(cell);
@@ -523,43 +565,55 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         const rowMax = this.props.data.length;
         let nextCol = currentPositionOfCell.nextCol;
         let nextRow = currentPositionOfCell.nextRow;
-        // console.log(type, config, 'moveToNextEditableCell config')
         if (!(nextCol !== undefined && nextRow !== undefined)) {
           // 某一个不存在，最后一个可编辑单元格
-          if (config.allowDownAddRow) {
-            // 向下增加五行 
+          let allowDownAddRow = config.allowDownAddRow;
+          if (allowDownAddRow) {
+            if (args && args.arrowKey === 'ArrowRight') {
+              allowDownAddRow = config.allowRightArrowDownAddRow;
+            }
+          }
+          if (allowDownAddRow) {
+            // 向下增加行 
             // CUSTOM FIELD
-            this.props.dataManager.onAdd(new Array(5).fill(undefined), rowMax, () => {
-              if (this._lastCell) {
-                const position = this._cellIdQueryPositionMap.get(this.CellUniqueObject2Id(this._lastCell));
-                if (position) {
-                  const lastRowFisrtCell = this.getCellByPosition(0, position.row);
-                  lastRowFisrtCell && this.edit(lastRowFisrtCell, true, () => this.scroll2Cell(lastRowFisrtCell));
+            const MORE_ADD_ROW_NUMBER = 1;
+            this.props.dataManager.onAdd(new Array(MORE_ADD_ROW_NUMBER).fill(undefined), rowMax, () => {
+              this._dirtyCallBackQueue.push(() => {
+                if (this._lastCell) {
+                  const position = this._cellIdQueryPositionMap.get(this.CellUniqueObject2Id(this._lastCell));
+                  if (position) {
+                    const fisrtCol = this.getFisrtEditableColByRow(position.row);
+                    if (fisrtCol) {
+                      const lastRowFisrtCell = this.getCellByPosition(fisrtCol, position.row);
+                      lastRowFisrtCell && this.edit(lastRowFisrtCell, true, () => this.scroll2Cell(lastRowFisrtCell, false, false));
+                    }
+                    return true;
+                  }
                 }
-              }
+                return false;
+              })
             });
           } else {
             if (config.allowBottom2Up) {
               if (this._firstCell) {
                 // 回滚至第一行
-                this.scroll2Cell(this._firstCell)
+                this.scroll2Cell(this._firstCell, false, true)
                 this.edit(this._firstCell);
               }
             }
           }
         } else {
           const nextCell = this.getCellByPosition(nextCol, nextRow);
-          // console.log(currentPositionOfCell, nextCell, 'moveToNextEditableCell  currentPositionOfCell nextCell')
           if (nextCell) {
             if (currentPositionOfCell.row === nextRow - 1) {
               // 右方换行
               if (config.allowColumnRightBreakRow) {
-                this.scroll2Cell(nextCell);
+                this.scroll2Cell(nextCell, false, true);
                 this.edit(nextCell);
               }
             }
             if (currentPositionOfCell.row === nextRow) {
-              this.scroll2Cell(nextCell);
+              this.scroll2Cell(nextCell, false, true);
               this.edit(nextCell);
             }
           }

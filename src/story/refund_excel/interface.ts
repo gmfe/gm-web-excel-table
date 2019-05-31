@@ -1,12 +1,22 @@
 import { TableControllerInterface } from '../../components/table/tablecontroller/interface';
 
+
+export interface RefundExcelTable_DetailCommonProperty{
+  id?: string
+  remain?: number
+  std_unit?: string
+  hasEdit?: boolean
+  selected_sum?: number
+}
+
+
 /**
  * [开发结构] 数据表格单元格数据结构
  *
  * @export
  * @interface Data_IRefundExcel
  */
-export interface Data_IRefundExcel {
+export interface Data_IRefundExcel extends RefundExcelTable_DetailCommonProperty {
   category: string,
   orderName: string,
   returnOrderNumber: string,  // number
@@ -14,6 +24,9 @@ export interface Data_IRefundExcel {
   fillPriceDiff: string, // 补差价
   chargerPerson: string // '操作人' // number
   returnTotalPrice: string, // 退货金额	 // number
+  returnBatchNumner?: string
+
+  rowKey: string;
 }
 
 /**
@@ -34,19 +47,16 @@ export interface DataWithController_IRefundExcel extends Data_IRefundExcel {
  * [业务结构]: 单元格详情数据结构
  *
  * @export
- * @interface RefundExcelTable_Details
+ * @interface RefundExcelTable_Detail
  */
-export interface RefundExcelTable_Details {
+export interface RefundExcelTable_Detail extends RefundExcelTable_DetailCommonProperty {
   money: string
-  quantity: string
-  unit_price: string
-  different_price: string
-
-  id?: string
   name?: string
-  std_unit?: string
+  quantity: string
   category?: string
-
+  unit_price: string
+  batch_number?: string
+  different_price: string
 }
 
 export interface RefundExcelTable_SelectedData {
@@ -78,7 +88,7 @@ export interface RefundExcelTable_AllData {
   batch_number: number | null
 
   creator: string
-  details: RefundExcelTable_Details[]
+  details: RefundExcelTable_Detail[]
 }
 /**
  * [业务结构] 下拉列表数据结构
@@ -99,21 +109,23 @@ export interface GMOrderListDataStructure {
 
 export interface RefundExcelTableCustomProps {
   onSearchOrderName: (value: string, rowIndex: number) => Promise<any>
-
+  onClickSelectBatch: (detail: any, rowIndex: number) => void
+  i18next: any;
 }
 
 export interface RefundExcelTable_Props extends RefundExcelTableCustomProps {
 
   loading?: boolean
   data: RefundExcelTable_AllData
-
+  columnContext?: any; // 会影响列的配置
+  i18next: any;
 
   onOrderNameChange: (selectedData: any, rowIndex: number) => void
   onReturnOrderNumberChange: (value: string, rowIndex: number) => void
   onReturnOrderPerPriceChange: (value: string, rowIndex: number) => void
   onReturnTotalPriceChange: (value: string, rowIndex: number) => void
 
-  onAddRow: (addList: any[], startRowIndex?: number) => void
-  onDeleteRow: (rowIndexes: number[]) => void
+  onAddRow: (addList: any[], startRowIndex?: number, callback?: Function) => void
+  onDeleteRow: (rowIndexes: number[], callback?: Function) => void
 }
 

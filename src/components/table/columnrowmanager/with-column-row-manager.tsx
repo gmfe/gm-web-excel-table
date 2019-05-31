@@ -4,7 +4,7 @@ import * as React from 'react'
 import { CellInfo } from 'react-table';
 import { _GM_TABLE_SCROLL_CELL_PREFIX_ } from '../constants';
 import { WithColumnRowManagerConfig } from './interface';
-import { IColumnManager, ConfigColumnProps, GMExtendedColumnProps } from './interface';
+import { IColumnManager, ColumnRowManagerComponentProps, GMExtendedColumnProps } from './interface';
 
 
 /**
@@ -19,7 +19,7 @@ export function WithColumnRowManager(Target: React.ComponentClass<any, any>) {
 
   return (configOption: WithColumnRowManagerConfig) => {
 
-    return class extends React.Component<ConfigColumnProps<any>, any> {
+    return class extends React.Component<ColumnRowManagerComponentProps, any> {
       public _tableContainerDom?: HTMLElement;
       public _columnRowManager: IColumnManager;
 
@@ -97,15 +97,23 @@ export function withUniqueEditableColumnsProps(data: GMExtendedColumnProps[]): G
       if (d.registerAccessor) {
         const { original: { tableController } } = cell;
         tableController.register.registerColumnAccessorMap(d.key, () => d.registerAccessor && d.registerAccessor(cell));
-        // console.log(cell,d.key, accessor, 'registerAccessorregisterAccessor')
       }
+
 
       return (
         <div
           className="gm-web-table-cell-container"
           id={`${_GM_TABLE_SCROLL_CELL_PREFIX_}${d.key}${cell.original.rowKey}`}
-          style={cellContainerStyle}
+          style={{ ...cellContainerStyle }}
         >
+          
+          {/* { ADD fix container for hover background
+            d.fixed ? (
+              <div className="gm-web-table-cell">
+              {OldCellRender ? (OldCellRender instanceof Function ? OldCellRender(cell, column) : OldCellRender) : cell.value}
+            </div>
+            )
+          } */}
           <div className="gm-web-table-cell">
             {OldCellRender ? (OldCellRender instanceof Function ? OldCellRender(cell, column) : OldCellRender) : cell.value}
           </div>
@@ -115,13 +123,13 @@ export function withUniqueEditableColumnsProps(data: GMExtendedColumnProps[]): G
     }
 
     const OldHeaderRender = d.Header;
-    d.Header = (cell: CellInfo, column: any) => {
+    d.Header = (props: any, _: any) => {
       return (
         <div
           className="gm-web-table-header-cell-inner"
-          style={cellContainerStyle}
+          style={{...cellContainerStyle }}
         >
-          {OldHeaderRender ? (OldHeaderRender instanceof Function ? OldHeaderRender(cell, column) : OldHeaderRender) : cell.value}
+          {OldHeaderRender ? (OldHeaderRender instanceof Function ? OldHeaderRender(props, _) : OldHeaderRender) : 'null'}
         </div>
       )
     }
