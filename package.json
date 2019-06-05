@@ -15,7 +15,7 @@
   "author": "shankun@guanmai.cn",
   "license": "ISC",
   "peerDependencies": {
-    "react-gm": "^8.2.0-beta1"
+    "react-gm": "^8.3.2-beta"
   },
   "devDependencies": {
     "@babel/core": "^7.4.4",
@@ -44,7 +44,7 @@
     "lodash-webpack-plugin": "^0.11.5",
     "mini-css-extract-plugin": "^0.6.0",
     "prop-types": "^15.7.2",
-    "react-gm": "^8.2.0-beta1",
+    "react-gm": "^8.3.2-beta",
     "ts-loader": "^5.3.3",
     "typescript": "^3.4.3",
     "url-loader": "^1.1.2",
