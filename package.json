@@ -6,12 +6,12 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=dev webpack-dev-server",
     "pub": "npm run compile && npm version patch && npm publish",
-    "copy-update": "cp -R ./lib ../gm_static_station/node_modules/gm-web-excel-table",
+    "copy-update": "cp -R ./lib ./gm_static_station/node_modules/gm-web-excel-table",
     "build-update": "npm run compile && npm run cpupdate",
     "compile": "kunsam-tools run compile && tsc -p .",
     "watch-dev": "kunsam-tools run watch-compile-with-lib"
   },
-  "kunsam-tools-lib-target": "../gm_static_station",
+  "kunsam-tools-lib-target": "./gm_static_station",
   "author": "shankun@guanmai.cn",
   "license": "ISC",
   "peerDependencies": {

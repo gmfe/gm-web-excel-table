@@ -160,13 +160,15 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
             onSearch={(value: string) => onSearchOrderName(value, viewIndex)}
             mapSearchDataToSelect={(data: GMOrderListDataStructure[][]) => {
               let rowData = data[viewIndex] || [];
-              return rowData.map((d: GMOrderListDataStructure) => ({
+              const list = rowData.map((d: GMOrderListDataStructure) => ({
                 label: d.label,
                 children: d.children.map(c => {
                   dataValueMap.set(c.value, c);
                   return { value: c.value, text: c.name }
                 })
               }))
+              console.log('KeyBoardSearchSelect', rowData, list)
+              return list
             }}
             onSelect={(data: { value: string, text: string }) => {
               if (data) {
