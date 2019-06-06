@@ -3,7 +3,7 @@
 import React, { Component } from 'react'
 import './index.less'
 import cx from 'classnames';
-import { InputNumber, ToolTip } from 'react-gm'
+import { InputNumber } from 'react-gm'
 import { WithKeyboardHandlerProviderProps } from '../../../../../components'
 import { WithInputFocus, WithInputFocusProviderProps } from '../with-input-focus';
 
@@ -56,11 +56,11 @@ export class EditableInputNumber extends Component<{
     // }
     const isFinished = !editing && value && value.length > 0;
 
-    let isFinishedAndCollasped: boolean = false;
+    // let isFinishedAndCollasped: boolean = false;
 
     if (isFinished && this._containerRef) {
       // TODO 并且要计算文字处于...状态
-      isFinishedAndCollasped = value.length * 20 > this._containerRef.clientWidth;
+      // isFinishedAndCollasped = value.length * 20 > this._containerRef.clientWidth;
     }
 
     return (
@@ -70,24 +70,7 @@ export class EditableInputNumber extends Component<{
         '-finished': isFinished,
       })}>
 
-        <ToolTip
-          top
-          showArrow={false}
-          popup={isFinishedAndCollasped ? (
-            <div
-              style={{
-                display: 'inline-block',
-                width: this._containerRef && this._containerRef.clientWidth,
-                wordBreak: 'break-all'
-              }}
-            >
-              {value}
-            </div>
-          )
-            : <span />}
-        >
-          {/* InputNumberV2 cannot get mouse selection */}
-          <InputNumber
+        <InputNumber
             value={value || ''}
             precision={2}
             onChange={this.onChange}
@@ -98,8 +81,7 @@ export class EditableInputNumber extends Component<{
             onInputFocus={() => {
               onEditStart();
             }}
-          />
-        </ToolTip>
+        />
       </div>
     )
   }

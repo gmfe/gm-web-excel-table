@@ -8,7 +8,7 @@ import SearchSelect from './components/cells/search-select';
 import EditableInputNumber from './components/cells/editable-input-number';
 
 import { SvgFun } from 'gm-svg';
-import { ToolTip, Trigger } from 'react-gm';
+import { Popover, Flex } from 'react-gm';
 import SvgShanchumorenHuaban from 'gm-svg/src/ShanchumorenHuaban';
 import SvgTianjiamorenHuaban from 'gm-svg/src/TianjiamorenHuaban';
 import { GMOrderListDataStructure } from './interface';
@@ -31,6 +31,7 @@ export enum GM_REFUND_TABLE_COLUMNS_KEYS {
   fillPriceDiff = 'fillPriceDiff', // 补差
   returnTotalPrice = 'returnTotalPrice', // 退货金额
   chargerPerson = 'chargerPerson',
+  std_unit = 'std_unit', // 基本单位
 
   returnBatchNumber = 'returnBatchNumber' // 退货批次
 }
@@ -56,16 +57,24 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
     const isEditing = original.tableController.query.isEditing(cell);
     // const number = value && parseInt(value, 10) || null;
     return (
-      <KeyBoardEditableInputNumber
-        cell={cell}
-        value={value}
-        editing={isEditing}
-        className={className}
-        tableController={original.tableController}
-        onChange={(value?: number) => {
-          componentProps.dataManager.onUpdate({ [dataIndex]: value }, viewIndex, key);
-        }}
-      />
+      <Flex alignCenter>
+        <KeyBoardEditableInputNumber
+            cell={cell}
+            value={value}
+            editing={isEditing}
+            className={className}
+            tableController={original.tableController}
+            onChange={(value?: number) => {
+              componentProps.dataManager.onUpdate({ [dataIndex]: value }, viewIndex, key);
+            }}
+        />
+        <div className='gm-gap-5'/>
+        <span>
+          {
+            key === 'returnOrderNumber' ? original.std_unit : key === 'returnOrderPerPrice' ? (i18next.t('元') + '/' + (original.std_unit || '-') ) : i18next.t('元')
+          }
+        </span>
+      </Flex>
     );
   }
 
@@ -81,9 +90,9 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
       key: GM_REFUND_TABLE_COLUMNS_KEYS.number,
       fixed: 'left',
       Header: i18next.t('序号'),
-      minWidth: 24,
-      maxWidth: 49,
-      style: { borderRight: '1px solid rgba(0,0,0,0.02)' },
+      minWidth: 46,
+      maxWidth: 56,
+      style: { borderRight: '1px solid rgba(0, 0, 0, 0.05)' },
       Cell: ({ viewIndex }: CellInfo) => {
         return viewIndex + 1;
       }
@@ -93,39 +102,33 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
     // 操作
     {
       key: 'action',
-
       fixed: 'left',
       center: true,
-      minWidth: 56,
+      minWidth: 72,
       maxWidth: 82,
-      style: { borderRight: '1px solid rgba(0,0,0,0.05)', },
+      style: { borderRight: '1px solid rgba(0,0,0,0.05)' },
       Header: () => <SvgFun className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-action-header-svg`} />,
       Cell: ({ viewIndex }: CellInfo) => {
         return (
-          [
-            <ToolTip
-              key="add" top popup={<span>添加</span>}>
+          <Flex justifyCenter alignCenter>
+            <Popover showArrow type='hover' popup={<div className='gm-padding-5'>添加</div>}>
               <span onClick={() => { componentProps.dataManager.onAdd([undefined], viewIndex + 1); }}>
                 <SvgTianjiamorenHuaban
-                  width={18}
-                  className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-add-svg`}
+                    width={18}
+                    className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-add-svg`}
                 />
               </span>
-            </ToolTip>
-            ,
-
-            <ToolTip key="delete" top popup={<span>删除</span>}>
+            </Popover>
+            <Popover showArrow type='hover' popup={<div className='gm-padding-5'>删除</div>}>
               <span onClick={() => { componentProps.dataManager.onDelete(viewIndex); }}>
                 <SvgShanchumorenHuaban
-                  width={18}
-                  className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-delete-svg`}
+                    width={18}
+                    className={`${componentProps.tableKey}-svg ${componentProps.tableKey}-delete-svg`}
                 />
               </span>
 
-            </ToolTip>
-            ,
-
-          ]
+            </Popover>
+          </Flex>
         )
       },
     },
@@ -150,31 +153,43 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
         const isEditing = original.tableController.query.isEditing(cellObj);
         // this is an ensure props by refund-table;
         const { onSearchOrderName } = componentProps.custom;
-        const dataValueMap = new Map()
         return (
           <KeyBoardSearchSelect
             cell={cellObj}
             value={value}
             editing={isEditing}
+            selected={{ text: original.orderName, value: original.id }}
             tableController={original.tableController}
             onSearch={(value: string) => onSearchOrderName(value, viewIndex)}
             mapSearchDataToSelect={(data: GMOrderListDataStructure[][]) => {
+              // 这里是异步执行的
               let rowData = data[viewIndex] || [];
               const list = rowData.map((d: GMOrderListDataStructure) => ({
                 label: d.label,
                 children: d.children.map(c => {
-                  dataValueMap.set(c.value, c);
-                  return { value: c.value, text: c.name }
+                  const { unit_price, std_unit, category, name, value } = c
+                  return { value, text: name, name, id: value, category, std_unit, unit_price }
                 })
               }))
-              console.log('KeyBoardSearchSelect', rowData, list)
               return list
             }}
-            onSelect={(data: { value: string, text: string }) => {
+            onSelect={(data: { value: string, text: string }, selectListData: GMOrderListDataStructure[][]) => {
               if (data) {
-                const selectedData = dataValueMap.get(data.value);
-                componentProps.dataManager.onUpdate(selectedData, viewIndex, GM_REFUND_TABLE_COLUMNS_KEYS.orderName);
+                let findSelectedData: any;
+                selectListData.every((listData: any) => {
+                  listData.children.every((item: any) => {
+                    if (item.value === data.value) {
+                      findSelectedData = item;
+                      findSelectedData.name = data.text;
+                      findSelectedData.id = data.value;
+                    }
+                    return !findSelectedData;
+                  })
+                  return !findSelectedData;
+                })
+                componentProps.dataManager.onUpdate(findSelectedData, viewIndex, GM_REFUND_TABLE_COLUMNS_KEYS.orderName);
               }
+
             }}
           />
         )
@@ -186,7 +201,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
     {
       key: GM_REFUND_TABLE_COLUMNS_KEYS.orderCategory,
 
-      minWidth: 26,
+      minWidth: 30,
       Header: i18next.t('商品分类'),
       sortable: false,
       accessor: 'category',
@@ -197,7 +212,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
       key: GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderNumber,
 
       Header: i18next.t('退货数'),
-      minWidth: 100,
+      minWidth: 120,
       editable: true,
       uniqueEditable: true,
       accessor: 'returnOrderNumber',
@@ -213,7 +228,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
     {
       key: GM_REFUND_TABLE_COLUMNS_KEYS.returnOrderPerPrice,
 
-      minWidth: 100,
+      minWidth: 140,
       Header: i18next.t('退货单价'),
       editable: true,
       uniqueEditable: true,
@@ -231,7 +246,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
       key: GM_REFUND_TABLE_COLUMNS_KEYS.fillPriceDiff,
 
       Header: i18next.t('补差'),
-      minWidth: 28,
+      minWidth: 30,
       accessor: 'fillPriceDiff',
       Cell: (cell: CellInfo) => {
         return cell.value || '-';
@@ -243,7 +258,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
       key: GM_REFUND_TABLE_COLUMNS_KEYS.returnTotalPrice,
 
       Header: i18next.t('退货金额'),
-      minWidth: 100,
+      minWidth: 120,
       editable: true,
       uniqueEditable: true,
       accessor: 'returnTotalPrice',
@@ -292,7 +307,7 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
     columns.splice(6, 0, {
       key: GM_REFUND_TABLE_COLUMNS_KEYS.returnBatchNumber,
       Header: i18next.t('退货批次'),
-      minWidth: 28,
+      minWidth: 30,
       Cell: ({ original, viewIndex }: CellInfo) => {
 
         // 是否选择了批次
@@ -310,19 +325,18 @@ export const configOrderTable1Columns: IGetColumnsFunc = (componentProps: Column
             children = (
               <div className="gm-select-batch-anomaly">
                 <span style={{ color: '#ff0000', textDecoration: 'underline', marginRight: '5px' }}>{i18next.t('查看批次')}</span>
-                <Trigger
+                <Popover
                   showArrow
-                  component={<div />}
                   type='hover'
                   popup={
-                    <div className='gm-padding-10 gm-bg' style={{ width: '200px', color: '#333' }}>
+                    <div className='gm-padding-5' style={{ width: '200px', color: '#333' }}>
                       {i18next.t('所选批次库存数小于退货数，请更改批次或修改退货数')}
                     </div>
                   }>
                   <span style={{ backgroundColor: '#ff0000', color: '#ffffff', padding: '2px' }}>
                     {i18next.t('异常')}
                   </span>
-                </Trigger>
+                </Popover>
               </div>
             )
           }

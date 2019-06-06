@@ -19,7 +19,8 @@ export class SearchSelect extends Component<{
   value?: string;
   cell: CellUniqueObject;
   editing: boolean;
-  onSelect: (value: any) => void;
+  selected: { value: string, text: string },
+  onSelect: (value: any, selectListData: any[]) => void;
   onSearch: (value: string) => Promise<any>;
   handleKeyUp: (e: React.KeyboardEvent, value?: string | number) => void;
   mapSearchDataToSelect: (data: any) => GMMoreSelectData[];
@@ -29,6 +30,7 @@ export class SearchSelect extends Component<{
   private _popRef: any;
   private _lastFetchId: number = 0;
   private _containerRef: any;
+
 
   static defaultProps = {
     onSelect: () => { }
@@ -40,8 +42,6 @@ export class SearchSelect extends Component<{
       data: [],
       // fetching: false,
       value: props.value || undefined,
-      showMoreSelectPopWindow: false,
-      selected: { text: '', value: null },
     }
     this._lastFetchId = 0;
     this.handleSearch = debounce(this.handleSearch, 500);
@@ -62,6 +62,7 @@ export class SearchSelect extends Component<{
 
 
   handleSearch = async (value: string) => {
+
     return new Promise(res => {
       this._lastFetchId += 1;
       const fetchId = this._lastFetchId;
@@ -77,6 +78,7 @@ export class SearchSelect extends Component<{
           data: this.props.mapSearchDataToSelect(searchResult),
           // fetching: false,
         }, () => {
+          // console.log('searchselect', this.props.mapSearchDataToSelect(searchResult), searchResult)
           res()
         });
       })
@@ -105,8 +107,8 @@ export class SearchSelect extends Component<{
   }
 
   render() {
-    const { data, selected } = this.state;
-    const { onSelect, value, editing, handleKeyUp, onEditStart } = this.props;
+    const { data } = this.state;
+    const { onSelect, selected, value, editing, handleKeyUp, onEditStart } = this.props;
 
     const isFinished = !editing && value && value.length > 0;
 
@@ -147,14 +149,15 @@ export class SearchSelect extends Component<{
           <MoreSelect
             data={data}
             isGroupList
+            showArrow={false}
             popoverType={'click'}
             onSearch={this.handleSearch}
             popRef={(pop: any) => { this._popRef = pop }}
+            renderListFilter={(data: any) => data} // 展示全部数据1
             popoverClassName="gm-refund-table--more-select-popover"
             selected={selected && selected.value ? selected : undefined}
             onSelect={(selected: any) => {
-              onSelect(selected)
-              this.setState({ selected })
+              onSelect(selected, this.state.data)
             }}
             onInputFocus={() => { onEditStart(); }}
             onInputKeyDown={this.handleInputKeyDown}

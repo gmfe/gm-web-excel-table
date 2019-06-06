@@ -26,7 +26,6 @@
 // Header-cell
 @{table-any-head-cell-selector} {
   text-align      : left;
-  min-height      : 40px;
   background-color: @GME-title-background-color;
 }
 // 垂直居中
@@ -50,13 +49,13 @@
   .ReactTable.-highlight .rt-tbody .rt-tr:not(.-padRow):hover{
     background: transparent;
   }
-  .rthfc.-highlight .rt-tr:hover .rt-td {
-    background-color: rgba(242,243,249, 0.5);
-  }
+  //.rthfc.-highlight .rt-tr:hover .rt-td {
+  //  background-color: rgba(242,243,249, 0.5);
+  //}
 
   .rthfc.-highlight .rt-tbody .rt-tr:hover {
     .rt-td.rthfc-td-fixed {
-      background-color: #fff;
+      // background-color: #fff;
       // .gm-web-table-cell-container{
       //   background-color: rgba(242,243,249, 0.5);
       // }
@@ -106,4 +105,13 @@
 .rthfc .rt-th.rthfc-th-fixed-left-last,
 .rthfc .rt-td.rthfc-td-fixed-left-last {
   border-color: rgba(0, 0, 0, 0.05);
+}
+
+// fixed
+.rt-th.rthfc-td-fixed,
+.rt-td.rthfc-td-fixed,
+.rt-th.rthfc-th-fixed,
+re-td.rthfc-th-fixed {
+  box-sizing: border-box !important;
+  padding: 12px 8px !important;
 }

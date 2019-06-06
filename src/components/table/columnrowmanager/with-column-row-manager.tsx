@@ -9,7 +9,7 @@ import { IColumnManager, ColumnRowManagerComponentProps, GMExtendedColumnProps }
 
 /**
  * 行列操作相关 如行列拖动，行列配置
- * 
+ *
  * @export
  * @param {React.ComponentClass<any, any>} Target
  * @returns
@@ -87,6 +87,7 @@ export function withUniqueEditableColumnsProps(data: GMExtendedColumnProps[]): G
     const cellContainerStyle: any = {
       width: '100%',
       height: '100%',
+      lineHeight: '1em',
       display: 'flex',
       alignItems: 'center',
     }
@@ -106,7 +107,7 @@ export function withUniqueEditableColumnsProps(data: GMExtendedColumnProps[]): G
           id={`${_GM_TABLE_SCROLL_CELL_PREFIX_}${d.key}${cell.original.rowKey}`}
           style={{ ...cellContainerStyle }}
         >
-          
+
           {/* { ADD fix container for hover background
             d.fixed ? (
               <div className="gm-web-table-cell">
