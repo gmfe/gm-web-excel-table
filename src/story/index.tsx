@@ -14,7 +14,7 @@ import { i18next } from 'gm-i18n';
 import './i18next'
 
 
-// ----------------- 这个文件用来本地调试 -----------------
+// ----------------- !这个文件用来本地调试 -----------------
 
 
 const MOCK_ALLDATA: RefundExcelTable_AllData = {
@@ -66,7 +66,7 @@ export default class RenderComp extends React.Component<any, {
         loading: false,
         data: {
           ...this.state.data,
-          details: new Array(5).fill(null).map(a => cloneDeep(defaultData))
+          details: new Array(1).fill(null).map(_ => cloneDeep(defaultData))
         }
       })
 
@@ -80,7 +80,7 @@ export default class RenderComp extends React.Component<any, {
   }
 
 
-  fetchOrderName = (value: string, index: number) => {
+  fetchOrderName = (value: string) => {
 
     // 测试版本上进第一列显示下来数据
     return new Promise<GMOrderListDataStructure[][]>(res => {
@@ -88,18 +88,42 @@ export default class RenderComp extends React.Component<any, {
 
       setTimeout(() => {
         const mapData: GMOrderListDataStructure[][] = [
-          new Array(15).fill(null).map(_ => ({
-            label: Math.random().toFixed(3),
+          new Array(5).fill(null).map((_, index) => ({
+            label: `label${index}`,
             children: [{
               std_unit: "件",
-              category: "调味酱汁类（液态）",
+              category: "c1",
               unit_price: undefined,
-              value: "D4207755" + Math.random().toFixed(3),
-              name: "海天草菇老抽 1.9L （件）" + Math.random().toFixed(3),
+              value: value + index,
+              name: "n1-" + index + value,
             }],
-          }))
+          })),
+          new Array(5).fill(null).map((_, index) => ({
+            label: `label${index}`,
+            children: [{
+              std_unit: "件",
+              category: "c2",
+              unit_price: undefined,
+              value: value + index,
+              name: "n2-" + index + value ,
+            }],
+          })),
+          new Array(5).fill(null).map((_, index) => ({
+            label: `label${index}`,
+            children: [{
+              std_unit: "件",
+              category: "c3",
+              unit_price: undefined,
+              value: value + index,
+              name: "n3-" + index + value,
+            }],
+          })),
         ]
-        res(mapData)
+        if (!value) {
+          res([])
+        } else {
+          res(mapData)
+        }
       }, 1000)
       // fetch('https://randomuser.me/api/?results=5')
       //   .then(response => response.json())
@@ -117,6 +141,7 @@ export default class RenderComp extends React.Component<any, {
   onSelectOrderName = (selectedData: any, index: number) => {
     const details = this.state.data.details;
     details[index] = Object.assign(details[index] || {}, selectedData)
+
     this.setState({
       data: {
         ...this.state.data,
@@ -158,7 +183,7 @@ export default class RenderComp extends React.Component<any, {
     });
   }
 
-  onAddRow = (data: any, index: number, callback?: Function) => {
+  onAddRow = (_: any, index: number, callback?: Function) => {
     const details = this.state.data.details;
     if (index !== undefined) {
       details.splice(index, 0, cloneDeep(defaultData))

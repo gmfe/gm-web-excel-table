@@ -21,7 +21,7 @@ export interface GMConfigData<T> {
 
   defaultData: T
   fetchData?: Promise<T>
-
+  data: any;
   initData?: T[]
   controlled?: boolean // 受控状态
   getProps?: () => any

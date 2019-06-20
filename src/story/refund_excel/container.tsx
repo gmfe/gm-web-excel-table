@@ -26,7 +26,8 @@ import { RefundExcelTable_AllData, RefundExcelTable_Detail, Data_IRefundExcel, R
 //   returnOrderPerPrice: 0,
 //   fillPriceDiff: 0, // 补差价
 //   returnTotalPrice: 0, // 退货金额
-//   chargerPerson: '' // '操作人'
+//   chargerPerson: '', // '操作人'
+//   std_unit: '斤' // 基本单位
 // }
 
 
@@ -82,7 +83,7 @@ export default class TabelExcelContainer extends React.PureComponent<RefundExcel
       returnTotalPrice: d.money,
       returnOrderNumber: d.quantity,
       fillPriceDiff: d.different_price,
-      returnOrderPerPrice: d.unit_price,
+      returnOrderPerPrice: d.unit_price
     }
   }
   /**
@@ -170,11 +171,13 @@ export default class TabelExcelContainer extends React.PureComponent<RefundExcel
           ],
           moveEdit: {
             [MoveEditType.arrow]: {
-              allowUpAddRow: true, // 允许向上增行
+              allowUpAddRow: false, // 允许向上增行
               allowDownAddRow: true, // 允许向下增行
               allowRightArrowDownAddRow: false, // 允许向右增行
-              allowColumnRightBreakRow: true,
-              allowColumnLeftBackRow: true,
+              allowColumnRightBreakRow: false,
+              allowColumnLeftBackRow: false,
+              allowUp2Bottom: true,
+              allowBottom2Up: false
             },
             [MoveEditType.tab]: {
               allowDownAddRow: false, // 允许向下增行

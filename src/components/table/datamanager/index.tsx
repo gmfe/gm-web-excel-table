@@ -12,7 +12,7 @@ type IData = any;
 
 /**
  * 数据管理 | 数据注入
- * 
+ *
  * @export
  * @param {React.ComponentClass<any, any>} WrappedComponent
  * @returns

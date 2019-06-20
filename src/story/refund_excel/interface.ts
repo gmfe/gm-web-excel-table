@@ -24,7 +24,8 @@ export interface Data_IRefundExcel extends RefundExcelTable_DetailCommonProperty
   fillPriceDiff: string, // 补差价
   chargerPerson: string // '操作人' // number
   returnTotalPrice: string, // 退货金额	 // number
-  returnBatchNumner?: string
+  returnBatchNumner?: string,
+  std_unit?: string, // 基本单位
 
   rowKey: string;
 }

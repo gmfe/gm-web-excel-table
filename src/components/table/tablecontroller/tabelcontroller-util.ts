@@ -30,11 +30,16 @@ export class TableControllerUtil {
       return;
     }
 
-    let { handler, value, isCellOnFirstRow, isCellOnLastRow } = props;
+    let {
+      handler,
+      value,
+      // isCellOnFirstRow,
+      // isCellOnLastRow
+    } = props;
     const target = e.target as HTMLInputElement;
     const startPosition = target.selectionStart;
     const endPosition = target.selectionEnd;
-  
+
     switch (e.key) {
       case 'ArrowRight': {
         if (!value) {
@@ -71,29 +76,33 @@ export class TableControllerUtil {
         break;
       }
       case 'ArrowDown': {
-        if (isCellOnLastRow()) {
-          if (!this.isInputSelectionArriveVerticalBoundary) {
-            this.isInputSelectionArriveVerticalBoundary = true;
-          } else {
-            handler.onKeyUp_ArrowDown();
-          }
-        } else {
-          this.isInputSelectionArriveVerticalBoundary = false;
-          handler.onKeyUp_ArrowDown();
-        }
+        handler.onKeyUp_ArrowDown();
+        // BACKUP 下述代码是边界限制情况 暂时停用
+        // if (isCellOnLastRow()) {
+        //   if (!this.isInputSelectionArriveVerticalBoundary) {
+        //     this.isInputSelectionArriveVerticalBoundary = true;
+        //   } else {
+        //     handler.onKeyUp_ArrowDown();
+        //   }
+        // } else {
+        //   this.isInputSelectionArriveVerticalBoundary = false;
+        //   handler.onKeyUp_ArrowDown();
+        // }
         break;
       }
       case 'ArrowUp': {
-        if (isCellOnFirstRow()) {
-          if (!this.isInputSelectionArriveVerticalBoundary) {
-            this.isInputSelectionArriveVerticalBoundary = true;
-          } else {
-            handler.onKeyUp_ArrowUp();
-          }
-        } else {
-          this.isInputSelectionArriveVerticalBoundary = false;
-          handler.onKeyUp_ArrowUp();
-        }
+        handler.onKeyUp_ArrowUp();
+        // BACKUP 下述代码是边界限制情况 暂时停用
+        // if (isCellOnFirstRow()) {
+        //   if (!this.isInputSelectionArriveVerticalBoundary) {
+        //     this.isInputSelectionArriveVerticalBoundary = true;
+        //   } else {
+        //     handler.onKeyUp_ArrowUp();
+        //   }
+        // } else {
+        //   this.isInputSelectionArriveVerticalBoundary = false;
+        //   handler.onKeyUp_ArrowUp();
+        // }
         break;
       }
       case 'Enter': {

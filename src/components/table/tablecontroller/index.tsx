@@ -11,7 +11,6 @@ import {
   TableControllerMoveEditAllowConfig,
 } from './interface';
 
-import cx from 'classnames';
 import isEqual from 'lodash/isEqual';
 import { IDataManager } from '../datamanager/interface';
 import { GMExtendedColumnProps } from '../columnrowmanager/interface';
@@ -406,7 +405,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
         const position = this._cellIdQueryPositionMap.get(this.CellUniqueObject2Id(obj));
         // NOTICE 可能会是动态宽高，所以每次取
         if (position) {
-  
+
           const scroller = this.getScroller();
 
           if (scrollX) {
@@ -469,6 +468,15 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
                 this.edit(this._firstCell, true, () => this.scroll2Cell(this._firstCell!, true, false));
               }
             });
+          } else if (config.allowUp2Bottom) {
+            // 向上到最后一行
+            const rowMax = this.props.data.length
+            const currentRowLastCol = this.getCellByPosition(currentPositionOfCell.col, rowMax - 1)
+
+            if (currentRowLastCol) {
+              this.scroll2Cell(currentRowLastCol, true, false);
+              this.edit(currentRowLastCol);
+            }
           }
         } else {
           const nextCell = this.getCellByPosition(nextCol, nextRow);
@@ -498,7 +506,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
             const MORE_ADD_ROW_NUMBER = 1;
             this.props.dataManager.onAdd(new Array(MORE_ADD_ROW_NUMBER).fill(undefined), rowMax, () => {
               this._dirtyCallBackQueue.push(() => {
-                const cell = this._cellPositionQueryIdMap.get(this.PositionId({ col: currentPositionOfCell.col, row: rowMax }));
+                const cell = this._cellPositionQueryIdMap.get(this.PositionId({ col: 2, row: rowMax }));
                 if (cell) {
                   this.edit(cell, true, () => this.scroll2Cell(cell, true, false));
                   return true;
@@ -574,7 +582,7 @@ export function WithTableController(Target: React.ComponentClass<any, any>) {
             }
           }
           if (allowDownAddRow) {
-            // 向下增加行 
+            // 向下增加行
             // CUSTOM FIELD
             const MORE_ADD_ROW_NUMBER = 1;
             this.props.dataManager.onAdd(new Array(MORE_ADD_ROW_NUMBER).fill(undefined), rowMax, () => {
